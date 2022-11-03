@@ -4,12 +4,11 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import utf8 from "utf8"
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 import { Link } from 'react-router-dom';
+import axios from "axios"
 export const Home: React.FC = () => {
 
-    const theme = useSelector(state=>state)
-    console.log(theme)
     const dispatch = useDispatch();
-
+    
     useEffect(() => {
         
         dispatch({
@@ -24,12 +23,26 @@ export const Home: React.FC = () => {
     const name = "นายชิษณุพงศ์ เจตน์อัศวภิรมย์";
     
     const [state,setState] = useState({
-        open:false
+        open:false,
+        img:[],
     })
 
     const handleOpen = ():void => {
         setState(prev=>({...prev,open:!prev.open}));
     }
+
+    
+   /*  const loadImage = async() => {
+        return await axios.get(`http://localhost:5000/api/test2`)
+    }
+
+    useEffect(() => {
+      loadImage()
+      .then(res => setState(prev=>({...prev,img:res.data.img})))
+      
+    }, [])
+    console.log(state) */
+
 
     return (
     <>
@@ -44,7 +57,7 @@ export const Home: React.FC = () => {
                     </div>
 
                 <div className="  relative">
-
+               
                     <div className="flex border-2 rounded-3xl gap-4 p-1  max-h-[5vh]" onClick={handleOpen}>
                         <div className="max-w-[2rem] cursor-pointer">
                             <img src="https://www.w3schools.com/howto/img_avatar.png" className="rounded-full w-full h-full" />
@@ -72,7 +85,10 @@ export const Home: React.FC = () => {
 
                 </div>
             </div>
-        </div>   
+        </div>
+      {/*   {state.img && state.img.map((im,i) => (
+            <img src={`data:image/jpeg;base64,${im.imageBase64 as string}`} key={i}/>
+        ))} */}
     </>
     )
 }

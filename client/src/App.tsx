@@ -14,6 +14,7 @@ import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { ResultCurrentUser } from './Interface/Auth.Interface';
 import { AxiosError } from 'axios';
+import { CreateStore } from './Pages/Admin/CreateStore';
 function App() {
 
   const dispatch = useDispatch();
@@ -62,7 +63,7 @@ function App() {
         <Route element={<AdminLayout/>}>
         <Route index path="/admin" element={<Admin/>}/>
           <Route path="/admin/create-category" element={<CreateCategory/>}/>
-          <Route path="/admin/create-store" element={<CreateCategory/>}/>
+          <Route path="/admin/create-store" element={<CreateStore/>}/>
         </Route>
       </Routes>
     );

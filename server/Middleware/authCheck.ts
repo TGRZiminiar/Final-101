@@ -31,7 +31,7 @@ export const AdminCheck = async(req:Request, res:Response, next:NextFunction) =>
     //@ts-ignore
     const {userId} = req.user;
     //@ts-ignore
-    console.log(req.user)
+    // console.log(req.user)
     if(!userId){
         return res.status(400).send("Something Went Wronge")
     }

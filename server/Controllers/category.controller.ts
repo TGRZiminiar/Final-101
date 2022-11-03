@@ -39,6 +39,7 @@ export const ListAllCategory = async(req:Request, res:Response) => {
         
         const category = await CategoryModel.find({})
         .sort({"updatedAt":-1})
+        .select("name _id")
         .lean();
 
         return res.status(200).json({"category":category});

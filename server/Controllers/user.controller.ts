@@ -4,7 +4,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserSignJWT } from "../Interface/user.interface";
 import { signJwt } from "../utils/jwt.utils";
-
+import multer from "multer"
+import ImageModel from "../Models/Image.model";
+import fs, { rmSync } from "fs"
 
 export const RegisterUser = async(req:Request, res:Response) => {
     try {
@@ -87,6 +89,55 @@ export const CurrentUser = async(req:Request, res:Response) => {
         .lean();
 
         return res.status(200).json({"user":getUser});
+
+    } catch (error) {
+        console.log(`Current User Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const UpLoadImageCon = async(req:Request, res:Response) => {
+    try {
+
+        const files = req.files;
+        if(!files){
+            return res.status(400).json("Something Went Wronge");
+        }
+        // convert images into base64 encoding
+        //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+            return img.toString('base64')
+        })
+
+        await Promise.all( imgArray.map((src:string, index:number) => {
+
+            // create object to store data in the collection
+            let finalImg = {
+                //@ts-ignore
+                filename : files[index].originalname,
+                //@ts-ignore
+                contentType : files[index].mimetype,
+                imageBase64 : src
+            }
+            let newUpload = new ImageModel(finalImg).save()
+        }))
+
+        return res.status(200).json("SUCCESS")
+
+    } catch (error) {
+        console.log(`Current User Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const ListAllImage = async(req:Request, res:Response) => {
+    try {
+        
+        const img = await ImageModel.find({}).lean();
+
+        return res.status(200).json({"img":img})
 
     } catch (error) {
         console.log(`Current User Error => ${error}`);
