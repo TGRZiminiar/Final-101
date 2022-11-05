@@ -15,6 +15,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ResultCurrentUser } from './Interface/Auth.Interface';
 import { AxiosError } from 'axios';
 import { CreateStore } from './Pages/Admin/CreateStore';
+import { ListStore } from './Pages/Admin/ListStore';
+import { UploadImageStore } from './Pages/Admin/UploadImageStore';
+import { UpdateStore } from './Pages/Admin/UpdateStore';
 function App() {
 
   const dispatch = useDispatch();
@@ -64,6 +67,9 @@ function App() {
         <Route index path="/admin" element={<Admin/>}/>
           <Route path="/admin/create-category" element={<CreateCategory/>}/>
           <Route path="/admin/create-store" element={<CreateStore/>}/>
+          <Route path="/admin/get-store" element={<ListStore/>}/>
+          <Route path="admin/upload-image/:storeId" element={<UploadImageStore/>}/>
+          <Route path="admin/edit/:storeId" element={<UpdateStore/>}/>
         </Route>
       </Routes>
     );

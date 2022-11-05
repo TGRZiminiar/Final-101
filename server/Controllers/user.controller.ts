@@ -100,6 +100,7 @@ export const UpLoadImageCon = async(req:Request, res:Response) => {
     try {
 
         const files = req.files;
+        console.log(req.files)
         if(!files){
             return res.status(400).json("Something Went Wronge");
         }

@@ -6,6 +6,7 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import "./Admin.css"
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import { Link } from 'react-router-dom';
 
 
@@ -63,6 +64,14 @@ export const Admin: React.FC = () => {
             <div className="flex justify-around py-4 hover:bg-blue-700 cursor-pointer">
                 <AddBusinessOutlinedIcon fontSize='large'  />
                 <h6 className="self-center">Create Store</h6>
+            </div>
+            </Link>
+            <hr/>
+            
+            <Link to="/admin/get-store">
+            <div className="flex justify-around py-4 hover:bg-blue-700 cursor-pointer">
+                <StorefrontOutlinedIcon fontSize='large'  />
+                <h6 className="self-center">See All Store</h6>
             </div>
             </Link>
             <hr/>

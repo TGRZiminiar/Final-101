@@ -1,0 +1,8 @@
+1. List หน้า store
+2. Update store
+3. HomePage
+4. Remove Store
+5. Single Store
+6. Comment
+7. CommentReply
+8. Rating

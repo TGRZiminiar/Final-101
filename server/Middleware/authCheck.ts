@@ -33,7 +33,7 @@ export const AdminCheck = async(req:Request, res:Response, next:NextFunction) =>
     //@ts-ignore
     // console.log(req.user)
     if(!userId){
-        return res.status(400).send("Something Went Wronge")
+        return res.status(400).send("Something Went Wronge with Id")
     }
     const checkAdmin = await UserModel.findById({"_id":userId})
     .select('role')

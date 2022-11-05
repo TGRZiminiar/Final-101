@@ -82,11 +82,21 @@ export const Home: React.FC = () => {
                }
                 </div>
 
-
                 </div>
             </div>
         </div>
-      {/*   {state.img && state.img.map((im,i) => (
+
+
+        <div className="grid">
+            <div className="w-full h-[25rem]">
+            <img src="https://m.media-amazon.com/images/I/61+oIVFF7FL.png" className="w-full h-full object-cover"/>
+            </div>
+            <div className="bg-white h-full mx-auto w-[100vh]">
+               hello
+            </div>
+        </div>
+
+        {/* {state.img && state.img.map((im,i) => (
             <img src={`data:image/jpeg;base64,${im.imageBase64 as string}`} key={i}/>
         ))} */}
     </>

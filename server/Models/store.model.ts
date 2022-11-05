@@ -71,10 +71,10 @@ const storeSchema = new mongoose.Schema({
         platform:{
             type:String,
             enum:[
-                "facebook",
-                "line",
-                "instagram",
-                "phone",
+                "Facebook",
+                "Line",
+                "Instagram",
+                "Phone",
             ]
         },
         link:{type:String},

@@ -3,8 +3,14 @@ import React, { SyntheticEvent, useEffect, useState } from 'react'
 import { ListAllCategory } from "../../Function/category.func"
 import { AxiosError } from "axios";
 import {toast} from "react-toastify";
-import { TimeOpenTable } from '../../Components/Table/TimeOpenTable';
 import { PostCreateStore } from '../../Function/store.func';
+import { SelectDateAndTime } from '../../Components/CreateStore/SelectDateAndTime';
+import { Location } from '../../Components/CreateStore/Location';
+import { SelectDateAndTimeDelivery } from '../../Components/CreateStore/SelectDateAndTimeDelivery';
+import { CheckBox } from '../../Components/CreateStore/CheckBox';
+import { Contact } from '../../Components/CreateStore/Contact';
+import { MenuTable } from '../../Components/Table/MenuTable';
+import "./CreateStore.css"
 
 type SingleCategory = {
     _id:string;
@@ -16,7 +22,24 @@ export interface TimeOpen {
     time:string;
 }
 
-interface StateProps {
+
+export type CheckBox = {
+    text:string;
+    check:boolean;
+}
+
+export type Contact = {
+    platform:string;
+    link:string;
+}
+
+export type Menu = {
+    text:string;
+    price:number;
+}
+
+
+export interface StateProps {
     name:string;
     category:SingleCategory[] | null;
     categories:SingleCategory[],
@@ -29,10 +52,30 @@ interface StateProps {
     timeOpen:TimeOpen[];
     index:number;
     dateDelivery:string;
+    
     timeArrayDelivery:string;
     tempDelivery:string;
     timeOpenDelivery:TimeOpen[];
+    
     rangePrice:string;
+    
+    textCheckBox:string;
+    boolCheck:string;
+    checkBox:CheckBox[];
+   
+    platform:string;
+    linkPlatform:string;
+    contact:Contact[];
+
+    text:string;
+    price:number;
+    menu:Menu[];
+
+    branch:string[];
+    otherDetail:string;
+
+    seatNumber:number
+
 }
 
 export const CreateStore: React.FC = () => {
@@ -47,13 +90,30 @@ export const CreateStore: React.FC = () => {
         date:"",
         timeArray:"",
         temp:"",
-        timeOpen:[],
+        timeOpen:[{"date":"monday","time":"08.00 - 12.00"}],
         dateDelivery:"",
         timeArrayDelivery:"",
         tempDelivery:"",
-        timeOpenDelivery:[],
+        timeOpenDelivery:[{"date":"monday","time":"08.00 - 12.00"}],
         index:0,
-        rangePrice:""
+        rangePrice:"",
+        seatNumber:0,
+
+        textCheckBox:"",
+        boolCheck:"",
+        checkBox:[{"text":"Parking","check":true}],
+
+        platform:"",
+        linkPlatform:"http://facebook.com",
+        contact:[],
+
+        text:"",
+        price:0,
+        menu:[],
+
+        branch:[],
+        otherDetail:"",
+
     })
 
     const loadCategories = async() => {
@@ -76,12 +136,6 @@ export const CreateStore: React.FC = () => {
 
     }, [])
     
-    //@ts-ignore
-    const handleChange = (e,v) => {
-        //@ts-ignore
-        console.log("ThIS IS V =>",v)
-        setState(prev=>({...prev,category:v}))
-    }
 
     const handleAddDate = () => {
         
@@ -91,9 +145,8 @@ export const CreateStore: React.FC = () => {
         setState(prev => ({...prev, date:"", timeArray:"", timeOpen:objToPush}))
     }
 
-    console.log(state)
 
-    const handleRemove = (index:number) => {
+    const handleRemoveDate = (index:number) => {
         const tempState = state.timeOpen;
         tempState.splice(index,1);
         setState(prev => ({...prev,timeOpen:tempState}));
@@ -104,6 +157,24 @@ export const CreateStore: React.FC = () => {
         tempState.splice(index,1);
         setState(prev => ({...prev,timeOpenDelivery:tempState}));
     }
+    
+    const handleRemoveCheckBox = (index:number) => {
+        const tempState = state.checkBox;
+        tempState.splice(index,1);
+        setState(prev => ({...prev,checkBox:tempState}));
+    }
+    
+    const handleRemoveContact = (index:number) => {
+        const tempState = state.contact;
+        tempState.splice(index,1);
+        setState(prev => ({...prev,contact:tempState}));
+    }
+   
+    const handleRemoveMenu = (index:number) => {
+        const tempState = state.menu;
+        tempState.splice(index,1);
+        setState(prev => ({...prev,menu:tempState}));
+    }
 
     const handleAddDateDelivery = () => {
         const objToPush = state.timeOpenDelivery; 
@@ -111,35 +182,61 @@ export const CreateStore: React.FC = () => {
         objToPush.push(tempObject)
         setState(prev => ({...prev, dateDelivery:"", timeArrayDelivery:"", timeOpenDelivery:objToPush}))
     }
+    
+    const handleAddCheckBox = () => {
+        const objToPush = state.checkBox;
+        const tempObject:CheckBox = {"text":state.textCheckBox,"check":Boolean(state.boolCheck)};
+        objToPush.push(tempObject);
+        setState(prev => ({...prev, textCheckBox:"", boolCheck:"", checkBox:objToPush}));
+    }
+
+    const handleAddContact = () => {
+        const objToPush = state.contact;
+        const tempObject:Contact = {"platform":state.platform,"link":state.linkPlatform};
+        objToPush.push(tempObject);
+        setState(prev => ({...prev, platform:"", link:"", contact:objToPush}));
+    }
+  
+    const handleAddMenu = () => {
+        const objToPush = state.menu;
+        const tempObject:Menu = {"text":state.text,"price":state.price};
+        objToPush.push(tempObject);
+        setState(prev => ({...prev, text:"", price:0, menu:objToPush}));
+    }
+  
+
+   
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("SUBMIT")
-        const {name, category, textLocation, link , timeOpen, timeOpenDelivery} = state
+        const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch } = state
         const objLocation = {"textLocation":textLocation,"link":link};
         const onlyIdCategory:string[] = [];
         category?.map((c) => {
             onlyIdCategory.push(c._id)
         })
-        await PostCreateStore(name, onlyIdCategory, objLocation, 5, timeOpen, timeOpenDelivery)
+        await PostCreateStore(name, onlyIdCategory, objLocation, 5, timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch)
         .then((res) => {
-            console.log(res.data)
+            console.log("THIS IS RESPONSE", res)
         })
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)
         })
 
     }
-    
+
+    console.log(state)
+
 
     return (
     <>
      <div className="md:ml-[15rem] p-6 w-full h-full">
-          <div className="bg-white p-8 h-[full]">
+          <div className="bg-white p-20 h-[full]">
             <form onSubmit={handleSubmit}>
             <h6 className="text-4xl text-center font-bold text-indigo-500 mt-4 mb-8">Create Store Data</h6>
 
             <Grid container spacing={8}>
+
                 <Grid item xs={6}>
                 <h6 className="text-2xl font-semibold mb-2">Assign Store Name</h6>
                 <TextField
@@ -150,6 +247,7 @@ export const CreateStore: React.FC = () => {
                 onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, name:e.target.value}))}
                 />
                 </Grid>
+
                 <Grid item xs={6}>
                 <h6 className="text-2xl font-semibold mb-2">Assign Store Category</h6>
                 {state.categories && 
@@ -177,139 +275,145 @@ export const CreateStore: React.FC = () => {
                 }
 
                 </Grid>
-                <Grid item xs={12}>
-                <h6 className="text-2xl font-bold mb-2">Choose Location Of Store</h6>
-                <div className="grid grid-cols-2 gap-12">
-                    <div>
 
-                    <h6 className="text-xl font-semibold mb-1">Text To Display Link</h6>
-                    <TextField
-                    fullWidth
-                    variant="filled"
-                    placeholder="Text To Display Link"
-                    value={state.textLocation}
-                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, textLocation:e.target.value}))}
-                    />
-                    </div>
-                    <div>
-                        <h6 className="text-xl font-semibold mb-1">Link To Navigate</h6>
-                        <TextField
-                        fullWidth
-                        variant="filled"
-                        placeholder="Link To Navigate"
-                        value={state.link}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, link:e.target.value}))}
-                        />
-                    </div>
-                </div>
-                <h6>
-                1.Share a map or location
-                On your computer, open Google Maps.
-                <br/>
-                2. Go to the directions, map, or Street View image you want to share.
-                On the top left, click Menu Menu.
-                <br/>
-                3.Select Share or embed map. If you don't see this option, click Link to this map.
-                4.Optional: To create a shorter web page link, check the box next to "Short URL."
-                <br/>
-                5.Copy and paste the link wherever you want to share the map.
-                </h6>
+                {/* Location */}
+                <Grid item xs={12}>
+                <Location
+                state={state}
+                setState={setState}
+                />
                 </Grid>
+                {/* End Location */}
+                
+                {/* Select Date And Time Open Section */}
+                <Grid item xs={12}>
+                    <SelectDateAndTime
+                    state={state}
+                    setState={setState}
+                    handleAddDate={handleAddDate}
+                    handleRemoveDate={handleRemoveDate}
+                    />
+                </Grid>
+                {/* End Select Date And Time Open Section */}
+
+
+
+                {/* Select Date And Time Delivery and Select Time Delivery */}
+                
+                <Grid item xs={12}>
+                    <SelectDateAndTimeDelivery
+                    state={state}
+                    setState={setState}
+                    handleAddDateDelivery={handleAddDateDelivery}
+                    handleRemoveDelivery={handleRemoveDelivery}
+                    />
+                </Grid>
+                {/* End Select Date And Time Delivery and Select Time Delivery */}
             
+ 
+            {/* CheckBox Section */}
             <Grid item xs={12}>
-                <h6 className="text-2xl font-bold mb-2">Select Date And Time Open</h6>
+               <CheckBox
+               state={state}
+               setState={setState}
+               handleAddCheckBox={handleAddCheckBox}
+                handleRemoveCheckBox={handleRemoveCheckBox}
+               />
+            </Grid>
+            {/* End CheckBox Section */}
+
+            
+             {/* Contach Section */}
+             <Grid item xs={12}>
+               <Contact
+               state={state}
+               setState={setState}
+               handleAddContact={handleAddContact}
+                handleRemoveContact={handleRemoveContact}
+               />
+            </Grid>
+            {/* End Contact Section */}
+
+
+            {/* Add Menu And Price */}
+            <Grid item xs={12}>
+                <h6 className="text-2xl font-bold mb-2">Add Menu</h6>
                 <div className="grid grid-cols-2 gap-12">
                     <div>
-                        <h6 className="text-xl font-semibold ">Select Date Open</h6>
+                        <h6 className="text-xl font-semibold ">Menu Name</h6>
                         <TextField
                         fullWidth
                         variant="filled"
-                        placeholder="Ex. Monday"
-                        value={state.date}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, date:e.target.value}))}
+                        placeholder="Ex. Fried rice"
+                        value={state.text}
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, text:e.target.value}))}
                         
                         />
                     </div>
                     <div>
-                        <h6 className="text-xl font-semibold ">Select Time Open</h6>
+                        <h6 className="text-xl font-semibold ">Price</h6>
                         <TextField
                         fullWidth
                         variant="filled"
+                        type="number"
                         placeholder="Ex. 08.00-12.00"
-                        value={state.timeArray}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, timeArray:e.target.value}))}
+                        value={state.price}
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, price:Number(e.target.value)}))}
                         sx={{mb:4}}
                         />
                     </div>
                 </div>
 
                 <div className="mb-6">
-                <Button variant="contained" className="rounded-lg" onClick={handleAddDate}>
-                    Click To Date And Time Open
+                <Button variant="contained" className="rounded-lg" onClick={handleAddMenu}>
+                    Click To Menu To Store
                 </Button>
                 </div>
                 
-                <TimeOpenTable
-                timeOpen={state.timeOpen}
-                handleRemove={handleRemove}
-                title="Date Open"
+                <MenuTable
+                datas={state.menu}
+                handleRemoveMenu={handleRemoveMenu}
+                title="Menu Name"
+                subtitle="Menu Price"
                 />
                 <Divider/>
             </Grid>
+             {/* End Add Menu And Price */}
+
             
-
-
-            <Grid item xs={12}>
-                <h6 className="text-2xl font-bold mb-2">Select Date And Time Delivery</h6>
-                <div className="grid grid-cols-2 gap-12">
-                    <div>
-                        <h6 className="text-xl font-semibold ">Select Date Delivery </h6>
-                        <TextField
-                        fullWidth
-                        variant="filled"
-                        placeholder="Ex. Monday"
-                        value={state.dateDelivery}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, dateDelivery:e.target.value}))}
-                        
-                        />
-                    </div>
-                    <div>
-                        <h6 className="text-xl font-semibold ">Select Time Delivery</h6>
-                        <TextField
-                        fullWidth
-                        variant="filled"
-                        placeholder="Ex. 08.00-12.00"
-                        value={state.timeArrayDelivery}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, timeArrayDelivery:e.target.value}))}
-                        sx={{mb:4}}
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-6">
-                <Button variant="contained" className="rounded-lg" onClick={handleAddDateDelivery}>
-                    Click To Add Date And Time Delivery
-                </Button>
-                </div>
-                
-                <TimeOpenTable
-                timeOpen={state.timeOpenDelivery}
-                handleRemove={handleRemoveDelivery}
-                title="Date Delivery"
-                />
-
-                <div className="mt-12">
-                    <h6 className="text-xl font-semibold ">Select Time Delivery</h6>
+             <Grid item xs={12}>
+                <h6 className="text-2xl font-semibold mb-2">Assign Store branch</h6>
+                  <Autocomplete
+                  sx={{marginTop:1}}
+                  multiple
+                  freeSolo
+                  options={[""]}
+                  value={state.branch!}
+                  onChange={(event: any, value: (string | string[])[]) => setState(prev => ({...prev,branch:value as string[]}))}
+                  fullWidth
+                  
+                  renderInput={(params:any) => (
                     <TextField
-                    fullWidth
-                    variant="filled"
-                    placeholder="Ex. 1000 - 2000 baht"
-                    value={state.rangePrice}
-                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, rangePrice:e.target.value}))}
-                    sx={{mb:4}}
+                      {...params}
+                      fullWidth
+                    //   placeholder="เลือกหรือสร้าง Tags เองก็ได้"
+                    //   helperText="เมื่อพิมเสร็จแล้วให้กด Enter ระบบถึงจะบันทึก tag ให้ ปล.ไม่สามารถเกิน 10 tags"
                     />
-                </div>
-            </Grid>
+                  )}
+                />
+                </Grid>
+                
+                <Grid item xs={12}>
+                    <h6 className="text-2xl font-semibold mb-2">Store Other Detail</h6>
+                    <TextField
+                    placeholder='Other Details'
+                    variant="filled" 
+                    fullWidth 
+                    value={state.otherDetail}
+                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, otherDetail:e.target.value}))}
+                    />
+                </Grid>
+
 
             <Grid item xs={12}>
                 <div>
@@ -326,3 +430,8 @@ export const CreateStore: React.FC = () => {
     </>
     )
 }
+
+/* 
+Monday : 08.00 - 12.00 , 13.00 - 16.00
+
+*/

@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from "@mui/material/Button";
-import { TimeOpen } from '../../Pages/Admin/CreateStore';
+import { Contact } from '../../Pages/Admin/CreateStore';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -31,14 +31,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-interface TimeOpenTableInterface {
-  timeOpen:TimeOpen[];
+interface ContactTableInterface {
+  datas:Contact[];
   handleRemove:(i:number) => void;
   title:string;
   subtitle:string;
 }
 
-export const TimeOpenTable: React.FC<TimeOpenTableInterface> = ({handleRemove, timeOpen, title, subtitle}) => {
+export const ContactTable: React.FC<ContactTableInterface> = ({handleRemove,datas,title,subtitle}) => {
   
   return (
     <TableContainer component={Paper}>
@@ -52,12 +52,12 @@ export const TimeOpenTable: React.FC<TimeOpenTableInterface> = ({handleRemove, t
           </TableRow>
         </TableHead>
         <TableBody>
-          {timeOpen.map((time,i) => (
+          {datas.map((data,i) => (
             <StyledTableRow key={i}>
               <StyledTableCell component="th" scope="row">
-                {time.date}
+                {data.platform}
               </StyledTableCell>
-              <StyledTableCell align="center">{time.time}</StyledTableCell>
+              <StyledTableCell align="center">{data.link}</StyledTableCell>
               {/* <StyledTableCell align="right"><Button color='warning' fullWidth variant='contained' onClick={() => handleEdit(i)} >Edit</Button></StyledTableCell> */}
               <StyledTableCell align="center" width="10%"><Button color='error' fullWidth variant='contained' onClick={() => handleRemove(i)} >Remove</Button></StyledTableCell>
             </StyledTableRow>
