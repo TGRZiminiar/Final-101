@@ -73,6 +73,7 @@ type RatingSection = {
     rating:number;
     ratingBy:string;
     ratingAt:Date;
+    _id:string;
 }
 
 export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList};
