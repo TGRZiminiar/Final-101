@@ -1,8 +1,9 @@
 import { Rating } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import { TabsDetailStore } from '../../Components/Tabs/TabsDetailStore';
 
 
 interface SingleStoreProps {
@@ -11,8 +12,13 @@ interface SingleStoreProps {
 
 export const SingleStore: React.FC<SingleStoreProps> = ({}) => {
     
+    const [state,setState] = useState({
+      value:0,
+    })
 
-
+    const handleTabsChange = (newValue:number) => {
+      setState(prev => ({...prev,value:newValue}));
+    }
 
     return (
     <>
@@ -46,7 +52,9 @@ export const SingleStore: React.FC<SingleStoreProps> = ({}) => {
           </Carousel>
 
     </div>
-       <div className="bg-white h-full mx-auto w-[75%] p-8 md:p-16">
+
+       <div className="bg-white h-full mx-auto w-[75%] min-h-[100vh]">
+       <div className=" p-8 md:p-16">
             <div className="flex gap-8 self-center">
                 <h4 className="text-4xl font-bold">Mix Store</h4>
                 <div className="flex gap-2 self-center">
@@ -64,7 +72,13 @@ export const SingleStore: React.FC<SingleStoreProps> = ({}) => {
             </div>
         </div>
 
-
+          </div>
+        <div >
+          <TabsDetailStore 
+          value={state.value}
+          handleChange={handleTabsChange}
+          />
+        </div>
        </div>
     </>
     )

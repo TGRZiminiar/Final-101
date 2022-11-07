@@ -18,9 +18,9 @@ import { CreateStore } from './Pages/Admin/CreateStore';
 import { ListStore } from './Pages/Admin/ListStore';
 import { UploadImageStore } from './Pages/Admin/UploadImageStore';
 import { UpdateStore } from './Pages/Admin/UpdateStore';
-import { SingleStore } from './Components/DetailStore/SingleStore';
 import { Navbar } from './Components/Navbar';
 import { UserLayout } from './Layout/UserLayout';
+import { SingleStore } from './Pages/User/SingleStore';
 function App() {
 
   const dispatch = useDispatch();

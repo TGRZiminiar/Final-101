@@ -136,7 +136,7 @@ export const Home: React.FC = () => {
             <div className="p-8 px-16">
                 <div className="grid grid-cols-3 justify-items-center">
 
-                    <div className="p-4 bg-white shadow-2xl hover:shadow-slate-400 cursor-pointer" onClick={() => navigate(`/store/${1}`)}>
+                    <div className="p-4 bg-white shadow-2xl hover:shadow-slate-400 cursor-pointer hover:-translate-y-5" onClick={() => navigate(`/store/${1}`)}>
                         <div className="grid">
                         <div className="w-full h-[12rem]">
                         <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&" className="w-full h-full object-contain" />
