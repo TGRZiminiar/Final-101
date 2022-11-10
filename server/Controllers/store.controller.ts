@@ -242,13 +242,13 @@ export const GetSingleStore = async(req:Request, res:Response) => {
     try {
         
         const { storeid } = req.headers;
-        let userId = null;
+        let userId:string|null = null;
         //@ts-ignore
         if(req.user){
             //@ts-ignore
-            userId = req.user.userId;
+            userId = req.user.userId as string;
         }
-
+        userId = "63623495930fb6a0cd070cf3"
         const data:StoreDocument = await StoreModel.findById({_id:storeid})
         .select(
             "storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch ratingSum ratingCount commentCount imageData commentSection createdAt"
@@ -274,6 +274,8 @@ export const GetSingleStore = async(req:Request, res:Response) => {
             comments = await checkCommentAndCommentReplyNoUserId(data)
         }
 
+        // console.log(comments);
+
         return res.status(200).json({"store":data,"comments":comments});
 
     } catch (error) {
@@ -287,82 +289,95 @@ export const GetSingleStore = async(req:Request, res:Response) => {
 const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => {
     
     let comments:CommentToSend[] = data.commentSection;
+    let commentsToReturn:CommentToSend[] = [];
+    
+    let userLikeOrNot:boolean = false;
+    let userDisLikeOrNot:boolean = false;
 
     for (let i = 0; i < comments.length; i++) {
-        
-        comments[i].userLikeOrNot = true;
-        comments[i].userDislikeOrNot = true;
 
-        let userLikeOrNot:boolean =  comments[i].likes!.some((elem) => elem === userId);
-        // let userDisLikeOrNot:boolean =  comments[i].disLikes!.some((elem) => elem === userId)
-        let userDisLikeOrNot:boolean = false;
-        // console.log("COMMENT LENGTH => ",comments[i].disLikes!.length)
-
-        for (let j = 0; j < comments[i].disLikes!.length; j++) {
-            if(comments[i].disLikes![j] === userId){
-                userDisLikeOrNot = true;
+        for (let j = 0; j < comments[i].likes!.length; j++) {
+            if(String(comments[i].likes![j]) === userId){
+                comments[i].userLikeOrNot = true;
                 break;
             }
-        }
-
-        if(comments[i].disLikes!.length === 0){
-            comments[i].userDislikeOrNot = false;
-        }
-        if(comments[i].likes!.length === 0){
-            comments[i].userLikeOrNot = false;
-        }
-
+        }        
+        
+        for (let j = 0; j < comments[i].disLikes!.length; j++) {
+            if(String(comments[i].disLikes![j]) === userId){
+                comments[i].userDislikeOrNot = true;
+                break;
+            }
+        }        
 
         comments[i].countLike = comments[i].likes!.length as number;
         comments[i].countDislike = comments[i].disLikes!.length as number;
-
-        if(userLikeOrNot){
+        console.log(`THIS IS USER LIKE OR NOT => ${userLikeOrNot}`);
+        console.log(`THIS IS USER DISLIKE OR NOT => ${userDisLikeOrNot}`);
+        
+        if(userLikeOrNot === true){
+            comments[i].userLikeOrNot = userLikeOrNot; 
+        }
+        else if(userLikeOrNot === false){
             comments[i].userLikeOrNot = userLikeOrNot;
         }
-        else if(!userLikeOrNot){
-            comments[i].userLikeOrNot= userLikeOrNot;
-        }
-        else if(userDisLikeOrNot){
+
+        if(userDisLikeOrNot === true){
             comments[i].userDislikeOrNot = userDisLikeOrNot;
         }
-        else if(!userDisLikeOrNot){
+        else if(userDisLikeOrNot === false){
             comments[i].userDislikeOrNot = userDisLikeOrNot;
         }
-        
+
         delete comments[i].likes;
         delete comments[i].disLikes;
         let replyArr:ReplyToSend[] = comments[i].commentReply;
-        
+
         for (let j = 0; j < comments[i].commentReply.length; j++) {
+            let userLikeReplyOrNot:boolean = false;
+            let userDisLikeReplyOrNot:boolean = false;
+            
+            for (let k = 0; k < comments[i].commentReply[j].likes!.length; k++) {
+                if(String(comments[i].commentReply[j].likes![k]) === userId){
+                    userLikeReplyOrNot = true;
+                    break;
+                }                
+            }
+            
+            for (let k = 0; k < comments[i].commentReply[j].disLikes!.length; k++) {
+                if(String(comments[i].commentReply[j].disLikes![k]) === userId){
+                    userDisLikeReplyOrNot = true;
+                    break;
+                }                
+            }
 
-            replyArr[j].userDislikeOrNot = true;
-            replyArr[j].userLikeOrNot = true;
-            let userLikeReplyOrNot:boolean = replyArr[j].likes!.some((elem) => (elem === userId));
-            let userDisLikeReplyOrNot:boolean = replyArr[j].disLikes!.some((elem) => (elem === userId));
-
-            replyArr[j].countReplyLike = replyArr[j].likes!.length;
-            replyArr[j].countReplyDislike = replyArr[j].disLikes!.length;
+            comments[i].commentReply[j].countReplyLike = comments[i].commentReply[j].likes!.length as number;
+            comments[i].commentReply[j].countReplyDislike = comments[i].commentReply[j].disLikes!.length as number;
 
             if(userLikeReplyOrNot){
-                replyArr[j].userLikeOrNot = true;
+                comments[i].commentReply[j].userLikeOrNot = userLikeReplyOrNot;
             }
             else if(!userLikeReplyOrNot){
-                replyArr[j].userLikeOrNot = false;
+                comments[i].commentReply[j].userLikeOrNot = userLikeReplyOrNot;
             }
-            else if(userDisLikeReplyOrNot){
-                replyArr[j].userDislikeOrNot = true;
+
+            if(userDisLikeReplyOrNot){
+                comments[i].commentReply[j].userDislikeOrNot = userDisLikeOrNot;
             }
             else if(!userDisLikeReplyOrNot){
-                replyArr[j].userDislikeOrNot = false;
-            }            
+                comments[i].commentReply[j].userDislikeOrNot = userDisLikeOrNot;
+            }
 
-            delete replyArr[j].likes;
-            delete replyArr[j].disLikes;
+            delete comments[i].commentReply[j].likes;
+            delete comments[i].commentReply[j].disLikes;
+            replyArr.push(comments[i].commentReply[j]);
         }
-        comments[i].commentReply = replyArr;
+        comments[i].commentReply = replyArr
+
+        commentsToReturn.push(comments[i])
+
     }
-    console.log(comments)
-    return comments;
+    return commentsToReturn;
 
 }
 

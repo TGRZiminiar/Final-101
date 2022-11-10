@@ -58,7 +58,7 @@ type CommentSection = {
     postedBy:string;
     postedAt:Date;
     replyCount:number;
-    commentReply:CommentReply[] | ReplyToSend[] 
+    commentReply:ReplyToSend[] 
 }
 
 type CommentReply = {
