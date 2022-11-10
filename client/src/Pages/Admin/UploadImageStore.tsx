@@ -3,7 +3,7 @@ import { Axios, AxiosError, AxiosResponse } from 'axios';
 import React,{ useState,useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { DeleteImageStore, GetSingleStore, UploadImageStoreFunc } from '../../Function/store.func';
+import { DeleteImageStore, GetSingleStoreForUploadImage, UploadImageStoreFunc } from '../../Function/store.func';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 interface SingleStore {
@@ -38,7 +38,7 @@ export const UploadImageStore: React.FC = () => {
 
     const loadSingleStore = async() => {
 
-        await GetSingleStore(storeId as string)
+        await GetSingleStoreForUploadImage(storeId as string)
         .then((res:AxiosResponse) => {
             setState(prev => ({...prev,singleStore:res.data.store as SingleStore}))
         }) 
@@ -82,8 +82,9 @@ export const UploadImageStore: React.FC = () => {
             //@ts-ignore
             console.log(res)
             //@ts-ignore
-            toast.success(res.data.message)
+            toast.success("Upload Image Success")
             setState(prev => ({...prev,images:[],imageURLs:[],}))
+            loadSingleStore()
         })
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)
@@ -122,7 +123,6 @@ export const UploadImageStore: React.FC = () => {
     }
 
     const handleSubmitDeleteImage = async() => {
-        console.log("HELLo")
         const {imageIdArr,singleStore} = state;
         let fileName:string[] = [];
 

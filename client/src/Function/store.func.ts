@@ -47,9 +47,9 @@ export const GetStore = async() => {
     })
 }
 
-export const GetSingleStore = async(storeId:string) => {
+export const GetSingleStoreForUploadImage = async(storeId:string) => {
     
-    return await axios.get(`http://localhost:5000/api/get-single-store`,{
+    return await axios.get(`http://localhost:5000/api/get-single-store-upload-image`,{
         headers:{
             authorization:`Bearer ${authtoken}`,
             storeid:storeId
@@ -90,6 +90,19 @@ export const DeleteImageStore = async(storeId:string, arrImgId:string[], arrImgF
 export const GetDataUpdate = async() => {
     return await axios.get("http://localhost:5000/api/get-single-update-store",{
         headers:{
+            authorization:`Bearer ${authtoken}`,
+        }
+    })
+}
+
+export const GetAllStore = async() => {
+    return await axios.get("http://localhost:5000/api/get-all-store")
+}
+
+export const GetSingleStore = async(storeId:string) => {
+    return await axios.get("http://localhost:5000/api/get-single-store",{
+        headers:{
+            storeid:storeId,
             authorization:`Bearer ${authtoken}`,
         }
     })

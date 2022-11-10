@@ -53,20 +53,20 @@ type ImageData = {
 
 type CommentSection = {
     textComment:string;
-    likes:string[];
-    disLikes:string[];
+    likes?:string[];
+    disLikes?:string[];
     postedBy:string;
     postedAt:Date;
     replyCount:number;
-    commentReply:CommentReply[]
+    commentReply:CommentReply[] | ReplyToSend[] 
 }
 
 type CommentReply = {
     textCommentReply:string;
     postedBy:string;
     postedAt:Date;
-    likes:string[];
-    disLikes:string[];
+    likes?:string[];
+    disLikes?:string[];
 }
 
 type RatingSection = {
@@ -76,4 +76,18 @@ type RatingSection = {
     _id:string;
 }
 
-export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList};
+interface CommentToSend extends CommentSection { 
+    userLikeOrNot?:boolean;
+    userDislikeOrNot?:boolean;
+    countLike?:number;
+    countDislike?:number;
+}
+
+interface ReplyToSend extends CommentReply {
+    userLikeOrNot?:boolean;
+    userDislikeOrNot?:boolean;
+    countReplyLike?:number;
+    countReplyDislike?:number;
+}
+
+export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend};

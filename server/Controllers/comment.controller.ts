@@ -65,31 +65,29 @@ export const LikeComment = async(req:Request, res:Response) => {
         const { userId } = req.user
         const {commentId, storeId} = req.body
 
-        const findComment = await StoreModel.findById({
+        const findComment:StoreDocument = await StoreModel.findById({
             _id:new mongoose.Types.ObjectId(`${storeId}`),
             "commentSection.$":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
         })
         .select('commentSection')
         .lean()
-
-        const userLikeExistOrNot:boolean = await findComment!.commentSection[0].likes.some(element=>String(element)===String(userId))
-        
+        const userLikeExistOrNot:boolean = await findComment!.commentSection[0].likes!.some(element=>String(element)===String(userId))
         if(!userLikeExistOrNot){
             await StoreModel.updateOne({
                 _id:new mongoose.Types.ObjectId(`${storeId}`),
-                "commentSection.$":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
+                "commentSection":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
             },{
                 $addToSet:{"commentSection.$.likes":userId}
-            })
+            },{multi:true,new:true})
             return res.status(200).json({"message":"Like Comment Success"});
         }
         if(userLikeExistOrNot){
             await StoreModel.updateOne({
                 _id:new mongoose.Types.ObjectId(`${storeId}`),
-                "commentSection.$":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
+                "commentSection":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
             },{
                 $pull:{"commentSection.$.likes":userId}
-            })
+            },{multi:true,new:true})
             return res.status(200).json({"message":"Like Comment Success"});
         }
 
@@ -113,12 +111,12 @@ export const DisLikeComment = async(req:Request, res:Response) => {
         .select('commentSection')
         .lean()
 
-        const userDisLikeExistOrNot:boolean = await findComment!.commentSection[0].disLikes.some(element=>String(element)===String(userId))
+        const userDisLikeExistOrNot:boolean = await findComment!.commentSection[0].disLikes!.some(element=>String(element)===String(userId))
         
         if(!userDisLikeExistOrNot){
             await StoreModel.updateOne({
                 _id:new mongoose.Types.ObjectId(`${storeId}`),
-                "commentSection.$":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
+                "commentSection":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
             },{
                 $addToSet:{"commentSection.$.disLikes":userId}
             })
@@ -127,7 +125,7 @@ export const DisLikeComment = async(req:Request, res:Response) => {
         if(userDisLikeExistOrNot){
             await StoreModel.updateOne({
                 _id:new mongoose.Types.ObjectId(`${storeId}`),
-                "commentSection.$":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
+                "commentSection":{$elemMatch:{_id:new mongoose.Types.ObjectId(`${commentId}`)}}
             },{
                 $pull:{"commentSection.$.disLikes":userId}
             })

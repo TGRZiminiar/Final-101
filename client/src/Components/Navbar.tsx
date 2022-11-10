@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 
@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({}) => {
-   
+    const navigate = useNavigate();
     const [state,setState] = useState({
         open:false,
         img:[],
@@ -19,10 +19,10 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
     const name = "นายชิษณุพงศ์ เจตน์อัศวภิรมย์";
    
     const onClose = () => {
-        setTimeout(() => {
-            console.log("ON CLOSE")
-            setState(prev =>({...prev,open:false}))
-        }, 50);
+        // setTimeout(() => {
+        //     console.log("ON CLOSE")
+        setState(prev =>({...prev,open:false}))
+        // }, 50);
 
     }
     return (
@@ -37,9 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
                     <MenuOutlinedIcon />
                     </div>
 
-                <div className="  relative" >
-               
-                    <div className="flex border-2 rounded-3xl gap-4 p-1  max-h-[5vh]" onClick={handleOpen} onBlur={onClose} tabIndex={0}>
+                <div className="relative" onClick={handleOpen}  tabIndex={0} onBlur={onClose}>
+                    <div className="flex border-2 rounded-3xl gap-4 p-1  max-h-[5vh]" >
                         <div className="max-w-[2rem] cursor-pointer">
                             <img src="https://www.w3schools.com/howto/img_avatar.png" className="rounded-full w-full h-full" />
                         </div>
@@ -49,12 +48,15 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
                     </div>
 
                {state.open && 
-                <div className="absolute bg-white shadow-xl drop-shadow-lg w-full h-[20rem] left-0 top-[5vh] p-2">
+                <div className="absolute bg-white shadow-xl drop-shadow-lg w-full h-[20rem] left-0 top-[5vh] p-2 z-50"  >
                 <div className="grid">
-                    <div className="flex border-b-2 hover:bg-slate-200 justify-evenly cursor-pointer">
-                        <div className="flex gap-4 selfe-center place-items-center">
+                    <div className="flex border-b-2 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
+                    e.stopPropagation()
+                    navigate("/admin")
+                     }} >
+                        <div className="flex gap-4 self-center place-items-center" >
                         <SupervisorAccountOutlinedIcon/>
-                        <h6><Link to="/admin">Admin</Link></h6>
+                        <h6>Admin</h6>
                         </div>
                         <div/>
                     </div>

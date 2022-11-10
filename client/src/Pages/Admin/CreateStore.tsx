@@ -218,6 +218,7 @@ export const CreateStore: React.FC = () => {
         await PostCreateStore(name, onlyIdCategory, objLocation, 5, timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch)
         .then((res) => {
             console.log("THIS IS RESPONSE", res)
+            toast.success("Create Store Success");
         })
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)

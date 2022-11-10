@@ -1,0 +1,30 @@
+.line {
+    position: relative;
+    cursor: pointer;
+}
+
+
+
+.line::after{
+    content: "";
+    width: 0.5rem;
+    height: 0.2rem;
+    background-color: white;
+    z-index: 999;
+    position: absolute;
+    top: 73%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+}
+
+.line::before {
+    content: "";
+    width: 0.2rem;
+    height: 1.1rem;
+    background-color: white;
+    z-index: 999;
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+}

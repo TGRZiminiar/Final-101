@@ -17,8 +17,11 @@ export interface StoreDocument extends mongoose.Document{
     imageData:ImageData;
     commentSection:CommentSection[];
     ratingSection:RatingSection[];
-    ratingSum:string;
-    ratingCount:string;
+    ratingSum:number;
+    ratingCount:number;
+    commentCount:number;
+    createdAt:Date;
+    updatedAt:Date;
 }
 
 const storeSchema = new mongoose.Schema({
@@ -133,7 +136,8 @@ const storeSchema = new mongoose.Schema({
     ratingSum:{type:Number,default:0},
 
     ratingCount:{type:Number,default:0},
-
+    commentCount:{type:Number,default:0},
+    
 
 },{timestamps:true});
 

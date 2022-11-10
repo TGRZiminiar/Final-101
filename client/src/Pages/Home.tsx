@@ -1,10 +1,9 @@
 import React, { useEffect,useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import utf8 from "utf8"
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 import { Link,useNavigate } from 'react-router-dom';
-import axios from "axios"
+import axios, { AxiosError, AxiosResponse } from "axios"
 import { Button, TextField } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -13,63 +12,74 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined';
 import { styled } from '@mui/material/styles';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import { Navbar } from '../Components/Navbar';
+import { GetAllStore } from '../Function/store.func';
+import { CardHome } from '../Components/Card/CardHome';
+
 const SearchBox = styled(TextField)(() => ({
-    '& input': {
-      paddingLeft: '30px',
-    },
+
     '& fieldset': {
       borderRadius: '30px',
     },
   }));
 
+export type Store = {
+    category:{
+        name:string;
+        _id:string;
+    }[];
+
+    imageData:{
+        contentType:string;
+        filename:string;
+        imageBase64:string;
+        _id:string;
+    };
+
+    ratingCount:number;
+    commentCount:number;
+    ratingSum:number;
+    storeName:string;
+    _id:string;
+
+}
+
+interface StateProps {
+    open:boolean;
+    store:Store[];
+}
 
 export const Home: React.FC = () => {
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    useEffect(() => {
-        
-        dispatch({
-            type:"LOGIN_USER",
-            payload:{
-              email:"Hello" || null,
-            },
-          }) 
-          
-    }, [])
     
     const name = "นายชิษณุพงศ์ เจตน์อัศวภิรมย์";
     
-    const [state,setState] = useState({
+    const [state,setState] = useState<StateProps>({
         open:false,
-        img:[],
+        store:[],
     })
 
     const handleOpen = ():void => {
         setState(prev=>({...prev,open:!prev.open}));
     }
-
     
-   /*  const loadImage = async() => {
-        return await axios.get(`http://localhost:5000/api/test2`)
+    const loadStore = async() => {
+        await GetAllStore()
+        .then((res:AxiosResponse) => {
+            console.log(res.data)
+            setState(prev => ({...prev,store:res.data.store}))
+        })
+        .catch((err:AxiosError) => {
+            console.log(err)
+        })
     }
-
     useEffect(() => {
-      loadImage()
-      .then(res => setState(prev=>({...prev,img:res.data.img})))
-      
+        loadStore()
     }, [])
-    console.log(state) */
+  
     console.log(state)
 
-    const onClose = () => {
-        setTimeout(() => {
-            console.log("ON CLOSE")
-            setState(prev =>({...prev,open:false}))
-        }, 50);
-
-    }
+   
 
     return (
     <>
@@ -96,6 +106,7 @@ export const Home: React.FC = () => {
                         }}
                         variant="outlined"
                     />
+                    
                 </div>
                 <div className="col-span-2">
                     <SearchBox
@@ -135,39 +146,21 @@ export const Home: React.FC = () => {
 
             <div className="p-8 px-16">
                 <div className="grid grid-cols-3 justify-items-center">
-
-                    <div className="p-4 bg-white shadow-2xl hover:shadow-slate-400 cursor-pointer hover:-translate-y-5" onClick={() => navigate(`/store/${1}`)}>
-                        <div className="grid">
-                        <div className="w-full h-[12rem]">
-                        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&" className="w-full h-full object-contain" />
-                        </div>
-                        <h4 className="text-2xl font-semibold mt-1">Mix Store</h4>
-                        <h4 className="text-lg font-semibold mt-1">Japan Food, Buffet</h4>
-                       
-                        <div className="flex gap-2">
-                            {/* <div className="bg-[#BF1A1A] text-[#ECD146] p-1"> */}
-                            <div className="flex gap-1">
-                                <StarOutlinedIcon className="text-yellow-500"/>
-                            <p className="text-base font-medium">4.9 STARS</p>
-                            </div>
-
-                            <br/>
-                            <div className="flex gap-1">
-                            <BorderColorOutlinedIcon fontSize='small' className="text-amber-700"/>
-                            <p className="text-base font-medium">500 reviews</p>
-
-                            </div>
-                        </div>
-                        </div>
-                    </div>
+                    
+                    {state.store && state.store.map((str,i) => (
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                    ))}
                     
                     
-                    <div>
+                   {/*  <div>
                         hello
                     </div>
                     <div>
                         hello
-                    </div>
+                    </div> */}
                 </div>
             </div>
 

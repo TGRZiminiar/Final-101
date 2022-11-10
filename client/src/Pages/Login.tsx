@@ -5,6 +5,8 @@ import { LoginUser } from '../Function/user';
 import { toast } from 'react-toastify';
 import { ResultRegister } from '../Interface/Auth.Interface';
 import { AxiosError } from 'axios';
+import {useNavigate} from "react-router-dom"
+
 
 interface State {
     email:string;
@@ -12,6 +14,7 @@ interface State {
 }
 
 export const Login: React.FC = () => {
+    const navigate = useNavigate();
 
     const [state,setState] = useState<State>({
         email:"",
@@ -28,18 +31,19 @@ export const Login: React.FC = () => {
             const data:ResultRegister = res.data
             Cookies.set('access_token',`${data.token!}`,{expires:3})
             toast.success(data.message);
+            navigate("/home");
         })
         .catch((err:AxiosError) => {
             console.log("THIS IS ERROR" ,err)
-            toast.error(err.response?.data as string)
+            toast.error("Something Went Wronge Try Again")
         })
         
     }
 
     return (
     <>
-     <div className="w-screen h-screen flex justify-center align-middle ">
-        <div className="w-[50vh] h-[50vh] p-8 self-center bg-white">
+     <div className="w-full h-[100vh] flex justify-center align-middle ">
+        <div className="w-[50vh] h-[50vh] my-auto p-8 self-center bg-white">
             <h2 className='text-4xl font-bold text-blue-400'> Login Here!</h2>
             <h2 className='pt-2 text-lg font-bold text-slate-500'> Let's have fun!</h2>
             <div className="grid mt-8 gap-4">

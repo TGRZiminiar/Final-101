@@ -6,36 +6,24 @@ import "./TabsDetailStore.css"
 import { SecondIndex } from './SecondIndex';
 import { ThirdIndex } from './ThirdIndex';
 
+import { SingleStateProps } from '../../Pages/User/SingleStore';
+import { SingleStoreInterface } from '../../Interface/store.interface';
+
 interface TabsDetailStoreProps {
-    value:number;
+    state:SingleStateProps;
     handleChange:(newValue:number) => void;
+    storeId:string;
 }
 
-export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({value, handleChange}) => {
+export interface TabsDetailState {
+    store:SingleStoreInterface | null;
+}
+
+export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({state, handleChange, storeId}) => {
 
 
-    // const returnHidden = () => {
-    //     setTimeout(() => {
-    //         return "hidden"
-    //     }, 100);
-    // }
+    const { value } = state;
 
-    const [subState,setSubState] = useState({
-        string:"hidden"
-    })
-
-    function x() {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve('done!');
-          });
-        });
-     }
-     
-    x()
-    .then(res => console.log("res"))
-
-   
 
     return (
     <>
@@ -57,23 +45,24 @@ export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({value, handleCh
         style={value === 0 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
        
         >
-            <FirstIndex/>
+            {state.store && <FirstIndex state={state}/>}
         </div>
         
         <div className={`w-full`} 
         style={value === 1 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
         >
-            <SecondIndex/>
+            {state.store && <SecondIndex state={state} />}
         </div>
         
         <div className={`w-full`} 
         style={value === 2 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
         
         >
-            <ThirdIndex/>
+            {state.store && <ThirdIndex state={state} storeId={storeId} />}
         </div>
 
         </div>
     </>
     )
 }
+

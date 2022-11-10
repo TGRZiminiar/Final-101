@@ -1,24 +1,49 @@
 import { Rating } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { TabsDetailStore } from '../../Components/Tabs/TabsDetailStore';
+import { GetSingleStore } from '../../Function/store.func';
+import { useParams } from 'react-router-dom';
+import { AxiosError, AxiosResponse } from 'axios';
+import { CommentSection, SingleStoreInterface } from "../../Interface/store.interface"
+import { toast } from 'react-toastify';
 
-
-interface SingleStoreProps {
-
+export interface SingleStateProps {
+  value:number;
+  store:SingleStoreInterface | null;
+  comment:CommentSection[] | null;
 }
 
-export const SingleStore: React.FC<SingleStoreProps> = ({}) => {
+export const SingleStore: React.FC = () => {
     
-    const [state,setState] = useState({
+    const {storeId} = useParams();
+
+
+    const [state,setState] = useState<SingleStateProps>({
       value:0,
+      store:null,
+      comment:null,
     })
 
     const handleTabsChange = (newValue:number) => {
       setState(prev => ({...prev,value:newValue}));
     }
+
+    const loadSingleStore = async() => {
+      await GetSingleStore(storeId as string)
+      .then((res:AxiosResponse) => {
+          setState(prev => ({...prev, store:res.data.store as SingleStoreInterface, comment:res.data.comments as CommentSection[]}))
+      })
+      .catch((err:AxiosError) => {
+          toast.error(err.response?.data as string)
+      })
+  }
+
+    useEffect(() => {
+      loadSingleStore()
+    }, [])
 
     return (
     <>
@@ -75,8 +100,9 @@ export const SingleStore: React.FC<SingleStoreProps> = ({}) => {
           </div>
         <div >
           <TabsDetailStore 
-          value={state.value}
+          state={state}
           handleChange={handleTabsChange}
+          storeId={storeId as string}
           />
         </div>
        </div>

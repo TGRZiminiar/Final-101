@@ -5,32 +5,66 @@ import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
 import { DialogCreateComment } from '../Dialog/DialogCreateComment';
+import { Comment } from './Comment';
+import { CreateComment } from '../../Function/comment.func';
+import { AxiosError, AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
+import { CommentSection } from '../../Interface/store.interface';
+import { SingleStateProps } from '../../Pages/User/SingleStore';
 
 
-interface StateProps {
+export interface StateProps {
     open:boolean;
-
+    comment:string;
+    rating:number;
 }
 
-export const ThirdIndex: React.FC = () => {
+interface ThirdIndexProps {
+    state:SingleStateProps;
+    storeId:string;
+  
+}
+
+export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId}) => {
     
     
     const arr = [1,2,3]
 
-    const [state,setState] = useState<StateProps>({
-        open:true,
-
+    const [subState,setSubState] = useState<StateProps>({
+        open:false,
+        comment:"",
+        rating:0,
 
     })
 
     const handleClickOpen = () => {
-        setState(prev => ({...prev,open:true}))
+        setSubState(prev => ({...prev,open:true}))
     }
 
     const handleClose = () => {
-        setState(prev => ({...prev,open:false}))
+        setSubState(prev => ({...prev,open:false}))
     }
 
+
+    const handleSubmitComment = async(e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        let hasRating:boolean = true;
+        
+        const {rating, comment} = subState;
+        if(rating === 0){
+            hasRating = false;
+        }
+        await CreateComment(comment ,rating ,hasRating ,storeId)
+        .then((res:AxiosResponse) => {
+            toast.success(res.data.message)
+        })
+        .catch((err:AxiosError) => {
+            toast.error("Something Went Wronge Try Again Later.")
+        })
+
+    }
+
+    console.log(state)
 
     return (
     <>
@@ -44,43 +78,16 @@ export const ThirdIndex: React.FC = () => {
 
         <div className="">
 
-        {arr.map((i) => (
-            <>
-            <div className="flex gap-2 mt-8 ">
-            <div className="max-w-[3rem] max-h-[3rem] flex justify-center">
-                <Avatar className="w-full h-full self-center"/>
-            </div>
-            <div className="flex flex-col gap-1">
-               <p className="text-xl font-semibold">MIX_LUMLUKKA</p>
-               <p className="flex flex-wrap flex-1">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Repellat, saepe.</p>
-                <div className="flex gap-4">
-                <div className="flex gap-1">
-                <ThumbUpOffAltOutlinedIcon className="cursor-pointer self-center"/>
-                <p className="self-center">2 likes</p>
-                </div>
-                <div className="flex gap-1">
-                <ThumbDownOffAltOutlinedIcon className="cursor-pointer self-center"/>
-                <p className="self-center">2 disLikes</p>
-                </div>
-                <Button variant="text">
-                    Reply
-                </Button>
-               
-                <Button variant="text">
-                    View 25 Replies
-                    <ArrowDropDownOutlinedIcon/>
-                </Button>
-                </div>
-            </div>
-            </div>        
-            <Divider  />
-            </>
+        {state.comment?.map((comment,i) => (
+           <Comment key={i} comment={comment} mainState={state} storeId={storeId} />
         ))}
 
+
         <DialogCreateComment
-        state={state}
+        subState={subState}
         handleClose={handleClose}
-        setState={setState}
+        setSubState={setSubState}
+        handleSubmitComment={handleSubmitComment}
         />
 
         </div>
