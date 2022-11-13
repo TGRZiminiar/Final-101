@@ -1,5 +1,6 @@
-import { Button, TextField, Divider } from '@mui/material'
+import { Button, TextField, Divider,Grid } from '@mui/material'
 import React from 'react'
+import { TimeOpen } from '../../Interface/store.interface';
 import { StateProps } from "../../Pages/Admin/CreateStore"
 import { TimeOpenTable } from '../Table/TimeOpenTable';
 
@@ -11,10 +12,48 @@ interface SelectDateAndTimeProps {
 }
 
 export const SelectDateAndTime: React.FC<SelectDateAndTimeProps> = ({state,setState,handleAddDate,handleRemoveDate}) => {
+
+
+    const handleSwapUp = (index:number) => {
+        const timeOpen:TimeOpen[] = state.timeOpen;
+        if(index-1 < 0){
+            let temp = timeOpen[index];
+            timeOpen[index] = timeOpen[timeOpen.length-1];
+            timeOpen[timeOpen.length-1] = temp;
+        }
+        else {
+            let temp = timeOpen[index];
+            timeOpen[index] = timeOpen[index-1];
+            timeOpen[index-1] = temp;
+        }
+
+        setState(prev => ({...prev,timeOpen:timeOpen}))
+    }
+
+    const handleSwapDown = (index:number) => {
+        const timeOpen:TimeOpen[] = state.timeOpen;
+        if(index+1 > timeOpen.length-1){
+            let temp = timeOpen[index];
+            timeOpen[index] = timeOpen[0];
+            timeOpen[0] = temp;
+        }
+        else {
+            let temp = timeOpen[index];
+            timeOpen[index] = timeOpen[index+1];
+            timeOpen[index+1] = temp;
+        }
+
+        setState(prev => ({...prev,timeOpen:timeOpen}))
+    }
+
     return (
     <>
-    <h6 className="text-2xl font-bold mb-2">Select Date And Time Open</h6>
-                <div className="grid grid-cols-2 gap-12">
+            <div className="bg-[#857F7F] text-white p-3 self-center mb-8">
+                <h6 className="text-2xl font-bold">Select Date And Time Open</h6>
+            </div>
+        
+            <div className="px-20">
+            <div className="grid grid-cols-2 gap-12">
                     <div>
                         <h6 className="text-xl font-semibold ">Select Date Open</h6>
                         <TextField
@@ -39,10 +78,10 @@ export const SelectDateAndTime: React.FC<SelectDateAndTimeProps> = ({state,setSt
                     </div>
                 </div>
 
-                <div className="mb-6">
-                <Button variant="contained" className="rounded-lg" onClick={handleAddDate}>
+                <div className="mb-6 text-center">
+                <button type={"button"} onClick={handleAddDate} className="hover:bg-[#6a7d5b] text-white bg-[#6E845D] rounded-md px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
                     Click To Add Date And Time Open
-                </Button>
+                </button>
                 </div>
                 
                 <TimeOpenTable
@@ -50,8 +89,10 @@ export const SelectDateAndTime: React.FC<SelectDateAndTimeProps> = ({state,setSt
                 handleRemove={handleRemoveDate}
                 title="Date Open"
                 subtitle="Time Open"
+                handleSwapUp={handleSwapUp}
+                handleSwapDown={handleSwapDown}
                 />
-                <Divider/>
+            </div>
     </>
     )
 }

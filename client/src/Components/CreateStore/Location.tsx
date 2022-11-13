@@ -11,8 +11,12 @@ interface LocationProps {
 export const Location: React.FC<LocationProps> = ({state,setState}) => {
     return (
     <>
-    <h6 className="text-2xl font-bold mb-2">Choose Location Of Store</h6>
-                <div className="grid grid-cols-2 gap-12">
+            <div className="bg-[#857F7F] text-white p-3 self-center mb-8">
+                <h6 className="text-2xl font-bold">Choose Location Of Store</h6>
+            </div>
+            
+            <div className="px-20">
+            <div className="grid grid-cols-2 gap-12">
                     <div>
 
                     <h6 className="text-xl font-semibold mb-1">Text To Display Link</h6>
@@ -35,6 +39,7 @@ export const Location: React.FC<LocationProps> = ({state,setState}) => {
                         />
                     </div>
                 </div>
+                <div className="rounded-3xl bg-[#B57B5A] p-4 text-white mt-4">
                 <h6>
                 1.Share a map or location
                 On your computer, open Google Maps.
@@ -47,13 +52,14 @@ export const Location: React.FC<LocationProps> = ({state,setState}) => {
                 <br/>
                 5.Copy and paste the link wherever you want to share the map.
                 </h6>
+                </div>
                
                 <div className="mt-8">
                     <h6 className="text-xl font-semibold ">Select Range Price</h6>
                     <TextField
                     fullWidth
                     variant="filled"
-                    placeholder="Ex. 08.00-12.00"
+                    placeholder="Ex. 1000 - 2000 Baht"
                     value={state.rangePrice}
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, rangePrice:e.target.value}))}
                     sx={{mb:4}}
@@ -71,6 +77,8 @@ export const Location: React.FC<LocationProps> = ({state,setState}) => {
                     sx={{mb:4}}
                     />
                 </div>
+            </div>
+
     </>
     )
 }

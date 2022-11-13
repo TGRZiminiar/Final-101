@@ -21,6 +21,8 @@ import { UpdateStore } from './Pages/Admin/UpdateStore';
 import { Navbar } from './Components/Navbar';
 import { UserLayout } from './Layout/UserLayout';
 import { SingleStore } from './Pages/User/SingleStore';
+import { UploadImageMenu } from './Pages/Admin/UploadImageMenu';
+
 function App() {
 
   const dispatch = useDispatch();
@@ -63,7 +65,7 @@ function App() {
   return (
       <Routes>
         <Route element={<UserLayout/>}>
-          <Route index path="/home" element={<Home/>}/>
+          <Route index path="/" element={<Home/>}/>
           <Route index path="/register" element={<Register/>}/>
           <Route index path="/login" element={<Login/>}/>
           <Route index path="/store/:storeId" element={<SingleStore/>}/>
@@ -76,6 +78,7 @@ function App() {
           <Route path="/admin/get-store" element={<ListStore/>}/>
           <Route path="admin/upload-image/:storeId" element={<UploadImageStore/>}/>
           <Route path="admin/edit/:storeId" element={<UpdateStore/>}/>
+          <Route path="admin/upload-image-menu/:storeId" element={<UploadImageMenu/>}/>
         </Route>
       </Routes>
     );

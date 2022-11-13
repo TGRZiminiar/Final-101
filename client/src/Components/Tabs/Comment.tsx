@@ -10,8 +10,10 @@ import { CommentSection } from '../../Interface/store.interface';
 import { TabsDetailState } from './TabsDetailStore';
 import { DialogReply } from '../Dialog/DialogReply';
 import { toast } from 'react-toastify';
-import { PatchDisLikeComment, PatchLikeComment } from '../../Function/comment.func';
+import { CreateReplyComment, PatchDisLikeComment, PatchLikeComment } from '../../Function/comment.func';
 import moment from "moment"
+import { AxiosError } from 'axios';
+import { CommentReply } from './CommentReply';
 interface CommentProps {
     comment:CommentSection;
     mainState:TabsDetailState;
@@ -36,7 +38,7 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
         userDisLike:comment.userDislikeOrNot,
         countLike:comment.countLike,
         countDisLike:comment.countDislike,
-        openDialogReply:true,
+        openDialogReply:false,
         textReply:"",
 
     })
@@ -56,10 +58,16 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
     }
     
 
-    const handleSubmitReply = (e:React.FormEvent<HTMLFormElement>) => {
+    const handleSubmitReply = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-
+        await CreateReplyComment(comment._id, subComment.textReply, storeId)
+        .then((res) => {
+            console.log(res.data)
+        })
+        .catch((err:AxiosError) => {
+            toast.error("Something Went Wronge Try Again Later.")
+        })
 
     }
 
@@ -91,15 +99,14 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
         }
     }
 
-    console.log(subComment)
 
     
     return (
     <>
         <div className="flex gap-2 mt-8 ">
-            <div className="max-w-[3rem] max-h-[3rem] flex justify-center mt-4">
-                <Avatar className="w-full h-full self-center"/>
-            </div>
+                <div className="max-w-[3rem] max-h-[3rem] flex justify-center mt-4">
+                    <Avatar className="w-full h-full self-center"/>
+                </div>
             <div className="flex flex-col gap-1">
                <p className="text-xl font-semibold">{comment.postedBy.userName}</p>
                <p className="flex flex-wrap flex-1">{comment.textComment}</p>
@@ -108,25 +115,22 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
                 
                     <div className="flex gap-1" onClick={() => handleLikeComment(comment._id)}>
                         {subComment.userLike ? 
-                        <ThumbUpAltIcon fontSize="small" className="cursor-pointer self-center"/> 
+                        <ThumbUpAltIcon fontSize="small" className="cursor-pointer self-center text-blue-400"/> 
                         : 
-                        <ThumbUpOffAltOutlinedIcon fontSize="small" className="cursor-pointer self-center"/>}
+                        <ThumbUpOffAltOutlinedIcon fontSize="small" className="cursor-pointer self-center text-blue-400"/>}
                         <p className="self-center">{subComment.countLike} </p>
                     </div>
 
                     <div className="flex gap-1" onClick={() => handleDisLikeComment(comment._id)}>
                         {subComment.userDisLike ?
-                        <ThumbDownAltIcon fontSize="small" className="cursor-pointer self-center"/>
+                        <ThumbDownAltIcon fontSize="small" className="cursor-pointer self-center text-blue-400"/>
                         :
-                        <ThumbDownOffAltOutlinedIcon fontSize="small" className="cursor-pointer self-center"/>
+                        <ThumbDownOffAltOutlinedIcon fontSize="small" className="cursor-pointer self-center text-blue-400"/>
                         }
                         <p className="self-center">{subComment.countDisLike} </p>
                     </div>
 
-                <Button variant="text" onClick={openDialogReply}>
-                    Reply
-                </Button>
-               
+
                 {subComment.openReply ? 
                 <Button variant="text" onClick={() => setSubComment(prev => ({...prev,openReply:!prev.openReply}))}>
                     Close
@@ -135,12 +139,33 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
                 :
                 comment.replyCount !== 0 && 
                 <Button variant="text" onClick={() => setSubComment(prev => ({...prev,openReply:!prev.openReply}))}>
-                    {comment.replyCount} Replies
+                    {String(comment.replyCount)} Replies
                     <ArrowDropDownOutlinedIcon/>
                 </Button>
 
                 }
+
+                <Button variant="text" onClick={openDialogReply}>
+                    Reply
+                </Button>
+               
+                
+
+
                 </div>
+                {subComment.openReply && 
+                <div className="ml-6 md:ml-12  my-2 grid">
+                {comment.commentReply.map((reply,i) => (
+                        <React.Fragment key={i}>
+                           <CommentReply
+                           storeId={storeId}
+                           reply={reply}
+                           parentCommentId={comment._id}
+                           />
+                        </React.Fragment>
+                ))}
+                </div>
+                }
             </div>
             </div>        
 

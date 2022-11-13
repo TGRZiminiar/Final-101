@@ -14,8 +14,8 @@ export const AddCommentToStore = async(req:Request, res:Response) => {
         .select('commentSection ratingSection commentCount')
         .lean()
 
-        const existCommentOrNot : CommentSection | undefined = await findStore?.commentSection.find((elem) =>elem.postedBy === userId);
-        const existRatingOrNot : RatingSection | undefined = await findStore?.ratingSection.find((elem) =>elem.ratingBy === userId);
+        const existCommentOrNot : CommentSection | undefined = await findStore?.commentSection.find((elem) =>String(elem.postedBy) === userId as string);
+        const existRatingOrNot : RatingSection | undefined = await findStore?.ratingSection.find((elem) =>String(elem.ratingBy) === userId as string);
 
          //ไม่เคยคอมเมนต์กับ rating เลย
         if(existCommentOrNot === undefined && existRatingOrNot === undefined) {
@@ -88,7 +88,7 @@ export const LikeComment = async(req:Request, res:Response) => {
             },{
                 $pull:{"commentSection.$.likes":userId}
             },{multi:true,new:true})
-            return res.status(200).json({"message":"Like Comment Success"});
+            return res.status(200).json({"message":"UnLike Comment Success"});
         }
 
     } catch (error) {
@@ -120,7 +120,7 @@ export const DisLikeComment = async(req:Request, res:Response) => {
             },{
                 $addToSet:{"commentSection.$.disLikes":userId}
             })
-            return res.status(200).json({"message":"Like Comment Success"});
+            return res.status(200).json({"message":"DisLike Comment Success"});
         }
         if(userDisLikeExistOrNot){
             await StoreModel.updateOne({
@@ -129,7 +129,7 @@ export const DisLikeComment = async(req:Request, res:Response) => {
             },{
                 $pull:{"commentSection.$.disLikes":userId}
             })
-            return res.status(200).json({"message":"Like Comment Success"});
+            return res.status(200).json({"message":"UnDisLike Comment Success"});
         }
 
     } catch (error) {

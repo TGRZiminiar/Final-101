@@ -1,43 +1,15 @@
 import {Request, Response} from "express";
-import { CommentSection, CommentToSend, CreateStoreInterface, ReplyToSend } from "../Interface/store.interface";
+import { CommentSection, CommentToSend, CreateStoreInterface, ReplyToSend, UpdateStoreInterface } from "../Interface/store.interface";
 import StoreModel, { StoreDocument } from "../Models/store.model";
 import fs from "fs"
 import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken"
+import { UserSignJWT } from "../Interface/user.interface";
 export const CreateStore = async(req:Request, res:Response) => {
     try {
-        //@ts-ignore
-        // const files = req.files;
-        // if(!files){
-        //     return res.status(400).json("Something Went Wronge");
-        // }
-        // console.log("THIS IS REQ FILE",req.files)
-        // console.log(req.body)
-        //   //@ts-ignore
-        // let imgArray = files.map((file) => {
-        //     let img = fs.readFileSync(file.path)
-
-        //     return img.toString('base64')
-        // })
-
-        // let tempImageArray:ImageData[] = [];
-        // await Promise.all( imgArray.map((src:string, index:number) => {
-
-        //     // create object to store data in the collection
-        //     let finalImg:ImageData = {
-        //         //@ts-ignore
-        //         filename : files[index].originalname,
-        //         //@ts-ignore
-        //         contentType : files[index].mimetype,
-        //         imageBase64 : src
-        //     }
-        //     tempImageArray.push(finalImg);
-        // }))
-
+    
         const data:CreateStoreInterface = req.body;
         
-        // console.log(data)
-
         await new StoreModel({
             "storeName":data.storeName,
             "category":data.category,
@@ -55,6 +27,34 @@ export const CreateStore = async(req:Request, res:Response) => {
         return res.status(200).json({"message":"Create Store Success"});
     } catch (error) {
         console.log(`Current Store Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const UpdateStore = async(req:Request, res:Response) => {
+    try {
+        
+        const data:UpdateStoreInterface = req.body;
+
+        await StoreModel.findOneAndUpdate({_id:new mongoose.Types.ObjectId(`${data.storeId}`)}, {
+            "storeName":data.storeName,
+            "category":data.category,
+            "location":data.location,
+            "seatNumber":data.seatNumber,
+            "timeOpen":data.timeOpen,
+            "timeOpenDelivery":data.timeOpenDelivery,
+            "rangePrice":data.rangePrice,
+            "checkBox":data.checkBox,
+            "otherDetail":data.otherDetail,
+            "contact":data.contact,
+            "menuList":data.menuList,
+            "branch":data.branch,
+        })
+
+        return res.status(200).json({"message":"Update Store Success"});
+        
+    } catch (error) {
+        console.log(`Update Store Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }
@@ -102,7 +102,7 @@ export const UploadImageStore = async(req:Request, res:Response) => {
         //@ts-ignore
         const files = req.files;
         //@ts-ignore
-        console.log("THIS IS REQ FILE",req.files)
+        console.log("THIS IS REQ FILE",files)
         if(!files){
             return res.status(400).json("Something Went Wronge");
         }
@@ -115,17 +115,16 @@ export const UploadImageStore = async(req:Request, res:Response) => {
 
             return img.toString('base64')
         })
-
+        let url = req.protocol + '://' + req.get('host');
         let tempImageArray:ImageData[] = [];
         await Promise.all( imgArray.map((src:string, index:number) => {
 
             // create object to store data in the collection
             let finalImg:ImageData = {
                 //@ts-ignore
-                filename : files[index].originalname,
+                urlImage : url + "/" +files[index].path,
                 //@ts-ignore
                 contentType : files[index].mimetype,
-                imageBase64 : src
             }
             tempImageArray.push(finalImg)
         }))
@@ -204,7 +203,11 @@ export const GetStoreDetailUpdate = async(req:Request, res:Response) => {
         
         const {storeid} = req.headers;
         const data = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
-        .select("storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch category")
+        .select("storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch")
+        .populate({
+            path:"category",
+            select:"name _id"
+        })
         .lean()
         
         return res.status(200).json({"store":data})
@@ -238,20 +241,58 @@ export const GetAllStore = async(req:Request, res:Response) => {
     }
 }
 
+
+
+export const GetDataUploadImageMenu = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid} = req.headers;
+        
+        const data = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
+        .select("storeName menuList")
+        .lean();
+
+        return res.status(200).json({"store":data});
+
+    } catch (error) {
+        console.log(`Get Data Upload Image Menu Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+
+
+
+
+
+
+
 export const GetSingleStore = async(req:Request, res:Response) => {
     try {
         
         const { storeid } = req.headers;
         let userId:string|null = null;
-        //@ts-ignore
-        if(req.user){
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+        
+
+          //@ts-ignore
+        if(token){
             //@ts-ignore
-            userId = req.user.userId as string;
+            jwt.verify(token,process.env.ACCESS_TOKEN_SECRET as string,(err,user) => {
+                // console.log(user)
+                if(user){
+                    //@ts-ignore
+                    userId = String(user.userId) as UserSignJWT;
+                }
+                else userId = null;
+            })
         }
-        userId = "63623495930fb6a0cd070cf3"
+
+     
         const data:StoreDocument = await StoreModel.findById({_id:storeid})
         .select(
-            "storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch ratingSum ratingCount commentCount imageData commentSection createdAt"
+            "storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch ratingSum ratingCount commentCount imageData commentSection createdAt ratingSection"
         )
         .populate({
             path:"category",
@@ -275,14 +316,16 @@ export const GetSingleStore = async(req:Request, res:Response) => {
         }
 
         // console.log(comments);
-
-        return res.status(200).json({"store":data,"comments":comments});
+        const temp = {...data} as Partial<StoreDocument>
+        delete temp.commentSection;
+        return res.status(200).json({"store":temp,"comments":comments});
 
     } catch (error) {
         console.log(`Get All Store Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }
+
 
 
 
@@ -311,13 +354,13 @@ const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => 
 
         comments[i].countLike = comments[i].likes!.length as number;
         comments[i].countDislike = comments[i].disLikes!.length as number;
-
-        // console.log(`THIS IS USERLIKE OR NOT => ${userLikeOrNot}`)
-        // console.log(`THIS IS USERDISLIKE OR NOT => ${userDisLikeOrNot}`)
+        // console.log(comments[i].likes!.length)
+        // console.log(comments[i].disLikes!.length)
+       
         
         delete comments[i].likes;
         delete comments[i].disLikes;
-        let replyArr:ReplyToSend[] = comments[i].commentReply;
+        let replyArr:ReplyToSend[] = [];
 
         for (let j = 0; j < comments[i].commentReply.length; j++) {
            
@@ -337,9 +380,10 @@ const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => 
                 }                
             }
 
-            comments[i].commentReply[j].countReplyLike = comments[i].commentReply[j].likes!.length as number;
-            comments[i].commentReply[j].countReplyDislike = comments[i].commentReply[j].disLikes!.length as number;
-
+            comments[i].commentReply[j].countReplyLikes = comments[i].commentReply[j].likes!.length as number;
+            comments[i].commentReply[j].countReplyDisLikes = comments[i].commentReply[j].disLikes!.length as number;
+            // console.log(comments[i].commentReply[j].likes!.length)
+            // console.log(comments[i].commentReply[j].disLikes!.length)
             delete comments[i].commentReply[j].likes;
             delete comments[i].commentReply[j].disLikes;
             replyArr.push(comments[i].commentReply[j]);
@@ -377,8 +421,8 @@ const checkCommentAndCommentReplyNoUserId = async(data:StoreDocument) => {
             replyArr[j].userDislikeOrNot = false;
             replyArr[j].userLikeOrNot = false;
 
-            replyArr[j].countReplyLike = replyArr[j].likes!.length;
-            replyArr[j].countReplyDislike = replyArr[j].disLikes!.length;
+            replyArr[j].countReplyLikes = replyArr[j].likes!.length;
+            replyArr[j].countReplyDisLikes = replyArr[j].disLikes!.length;
 
             delete replyArr[j].likes;
             delete replyArr[j].disLikes;
@@ -388,4 +432,5 @@ const checkCommentAndCommentReplyNoUserId = async(data:StoreDocument) => {
     return comments;
 
 }
+
 

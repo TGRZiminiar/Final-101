@@ -1,44 +1,25 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
+import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Button from "@mui/material/Button";
-import { CheckBox, TimeOpen } from '../../Pages/Admin/CreateStore';
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
+import { CheckBox } from '../../Pages/Admin/CreateStore';
+import { StyledTableCell, StyledTableRow } from './table';
+import KeyboardDoubleArrowUpOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
+import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
 
 interface CheckBoxTableInterface {
   datas:CheckBox[];
   handleRemove:(i:number) => void;
   title:string;
   subtitle:string;
+  handleSwapUp:(i:number) => void;
+  handleSwapDown:(i:number) => void;
 }
 
-export const CheckBoxTable: React.FC<CheckBoxTableInterface> = ({handleRemove,datas,title,subtitle}) => {
+export const CheckBoxTable: React.FC<CheckBoxTableInterface> = ({handleRemove, datas, title, subtitle, handleSwapDown, handleSwapUp}) => {
   
   return (
     <TableContainer component={Paper}>
@@ -47,8 +28,9 @@ export const CheckBoxTable: React.FC<CheckBoxTableInterface> = ({handleRemove,da
           <TableRow>
             <StyledTableCell>{title}</StyledTableCell>
             <StyledTableCell align="center">{subtitle}</StyledTableCell>
+            <StyledTableCell align="center">Swap Up</StyledTableCell>
+            <StyledTableCell align="center">Swap Down</StyledTableCell>
             <StyledTableCell align="center">Delete</StyledTableCell>
-            {/* <StyledTableCell align="right">Delete</StyledTableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -58,8 +40,13 @@ export const CheckBoxTable: React.FC<CheckBoxTableInterface> = ({handleRemove,da
                 {data.text}
               </StyledTableCell>
               <StyledTableCell align="center">{String(data.check)}</StyledTableCell>
-              {/* <StyledTableCell align="right"><Button color='warning' fullWidth variant='contained' onClick={() => handleEdit(i)} >Edit</Button></StyledTableCell> */}
-              <StyledTableCell align="center" width="10%"><Button color='error' fullWidth variant='contained' onClick={() => handleRemove(i)} >Remove</Button></StyledTableCell>
+              <StyledTableCell align="center" width="15%"><KeyboardDoubleArrowUpOutlinedIcon className="cursor-pointer" onClick={() => handleSwapUp(i)}/></StyledTableCell>
+              <StyledTableCell align="center" width="18%"><KeyboardDoubleArrowDownOutlinedIcon className="cursor-pointer" onClick={() => handleSwapDown(i)} /></StyledTableCell>
+              <StyledTableCell align="center" width="10%">
+                  <button type={"button"} onClick={() => handleRemove(i)} className="hover:bg-[#b49e66] text-white bg-[#CCAF63] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                    Remove
+                </button>
+                </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

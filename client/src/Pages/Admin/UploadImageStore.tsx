@@ -5,6 +5,8 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { DeleteImageStore, GetSingleStoreForUploadImage, UploadImageStoreFunc } from '../../Function/store.func';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import { useSelector } from 'react-redux';
+
 
 interface SingleStore {
     storeName:string;
@@ -12,9 +14,8 @@ interface SingleStore {
 }
 
 type ImageData = {
-    filename:string;
+    urlImage:string;
     contentType:string;
-    imageBase64:string;
     _id:string
 }
 
@@ -28,7 +29,9 @@ interface StateProps {
 export const UploadImageStore: React.FC = () => {
     
     const {storeId} = useParams();
-    
+    //@ts-ignore
+    const openDrawer = useSelector(state => state.drawer);
+
     const [state,setState] = useState<StateProps>({
         singleStore:null,
         images:[],
@@ -126,7 +129,7 @@ export const UploadImageStore: React.FC = () => {
         const {imageIdArr,singleStore} = state;
         let fileName:string[] = [];
 
-        if(!singleStore || !imageIdArr){
+        if(!singleStore?.imageData || !imageIdArr){
             return toast.error("Something Wronge Please Refresh Page")
         }
 
@@ -134,7 +137,7 @@ export const UploadImageStore: React.FC = () => {
             // console.log(singleStore.imageData[i])
             for (let j = 0; j < imageIdArr.length; j++) {
                 if(imageIdArr[j] === singleStore.imageData[i]._id){
-                    fileName.push(singleStore.imageData[i].filename)
+                    fileName.push(singleStore.imageData[i].urlImage)
                 }                
             }            
         }
@@ -151,20 +154,31 @@ export const UploadImageStore: React.FC = () => {
     
     return (
     <>
-      <div className="md:ml-[15rem] p-6 w-full h-full">
-          <div className="bg-white p-20 h-[full] min-h-[95vh]">
-            <h6 className="text-4xl text-center font-bold text-indigo-500">Upload Image To {state.singleStore?.storeName} Store</h6>
+      <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
+          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] p-20">
+            <h6 className="text-4xl text-center font-bold text-black">Upload Image To {state.singleStore?.storeName} Store</h6>
             <div>
                 <Grid>
                 <Grid item xs={12} mt={8}>
                     <form onSubmit={handleSubmit}>
                     <h6 className="text-2xl font-semibold mb-2">Upload Image For Store</h6>
-                    <div className="text-gray-400 bg-slate-700 w-full p-4">
-                        <input type={"file"} multiple={true} className="bg-slate-800 w-full" onChange={handleImageChange} />
-                    </div>
-                    <div className="flex gap-8 ">
+                    <div className="text-white  w-full p-4">
+                        {/* <input type={"file"} multiple={true} className="bg-[#978351] w-full" onChange={handleImageChange} /> */}
+                        <input 
+                            onChange={handleImageChange}
+                            multiple={true}
+                            type="file" 
+                            className="block w-full text-lg text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-lg file:font-semibold
+                                file:bg-violet-50 file:text-violet-700
+                                hover:file:bg-violet-100
+                            "/>
+                        </div>
+                    <div className="flex gap-8 flex-wrap flex-1 ">
                     {state.imageURLs?.map((imageSrc:string, idx:number) => (
-                        <div key={idx} className="relative max-w-[10rem] max-h-[20rem] mt-4">
+                        <div key={idx} className="relative max-w-[13rem] max-h-[20rem] mt-4">
                         <img src={imageSrc} className="w-full h-full rounded-lg " />
                         <div className="absolute top-0 right-0 z-50 text-red-500 cursor-pointer" onClick={() => handleRemoveImage(idx)}>
                             <CloseOutlinedIcon/>
@@ -172,19 +186,22 @@ export const UploadImageStore: React.FC = () => {
                         </div>
                     ))}
                     </div>
-                    <Button type="submit" variant="contained" color="success" sx={{mt:4}}>
+       
+                   <div className="text-center">
+                   <button type={"submit"} onClick={handleSubmitDeleteImage} className="hover:bg-[#758867] text-white mt-4 bg-[#6E845D] rounded-md px-4 py-2 leading-6 shadow-md text-lg font-normal hover:shadow-xl"> 
                         Submit
-                    </Button>
+                    </button>
+                   </div>
                     </form>
                 </Grid>
                 </Grid>
                 <hr className="my-8 border-slate-600"/>
                 <Grid item xs={12} >
                     <h6 className="text-2xl font-semibold mb-2">Delete Image That Is Exist In Database</h6>
-                    <div className="flex gap-4 mt-8 flex-1">
+                    <div className="flex gap-4 mt-8 flex-1 flex-wrap">
                     {state.singleStore?.imageData.map((img,i) => (
-                        <div key={i} className="max-w-[10rem] max-h-[20rem] relative object-cover">
-                             <img src={`data:${img.contentType};base64,${img.imageBase64 as string}`} 
+                        <div key={i} className="max-w-[13rem] max-h-[20rem] relative object-cover">
+                             <img src={`${img.urlImage}`} 
                              className={`w-full h-full  ${checkId(img._id) && "border-2 border-indigo-500"}`} 
                              
                              key={i}/>
@@ -194,13 +211,17 @@ export const UploadImageStore: React.FC = () => {
                         </div>
                     ))}
                     </div>
-                    <div className="mt-4">
-                        <Button variant="contained" color="success" onClick={handleSubmitDeleteImage}>
-                            Delete All Image Selected
-                        </Button>
+                    <div className="mt-4 text-center">
+                        <button type={"button"} onClick={handleSubmitDeleteImage} className="hover:bg-[#758867] text-white bg-[#6E845D] rounded-md px-4 py-2 leading-6 shadow-md text-lg font-normal hover:shadow-xl"> 
+                        Delete All Image Selected
+                        </button>
                     </div>
                 </Grid>
 
+
+                {/* <img
+                src="http://localhost:5000/uploads\\2022-11-13T08-48-19.827ZSummary&sweet alert.jpg"
+                /> */}
             </div>
 
             

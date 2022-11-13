@@ -33,8 +33,10 @@ export const SingleStore: React.FC = () => {
 
     const loadSingleStore = async() => {
       await GetSingleStore(storeId as string)
-      .then((res:AxiosResponse) => {
-          setState(prev => ({...prev, store:res.data.store as SingleStoreInterface, comment:res.data.comments as CommentSection[]}))
+      .then((res:AxiosResponse | boolean) => {
+          if(typeof(res) !== "boolean"){
+            setState(prev => ({...prev, store:res.data.store as SingleStoreInterface, comment:res.data.comments as CommentSection[]}))
+          }
       })
       .catch((err:AxiosError) => {
           toast.error(err.response?.data as string)

@@ -11,26 +11,8 @@ import { Button } from '@mui/material';
 import { GetStore } from '../../Function/store.func';
 import { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
+import { StyledTableCell, StyledTableRow } from '../../Components/Table/table';
+import { useSelector } from 'react-redux';
 
 interface Store {
   _id:string;
@@ -48,7 +30,8 @@ interface StateProps {
 }
 
 export const ListStore: React.FC = () => {
-
+  //@ts-ignore
+  const openDrawer = useSelector(state => state.drawer)
   const navigate = useNavigate();
   const [state,setState] = useState<StateProps>({
     stores:[],
@@ -79,9 +62,9 @@ export const ListStore: React.FC = () => {
 
     return (
     <>
-    <div className="md:ml-[15rem] p-6 w-full h-full">
-          <div className="bg-white p-20 h-[full] min-h-[95vh]">
-            <h6 className="text-4xl text-center font-bold text-indigo-500 mt-4 mb-8">All Store Data</h6>
+ <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
+          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] py-10 px-16">
+            <h6 className="text-5xl text-center font-bold text-black mt-4 mb-8">All Store Data</h6>
 
             <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -90,7 +73,8 @@ export const ListStore: React.FC = () => {
                   <StyledTableCell>StoreName</StyledTableCell>
                   <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
-                  <StyledTableCell align="center">Upload Image</StyledTableCell>
+                  <StyledTableCell align="center">Image Store</StyledTableCell>
+                  <StyledTableCell align="center">Image Menu</StyledTableCell>
                   <StyledTableCell align="center">Delete</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -107,9 +91,31 @@ export const ListStore: React.FC = () => {
                     </h6>
                         ))}
                       </StyledTableCell>
-                    {<StyledTableCell align="center" width="10%"><Button color='warning' fullWidth variant='contained' onClick={() => handleEdit(store._id)} >Edit</Button></StyledTableCell>}
-                    <StyledTableCell align="center" width="10%"><Button color='secondary' fullWidth variant='contained' onClick={() => handleUpload(store._id)}  >Upload</Button></StyledTableCell>
-                    <StyledTableCell align="center" width="10%"><Button color='error' fullWidth variant='contained'  >Remove</Button></StyledTableCell>
+                    {<StyledTableCell align="center" width="10%">
+                      <button type={"button"} onClick={() => handleEdit(store._id)} className="hover:bg-[#5a7049] text-white bg-[#6E845D] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                        Edit
+                    </button>
+                      </StyledTableCell>}
+
+                    <StyledTableCell align="center" width="13%">
+                      <button type={"button"} onClick={() => handleUpload(store._id)} className="hover:bg-[#9b6a4e] text-white bg-[#B57B5A] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                      Store
+                    </button>
+                      
+                      </StyledTableCell>
+                   
+                    <StyledTableCell align="center" width="15%">
+                      <button type={"button"} onClick={() => navigate(`/admin/upload-image-menu/${store._id}`)} className="hover:bg-[#a29191] text-white bg-[#857F7F] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                      Menu
+                    </button>
+                      
+                      </StyledTableCell>
+
+                    <StyledTableCell align="center" width="10%"> 
+                    <button type={"button"} onClick={() => console.log("REMOVE")} className="hover:bg-[#b49e66] text-white bg-[#CCAF63] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                        Delete
+                    </button>
+                    </StyledTableCell>
                   </StyledTableRow>
                ))}
               </TableBody>

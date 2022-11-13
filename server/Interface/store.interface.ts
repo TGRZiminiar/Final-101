@@ -11,7 +11,10 @@ interface CreateStoreInterface {
     contact:Contact[];
     menuList:MenuList[];
     branch:string[];
-    
+}
+
+interface UpdateStoreInterface extends CreateStoreInterface {
+    storeId:string;
 }
 
 
@@ -43,12 +46,14 @@ type Contact = {
 type MenuList = {
     text:string;
     price:number;
-}
-
-type ImageData = {
     fileName:string;
     contentType:string;
     imageBase64:string;
+}
+
+type ImageData = {
+    urlImage:string;
+    contentType:string;
 }
 
 type CommentSection = {
@@ -86,8 +91,8 @@ interface CommentToSend extends CommentSection {
 interface ReplyToSend extends CommentReply {
     userLikeOrNot?:boolean;
     userDislikeOrNot?:boolean;
-    countReplyLike?:number;
-    countReplyDislike?:number;
+    countReplyLikes?:number;
+    countReplyDisLikes?:number;
 }
 
-export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend};
+export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface};

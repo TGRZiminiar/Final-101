@@ -87,7 +87,14 @@ const storeSchema = new mongoose.Schema({
 
     menuList:[{
         text:{type:String},
-        price:{type:Number}
+        price:{type:Number},
+        urlImage : {
+            type : String,
+            unique : true,
+        },
+        contentType : {
+            type: String,
+        },
     }],
 
     branch:[{
@@ -95,7 +102,7 @@ const storeSchema = new mongoose.Schema({
     }],
 
     imageData:[{    
-        filename : {
+        urlImage : {
             type : String,
             unique : true,
             required: true
@@ -103,10 +110,6 @@ const storeSchema = new mongoose.Schema({
         contentType : {
             type: String,
             required : true
-        },
-        imageBase64 : {
-            type : String,
-            required: true
         },
     }],
 
@@ -117,7 +120,10 @@ const storeSchema = new mongoose.Schema({
         postedBy:{type:mongoose.Types.ObjectId,ref:"User"},
         postedAt:{type:Date,default:new Date()},
         replyCount:{type:Number,default:0},
-    
+        rating:{
+            type:Number,
+            default:0,
+        },
         commentReply:[{
             textCommentReply:{type:String},
             postedBy:{type:mongoose.Types.ObjectId,ref:"User"},
@@ -125,6 +131,7 @@ const storeSchema = new mongoose.Schema({
             likes:[{type:mongoose.Types.ObjectId,ref:"User"}],
             disLikes:[{type:mongoose.Types.ObjectId,ref:"User"}],
         }],
+     
     }],
     
     ratingSection:[{

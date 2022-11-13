@@ -1,5 +1,5 @@
-import { Grid, Select, TextField, Typography, MenuItem, SelectChangeEvent,Autocomplete, Button, Divider } from '@mui/material'
-import React, { SyntheticEvent, useEffect, useState } from 'react'
+import { Grid, TextField, Autocomplete, Divider } from '@mui/material'
+import React, {  useEffect, useState } from 'react'
 import { ListAllCategory } from "../../Function/category.func"
 import { AxiosError } from "axios";
 import {toast} from "react-toastify";
@@ -9,8 +9,9 @@ import { Location } from '../../Components/CreateStore/Location';
 import { SelectDateAndTimeDelivery } from '../../Components/CreateStore/SelectDateAndTimeDelivery';
 import { CheckBox } from '../../Components/CreateStore/CheckBox';
 import { Contact } from '../../Components/CreateStore/Contact';
-import { MenuTable } from '../../Components/Table/MenuTable';
 import "./CreateStore.css"
+import { useSelector } from 'react-redux';
+import { Menu } from '../../Components/CreateStore/Menu';
 
 type SingleCategory = {
     _id:string;
@@ -79,7 +80,8 @@ export interface StateProps {
 }
 
 export const CreateStore: React.FC = () => {
-    
+    //@ts-ignore
+    const openDrawer = useSelector(state => state.drawer)
     const [state,setState] = useState<StateProps>({
         name:"Mix",
         category:[],
@@ -209,13 +211,13 @@ export const CreateStore: React.FC = () => {
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch } = state
+        const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch, seatNumber } = state
         const objLocation = {"textLocation":textLocation,"link":link};
         const onlyIdCategory:string[] = [];
         category?.map((c) => {
             onlyIdCategory.push(c._id)
         })
-        await PostCreateStore(name, onlyIdCategory, objLocation, 5, timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch)
+        await PostCreateStore(name, onlyIdCategory, objLocation, seatNumber, timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch)
         .then((res) => {
             console.log("THIS IS RESPONSE", res)
             toast.success("Create Store Success");
@@ -226,19 +228,22 @@ export const CreateStore: React.FC = () => {
 
     }
 
-    console.log(state)
 
 
     return (
     <>
-     <div className="md:ml-[15rem] p-6 w-full h-full">
-          <div className="bg-white p-20 h-[full]">
+     <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
+          <div className="bg-white   h-[full] mx-auto w-[80%] mt-[3.5rem]">
             <form onSubmit={handleSubmit}>
-            <h6 className="text-4xl text-center font-bold text-indigo-500 mt-4 mb-8">Create Store Data</h6>
+            <div className="bg-[#857F7F] p-4 mb-12"> 
+            <h6 className="text-4xl text-center font-bold text-white ">Create Store Data</h6>
+            </div>
 
             <Grid container spacing={8}>
 
-                <Grid item xs={6}>
+                <Grid item xs={12}>
+                <div className="px-20">
+
                 <h6 className="text-2xl font-semibold mb-2">Assign Store Name</h6>
                 <TextField
                 placeholder='Store Name'
@@ -247,10 +252,8 @@ export const CreateStore: React.FC = () => {
                 value={state.name}
                 onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, name:e.target.value}))}
                 />
-                </Grid>
-
-                <Grid item xs={6}>
-                <h6 className="text-2xl font-semibold mb-2">Assign Store Category</h6>
+                
+                <h6 className="text-2xl font-semibold  mt-8">Assign Store Category</h6>
                 {state.categories && 
                   <Autocomplete
                   sx={{marginTop:1}}
@@ -274,9 +277,10 @@ export const CreateStore: React.FC = () => {
                 />
                 
                 }
-
+                </div>
                 </Grid>
 
+              
                 {/* Location */}
                 <Grid item xs={12}>
                 <Location
@@ -338,89 +342,67 @@ export const CreateStore: React.FC = () => {
 
             {/* Add Menu And Price */}
             <Grid item xs={12}>
-                <h6 className="text-2xl font-bold mb-2">Add Menu</h6>
-                <div className="grid grid-cols-2 gap-12">
-                    <div>
-                        <h6 className="text-xl font-semibold ">Menu Name</h6>
-                        <TextField
-                        fullWidth
-                        variant="filled"
-                        placeholder="Ex. Fried rice"
-                        value={state.text}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, text:e.target.value}))}
-                        
-                        />
-                    </div>
-                    <div>
-                        <h6 className="text-xl font-semibold ">Price</h6>
-                        <TextField
-                        fullWidth
-                        variant="filled"
-                        type="number"
-                        placeholder="Ex. 08.00-12.00"
-                        value={state.price}
-                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, price:Number(e.target.value)}))}
-                        sx={{mb:4}}
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-6">
-                <Button variant="contained" className="rounded-lg" onClick={handleAddMenu}>
-                    Click To Menu To Store
-                </Button>
-                </div>
-                
-                <MenuTable
-                datas={state.menu}
-                handleRemoveMenu={handleRemoveMenu}
-                title="Menu Name"
-                subtitle="Menu Price"
-                />
+              <Menu
+              state={state}
+              setState={setState}
+              handleAddMenu={handleAddMenu}
+              handleRemoveMenu={handleRemoveMenu}
+              />
                 <Divider/>
             </Grid>
              {/* End Add Menu And Price */}
 
             
              <Grid item xs={12}>
-                <h6 className="text-2xl font-semibold mb-2">Assign Store branch</h6>
-                  <Autocomplete
-                  sx={{marginTop:1}}
-                  multiple
-                  freeSolo
-                  options={[""]}
-                  value={state.branch!}
-                  onChange={(event: any, value: (string | string[])[]) => setState(prev => ({...prev,branch:value as string[]}))}
-                  fullWidth
-                  
-                  renderInput={(params:any) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                    //   placeholder="เลือกหรือสร้าง Tags เองก็ได้"
-                    //   helperText="เมื่อพิมเสร็จแล้วให้กด Enter ระบบถึงจะบันทึก tag ให้ ปล.ไม่สามารถเกิน 10 tags"
+             <div className="bg-[#857F7F] text-white p-3 self-center mb-8">
+                    <h6 className="text-2xl font-bold">Assign Store branch</h6>
+                </div>
+                <div className="px-20">
+                    <Autocomplete
+                    sx={{marginTop:1}}
+                    multiple
+                    freeSolo
+                    options={[""]}
+                    value={state.branch!}
+                    onChange={(event: any, value: (string | string[])[]) => setState(prev => ({...prev,branch:value as string[]}))}
+                    fullWidth
+                    
+                    renderInput={(params:any) => (
+                        <TextField
+                        {...params}
+                        fullWidth
+                        //   placeholder="เลือกหรือสร้าง Tags เองก็ได้"
+                          helperText="After Type In Something Please Enter"
+                        />
+                    )}
                     />
-                  )}
-                />
+                </div>
                 </Grid>
                 
                 <Grid item xs={12}>
-                    <h6 className="text-2xl font-semibold mb-2">Store Other Detail</h6>
+                <div className="bg-[#857F7F] text-white p-3 self-center mb-8">
+                    <h6 className="text-2xl font-bold">Store Other Detail</h6>
+                </div>
+                <div className="px-20">
                     <TextField
                     placeholder='Other Details'
                     variant="filled" 
                     fullWidth 
                     value={state.otherDetail}
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev, otherDetail:e.target.value}))}
+                    rows={5}
+                    multiline
                     />
+                </div>
                 </Grid>
 
 
             <Grid item xs={12}>
-                <div>
-                    <Button variant="contained" type="submit">
-                        Create Store
-                    </Button>
+                <div className="mb-4 text-center mx-16">
+                <button type={"submit"} className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] rounded-md px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                    Create Store
+                </button>
+                   
                 </div>
             </Grid>
 

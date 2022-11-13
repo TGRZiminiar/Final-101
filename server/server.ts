@@ -14,6 +14,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 
+app.use('/uploads',express.static(__dirname + '/uploads'));
+
+
 fs.readdirSync("./Routes").map((r:any)=> app.use(("/api"), require(`./Routes/${r}`)));
 
 

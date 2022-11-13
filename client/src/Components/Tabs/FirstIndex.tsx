@@ -29,8 +29,11 @@ export const FirstIndex: React.FC<FirstIndexProps> = ({state}) => {
         state.store?.category.map((cate) => (
             str.push(cate.name)
         ))
-    },[state.store?.category])
+    },[state])
 
+
+    console.log(state)
+    console.log(str)
 
     return (
     <div className="p-8 md:p-16">

@@ -2,9 +2,9 @@ interface SingleStoreInterface {
     storeName:string;//
     branch:string[];
     category:Category[];//
-    checkBox:CheckBox[];
+    checkBox:CheckBoxInterface[];
     commentCount:number;
-    contact:Contact[];
+    contact:ContactInterface[];
     imageData:ImageData[];
     location:LocationInterface; 
     menuList:MenuList[];
@@ -16,6 +16,34 @@ interface SingleStoreInterface {
     timeOpen:TimeOpen[];
     timeOpenDelivery:TimeOpenDelivery[];
 }
+
+interface UpdateStoreInterface {
+    storeName:string;//
+    category:Category[];//
+    location:LocationInterface; //
+    seatNumber:number;
+    timeOpen:TimeOpen[];
+    timeOpenDelivery:TimeOpenDelivery[];
+    rangePrice:string;
+    checkBox:CheckBox[];
+    otherDetail:string;
+    contact:Contact[];
+    menuList:MenuList[];
+    branch:string[];
+}
+
+
+type CheckBox = {
+    text:string;
+    check:boolean;
+}
+
+type Contact = {
+    platform:string;
+    link:string;
+}
+
+
 
 // commentSection:CommentSection[];
 
@@ -39,12 +67,12 @@ type TimeOpenDelivery = {
     time:string;
 }
 
-type CheckBox = {
+type CheckBoxInterface = {
     text:string;
     check:boolean;
 }
 
-type Contact = {
+type ContactInterface = {
     platform:string;
     link:string;
 }
@@ -65,7 +93,7 @@ type CommentSection = {
     postedBy:PostedBy;
     postedAt:Date;
     replyCount:number;
-    commentReply:CommentReply[];
+    commentReply:CommentReplyInterface[];
     userLikeOrNot:boolean;
     userDislikeOrNot:boolean;
     countLike:number;
@@ -73,12 +101,18 @@ type CommentSection = {
     _id:string;
 }
 
-type CommentReply = {
+type CommentReplyInterface = {
     textCommentReply:string;
     postedBy:PostedBy;
     postedAt:Date;
     likes:string[];
     disLikes:string[];
+    _id:string
+    userLikeOrNot:boolean;
+    userDislikeOrNot:boolean;
+    countReplyLikes:number;
+    countReplyDisLikes:number;
+
 }
 
 type PostedBy = {
@@ -87,4 +121,5 @@ type PostedBy = {
     userName:string;
 }
 
-export {SingleStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, MenuList,Category};
+
+export {SingleStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBoxInterface, CommentSection,ImageData , ContactInterface, CommentReplyInterface, MenuList,Category,UpdateStoreInterface};
