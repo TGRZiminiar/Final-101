@@ -80,12 +80,14 @@ type ContactInterface = {
 type MenuList = {
     text:string;
     price:number;
+    urlImage?:string;
+    contentType?:string;
+    _id?:string;
 }
 
 type ImageData = {
-    fileName:string;
+    urlImage:string;
     contentType:string;
-    imageBase64:string;
 }
 
 type CommentSection = {

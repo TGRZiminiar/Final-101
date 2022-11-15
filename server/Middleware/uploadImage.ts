@@ -14,8 +14,8 @@ var storage = multer.diskStorage({
         //@ts-ignore
         cb(null, req.imageName)
         // console.log(req.file?.path)
-        var fullUrl = req.protocol + '://' + req.get('host');
-        console.log("THIS IS REQ PROTOCOL",fullUrl)
+        // var fullUrl = req.protocol + '://' + req.get('host');
+        // console.log("THIS IS REQ PROTOCOL",fullUrl)
     }
 })
 const store = multer({ storage : storage });

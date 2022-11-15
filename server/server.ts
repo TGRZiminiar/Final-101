@@ -1,4 +1,4 @@
-import express, {Application} from "express";
+import express, {application, Application} from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -19,7 +19,6 @@ app.use('/uploads',express.static(__dirname + '/uploads'));
 
 fs.readdirSync("./Routes").map((r:any)=> app.use(("/api"), require(`./Routes/${r}`)));
 
-
 const PORT = process.env.PORT || 5000;
 
 const start = ():void => {
@@ -29,6 +28,11 @@ const start = ():void => {
         .then(() => console.log("Connected To DB"))
         .catch((err) => console.log(`Server Error => ${err}`));
     }))
+}
+
+
+const primeNumber = () => {
+
 }
 
 start();

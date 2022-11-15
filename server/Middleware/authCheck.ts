@@ -5,9 +5,10 @@ import UserModel from "../Models/user.models"
 
 export const authCheck = async(req:Request, res:Response, next:NextFunction)/*: Promise<NextFunction> */ => {
 
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
+    const authHeader = req.headers['authorization'];
 
+    const token = authHeader && authHeader.split(' ')[1];
+    
     if(!token){
         return res.status(403).json("Access Denied.");
     }

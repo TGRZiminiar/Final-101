@@ -1,10 +1,12 @@
 import {Request, Response} from "express";
-import { CommentSection, CommentToSend, CreateStoreInterface, ReplyToSend, UpdateStoreInterface } from "../Interface/store.interface";
+import { CommentSection, CommentToSend, CreateStoreInterface, ImageUrl, ReplyToSend, UpdateStoreInterface } from "../Interface/store.interface";
 import StoreModel, { StoreDocument } from "../Models/store.model";
 import fs from "fs"
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken"
 import { UserSignJWT } from "../Interface/user.interface";
+
+
 export const CreateStore = async(req:Request, res:Response) => {
     try {
     
@@ -47,7 +49,6 @@ export const UpdateStore = async(req:Request, res:Response) => {
             "checkBox":data.checkBox,
             "otherDetail":data.otherDetail,
             "contact":data.contact,
-            "menuList":data.menuList,
             "branch":data.branch,
         })
 
@@ -140,6 +141,74 @@ export const UploadImageStore = async(req:Request, res:Response) => {
 
     } catch (error) {
         console.log(`Upload Image Store Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const UploadMenuStore = async(req:Request, res:Response) => {
+    try {
+
+        //@ts-ignore
+        const files = req.files;
+        //@ts-ignore
+        console.log("THIS IS REQ FILE",files)
+        if(!files){
+            return res.status(400).json("Something Went Wronge");
+        }
+
+        const {storeid, menuid, currenturl, price, menuname} = req.headers;
+
+          //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+            return img.toString('base64')
+        })
+
+        let url = req.protocol + '://' + req.get('host');
+        let tempImageArray:ImageUrl[] = [];
+        
+        await Promise.all( imgArray.map((src:string, index:number) => {
+
+            // create object to store data in the collection
+            let finalImg:ImageUrl = {
+                //@ts-ignore
+                urlImage : url + "/" +files[index].path,
+                //@ts-ignore
+                contentType : files[index].mimetype,
+            }
+            tempImageArray.push(finalImg)
+        }))
+        
+
+        if(currenturl !== tempImageArray[0].urlImage){
+                const subString = String(currenturl).substring(30)
+                console.log("THIS IS SUBSTRING =>",subString)
+                fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                    if(r.includes(subString)){
+                        fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                    }
+                })
+
+            await StoreModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${storeid}`),
+                menuList:{$elemMatch:{"_id":new mongoose.Types.ObjectId(`${menuid}`)}}
+            },{
+                $set:{
+                    "menuList.$.urlImage":tempImageArray[0].urlImage,
+                    "menuList.$.price":Number(price),
+                    "menuList.$.text":menuname,
+                
+                }
+            })
+        }
+
+
+        return res.status(200).json({"message":"Upload Image Success"});
+
+
+    } catch (error) {
+        console.log(`Upload Image Menu Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }
@@ -260,6 +329,28 @@ export const GetDataUploadImageMenu = async(req:Request, res:Response) => {
     }
 }
 
+export const GetSingleMenuData = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid, menuid} = req.headers;
+
+        const data = await StoreModel.aggregate([
+            {$match:{"_id":new mongoose.Types.ObjectId(`${storeid}`)}},
+            {$unwind:"$menuList"},
+            {$match:{"menuList._id":new mongoose.Types.ObjectId(`${menuid}`)}},
+            {$project:{
+                _id:0,
+                menuList:"$menuList"
+            }}
+        ])
+
+        return res.status(200).json({"menu":data[0]})
+
+    } catch (error) {
+        console.log(`Get Single Menu Data Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
 
 
 
@@ -322,6 +413,107 @@ export const GetSingleStore = async(req:Request, res:Response) => {
 
     } catch (error) {
         console.log(`Get All Store Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const AddSingleMenuToStore = async(req:Request, res:Response) => {
+    try {
+        
+        //@ts-ignore
+        const files = req.files;
+        //@ts-ignore
+        if(!files){
+             return res.status(400).json("Something Went Wronge");
+        }
+ 
+        const {storeid,price,menuname} = req.headers;
+
+
+        //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+             return img.toString('base64')
+        })
+ 
+        let url = req.protocol + '://' + req.get('host');
+        let tempImageArray:ImageUrl[] = [];
+         
+        await Promise.all( imgArray.map((src:string, index:number) => {
+ 
+             // create object to store data in the collection
+            let finalImg:ImageUrl = {
+                //@ts-ignore
+                urlImage : url + "/" +files[index].path,
+                //@ts-ignore
+                contentType : files[index].mimetype,
+            }
+            tempImageArray.push(finalImg)
+        }))
+
+        console.log("THIS IS MENU NAME =>",menuname,price);
+
+        const data = await StoreModel.findOneAndUpdate({
+                 _id:new mongoose.Types.ObjectId(`${storeid}`),
+             },{
+                 $push:{menuList:{price:Number(price),text:menuname,urlImage:tempImageArray[0].urlImage}}
+        },{
+            new:true,
+        })
+        return res.status(200).json({"message":data})
+
+    } catch (error) {
+        console.log(`Add Single Menu Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+
+
+
+export const RemoveMenuStore = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid, menuid,urlimage} = req.headers;
+        console.log("THIS IS STORE ID =>",storeid);
+        console.log("THIS IS MENU ID =>",menuid);
+
+        
+        if(urlimage){
+            const subString = String(urlimage).substring(30)
+            fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                if(r.includes(subString)){
+                    fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                }
+            })
+        }
+
+        await StoreModel.updateOne({
+            // _id:new mongoose.Types.ObjectId(`${storeid}`),
+            menuList:{$elemMatch:{"_id":new mongoose.Types.ObjectId(`${menuid}`)}},
+        },{
+            $pull:{menuList:{"_id":new mongoose.Types .ObjectId(`${menuid}`)}},
+        },{
+            multi:true
+        })
+        
+        return res.status(200).json({"message":"Remove Image Success"});
+
+        // await StoreModel.updateOne({
+        //     _id:new mongoose.Types.ObjectId(`${storeid}`),
+        //     menuList:{$elemMatch:{"_id":new mongoose.Types.ObjectId(`${menuid}`)}}
+        // },{
+        //     $set:{
+        //         "menuList.$.urlImage":tempImageArray[0].urlImage,
+        //         "menuList.$.price":Number(price),
+        //         "menuList.$.text":menuname,
+            
+        //     }
+        // })
+
+    } catch (error) {
+        console.log(`Update Menu Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }

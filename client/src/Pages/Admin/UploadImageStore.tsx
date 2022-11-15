@@ -80,7 +80,7 @@ export const UploadImageStore: React.FC = () => {
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await UploadImageStoreFunc(storeId as string,state.images)
+        await UploadImageStoreFunc(storeId as string, state.images)
         .then((res:AxiosResponse) => {
             //@ts-ignore
             console.log(res)
@@ -152,6 +152,8 @@ export const UploadImageStore: React.FC = () => {
         })
     }
     
+    
+
     return (
     <>
       <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>

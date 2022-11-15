@@ -90,10 +90,11 @@ const storeSchema = new mongoose.Schema({
         price:{type:Number},
         urlImage : {
             type : String,
-            unique : true,
+            default: "",
         },
         contentType : {
             type: String,
+            
         },
     }],
 
@@ -104,7 +105,6 @@ const storeSchema = new mongoose.Schema({
     imageData:[{    
         urlImage : {
             type : String,
-            unique : true,
             required: true
         },
         contentType : {

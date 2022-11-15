@@ -79,7 +79,7 @@ export const Menu: React.FC<MenuProps> = ({state,setState,handleAddMenu,handleRe
 
                 <div className="mb-6 text-center">
                 <button type={"button"} onClick={handleAddMenu} className="hover:bg-[#6a7d5b] text-white bg-[#6E845D] rounded-md px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
-                    Click To Menu To Store
+                    Click To Add Menu To Store
                 </button>
                 
                 </div>

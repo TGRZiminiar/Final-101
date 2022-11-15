@@ -70,7 +70,49 @@ export const UploadImageStoreFunc = async(storeId:string,images:File[]) => {
         data: formData,
         headers: { "Content-Type": "multipart/form-data",authorization:`Bearer ${authtoken}`,storeid:storeId },
       })
-       
+}
+
+export const UploadImageMenuFunc = async(storeId:string, menuId:string, images:File[],currentUrl:string, price:string, menuName:string) => {
+    console.log("THIS IS IMAGE =>",images)
+    const formData = new FormData();
+
+    formData.append("images",images[0]);
+
+    return await axios({
+        method:"post",
+        url:"http://localhost:5000/api/upload-image-menu",
+        data: formData,
+        headers: {
+            "Content-Type":"singlepart/form-data",
+            authorization:`Bearer ${authtoken}`,
+            storeid:storeId,
+            menuid:menuId,
+            currenturl:currentUrl,
+            price:price,
+            menuname:menuName,
+        }
+    })
+
+}
+
+export const PatchAddMenu = async(storeId:string, images:File[], price:number, menuName:string) => {
+
+    const formData = new FormData();
+
+    formData.append("images",images[0]);
+
+    return await axios({
+        method:"patch",
+        url:"http://localhost:5000/api/add-menu",
+        data: formData,
+        headers: {
+            "Content-Type":"singlepart/form-data",
+            authorization:`Bearer ${authtoken}`,
+            storeid:storeId,
+            price:price,
+            menuname:menuName,
+        }
+    })
 
 }
 
@@ -141,6 +183,28 @@ export const GetUploadImageMenu = async(storeId:string) => {
             headers:{
                 authorization:`Bearer ${authtoken}`,
                 storeid:storeId
+        }
+    })
+}
+
+export const GetSingleMenu = async(storeId:string, menuId:string) => {
+    return await axios.get(`http://localhost:5000/api/get-single-menu`,{
+        headers:{
+            authorization:`Bearer ${authtoken}`,
+            storeid:storeId,
+            menuid:menuId,
+    }
+    })
+    
+}
+
+export const DeleteMenu = async(storeId:string, menuId:string, urlImage:string) => {
+    return await axios.delete(`http://localhost:5000/api/remove-menu`,{
+        headers:{
+            storeid:storeId,
+            menuid:menuId,
+            authorization:`Bearer ${authtoken}`,
+            urlimage:urlImage
         }
     })
 }

@@ -46,9 +46,10 @@ type Contact = {
 type MenuList = {
     text:string;
     price:number;
-    fileName:string;
+    urlImage:string;
     contentType:string;
-    imageBase64:string;
+    _id:string
+  
 }
 
 type ImageData = {
@@ -95,4 +96,9 @@ interface ReplyToSend extends CommentReply {
     countReplyDisLikes?:number;
 }
 
-export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface};
+type ImageUrl = {
+    urlImage:string;
+    contentType:string;
+}
+
+export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface, ImageUrl};

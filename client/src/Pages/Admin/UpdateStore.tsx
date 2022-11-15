@@ -221,11 +221,11 @@ export const UpdateStore: React.FC = () => {
         setState(prev => ({...prev,contact:tempState}));
     }
    
-    const handleRemoveMenu = (index:number) => {
-        const tempState = state.menu;
-        tempState.splice(index,1);
-        setState(prev => ({...prev,menu:tempState}));
-    }
+    // const handleRemoveMenu = (index:number) => {
+    //     const tempState = state.menu;
+    //     tempState.splice(index,1);
+    //     setState(prev => ({...prev,menu:tempState}));
+    // }
 
     const handleAddDateDelivery = () => {
         const objToPush = state.timeOpenDelivery; 
@@ -248,12 +248,12 @@ export const UpdateStore: React.FC = () => {
         setState(prev => ({...prev, platform:"", link:"", contact:objToPush}));
     }
   
-    const handleAddMenu = () => {
-        const objToPush = state.menu;
-        const tempObject:Menu = {"text":state.text,"price":state.price};
-        objToPush.push(tempObject);
-        setState(prev => ({...prev, text:"", price:0, menu:objToPush}));
-    }
+    // const handleAddMenu = () => {
+    //     const objToPush = state.menu;
+    //     const tempObject:Menu = {"text":state.text,"price":state.price};
+    //     objToPush.push(tempObject);
+    //     setState(prev => ({...prev, text:"", price:0, menu:objToPush}));
+    // }
   
 
    
@@ -387,19 +387,6 @@ export const UpdateStore: React.FC = () => {
                />
             </Grid>
             {/* End Contact Section */}
-
-
-            
-            {/* Add Menu And Price */}
-            <Grid item xs={12}>
-              <Menu
-              state={state}
-              setState={setState}
-              handleAddMenu={handleAddMenu}
-              handleRemoveMenu={handleRemoveMenu}
-              />
-            </Grid>
-             {/* End Add Menu And Price */}
 
 
             <Grid item xs={12}>

@@ -74,7 +74,7 @@ export const ListStore: React.FC = () => {
                   <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
                   <StyledTableCell align="center">Image Store</StyledTableCell>
-                  <StyledTableCell align="center">Image Menu</StyledTableCell>
+                  <StyledTableCell align="center">Edit Menu</StyledTableCell>
                   <StyledTableCell align="center">Delete</StyledTableCell>
                 </TableRow>
               </TableHead>

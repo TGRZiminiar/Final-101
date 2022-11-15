@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 
-
 const imageSchema = new mongoose.Schema({
     filename : {
         type : String,
@@ -15,7 +14,12 @@ const imageSchema = new mongoose.Schema({
     imageBase64 : {
         type : String,
         required: true
-    }
+    },
+    urlImage : {
+        type : String,
+        unique : true,
+        default: "",
+    },
 
 },{timestamps:true});
 
