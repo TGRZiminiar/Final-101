@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import e, {Request, Response} from "express";
 import { CommentSection, CommentToSend, CreateStoreInterface, ImageUrl, ReplyToSend, UpdateStoreInterface } from "../Interface/store.interface";
 import StoreModel, { StoreDocument } from "../Models/store.model";
 import fs from "fs"
@@ -182,10 +182,11 @@ export const UploadMenuStore = async(req:Request, res:Response) => {
         
 
         if(currenturl !== tempImageArray[0].urlImage){
-                const subString = String(currenturl).substring(30)
-                console.log("THIS IS SUBSTRING =>",subString)
+                let subString = String(currenturl).substring(30)
                 fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
-                    if(r.includes(subString)){
+                    // console.log("THIS IS SUBSTRING =>",subString)
+                    // console.log("THIS IS R =>",r)
+                    if(r === subString){
                         fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
                     }
                 })
@@ -232,8 +233,9 @@ export const DeleteImageStore = async(req:Request, res:Response) => {
         // }
 
         for (let i = 0; i < arrImgFileName.length; i++) {
+            const subString = String(arrImgFileName[i]).substring(30)
             fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
-                if(r.includes(arrImgFileName[i])){
+                if(r.includes(subString)){
                     fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
                 }
             })
@@ -461,7 +463,16 @@ export const AddSingleMenuToStore = async(req:Request, res:Response) => {
         },{
             new:true,
         })
-        return res.status(200).json({"message":data})
+
+
+
+        if(!data){
+            return res.status(400).json({"message":"StoreId Doesn't Match"});
+        }
+        else {
+            return res.status(200).json({"Menu":data.menuList,"message":"Add Menu Success"});
+        }
+
 
     } catch (error) {
         console.log(`Add Single Menu Error => ${error}`);
@@ -469,7 +480,30 @@ export const AddSingleMenuToStore = async(req:Request, res:Response) => {
     }
 }
 
+export const ChangeSequenceMenu = async(req:Request, res:Response) => {
+    try {
+        
+        const {menuList,storeId} = req.body;
+        const data = await StoreModel.findByIdAndUpdate({
+            _id:new mongoose.Types.ObjectId(`${storeId}`)
+        },{
+            $set:{"menuList":menuList}
+        },{
+            new:true
+        })
 
+        if(!data) {
+            return res.status(400).json({"Message":"No Store Found"});
+        }
+        else {
+            return res.status(200).json({"menu":data.menuList});
+        }
+
+    } catch (error) {
+        console.log(`Change Sequence Menu Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
 
 
 export const RemoveMenuStore = async(req:Request, res:Response) => {
@@ -519,9 +553,43 @@ export const RemoveMenuStore = async(req:Request, res:Response) => {
 }
 
 
+export const RemoveStore = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid} = req.headers;
+        const data:StoreDocument = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
+        .select("imageData menuList")
+        .lean();
 
+        for (let i = 0; i < data.menuList.length; i++) {
+            let substring = String(data.menuList[i].urlImage).substring(30);
+            fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                if(r.includes(substring)){
+                    fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                }
+            })
+        }
 
-const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => {
+        for (let i = 0; i < data.imageData.length; i++) {
+            let substring = String(data.imageData[i].urlImage).substring(30);
+            fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                if(r.includes(substring)){
+                    fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                }
+            })
+        }
+
+        await StoreModel.deleteOne({_id:new mongoose.Types.ObjectId(`${storeid}`)}).lean();
+
+        return res.status(200).json({"message":"Remove Store Success"});
+
+    } catch (error) {
+        console.log(`Remove Store Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => {
     
     let comments:CommentToSend[] = data.commentSection;
     let commentsToReturn:CommentToSend[] = [];

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { CommentSection, RatingSection } from "../Interface/store.interface";
 import StoreModel, { StoreDocument } from "../Models/store.model";
 import {createCommentAndRatingNoExist, updateCommentButCreateRating, updateRatingButCreateComment, updateRatingAndComment} from "../utils/comment.utils"
+import { checkCommentAndCommentReply } from "./store.controller";
 
 export const AddCommentToStore = async(req:Request, res:Response) => {
     try {
@@ -134,6 +135,34 @@ export const DisLikeComment = async(req:Request, res:Response) => {
 
     } catch (error) {
         console.log(`Like Comment Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const GetComment = async(req:Request, res:Response) => {
+    try {
+        const { storeid } = req.headers;
+        //@ts-ignore
+        const { userId } = req.user;
+
+        const data:StoreDocument = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
+        .select(
+            "commentSection"
+        )
+        .populate({
+            path:"commentSection.postedBy commentSection.commentReply.postedBy",
+            select:"-_id userName userImage gender"
+        })  
+        .lean();
+
+        let comments:any = null;
+
+        comments = await checkCommentAndCommentReply(data,userId);
+        // console.log("THIS IS COMMENT =>",comments)
+        return res.status(200).json({"comments":comments});
+
+    } catch (error) {
+        console.log(`Get Comment Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }

@@ -23,8 +23,8 @@ const StyledRating = styled(Rating)({
 export const RatingSectionInDialog: React.FC<RatingSectionInDialogProps> = ({setState,state}) => {
     return (
     <>
-        <div className='flex gap-4 bg-[#D9D9D9] rounded-xl w-fit p-2'>
-            <p className="text-xl self-center font-medium" >
+        <div className='flex justify-between gap-4 bg-[#D9D9D9] rounded-xl flex-wrap p-2 md:justify-center'>
+            <p className="text-xl self-center font-medium mx-auto" >
               &nbsp; Rating Your Experience
             </p>
             <Rating
@@ -34,7 +34,7 @@ export const RatingSectionInDialog: React.FC<RatingSectionInDialogProps> = ({set
               onChange={(e, n) => {
                   setState(prev=>({...prev,rating:n!}))
             }}
-            className="my-1"
+            className="my-1 mx-auto"
                 />
         </div>
     </>

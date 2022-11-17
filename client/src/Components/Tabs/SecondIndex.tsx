@@ -7,39 +7,58 @@ interface SecondIndexProps {
 }
 
 export const SecondIndex: React.FC<SecondIndexProps> = ({state}) => {
-    return (
+    
+  console.log(state)
+
+  return (
     <>
    
-<div className="overflow-x-auto relative rounded-lg">
-    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-        <thead className="uppercase bg-[#505e45] text-white rounded-lg text-lg border-b-2 border-white">
-            <tr>
-                <th scope="col" className="py-3 px-6">
-                    Menu Name
-                </th>
-                <th scope="col" className="py-3 px-6">
-                    Price
-                </th>
-               
+   <div className="flex flex-col  p-8 md:p-12">
+  <div className="overflow-x-auto sm:-mx-6 lg:-mx-8 shadow-md sm:rounded-lg bg-[#6E845D] ">
+    <div className="py-2 inline-block min-w-full ">
+      <div className="overflow-hidden">
+        <table className="text-center min-w-full">
+          <thead className="bg-[#6E845D] text-white border-b text-xl">
+            <tr className="text-center">
+              <th scope="col" className="font-medium px-6 py-4">
+              Pictures
+              </th>
+              <th scope="col" className="font-medium px-6 py-4">
+              Menu Name
+              </th>
+              <th scope="col" className="font-medium px-6 py-4">
+              Price
+              </th>
             </tr>
-        </thead>
-        
-        <tbody>
+          </thead>
+          <tbody className="text-3xl font-medium">
             {state.store?.menuList.map((menu,i) => (
-                <tr className={`border-b border-gray-700 rounded-lg text-white ${i % 2 === 0 ? "bg-[#809c6b] hover:bg-[#7e956c]" : "bg-[#7e956c] hover:bg-[#809c6b]"}`} key={i}>
-                    <th scope="row" className="py-4 px-6 font-medium  whitespace-nowrap">
-                        {menu.text}
-                    </th>
-                    <td className="py-4 px-6">
-                        {menu.price} Baht
-                    </td>
-                </tr>
-
+              <tr key={i} className="border-b transition duration-300 ease-in-out hover:bg-slate-100 odd:bg-white even:bg-slate-50">
+              <td className="px-6 py-4 whitespace-nowrap text-gray-900 w-[12rem] h-[16rem] object-fill">
+                {menu.urlImage ? 
+                  <img
+                  className="w-full h-full object-fill border-[1px] border-gray-400"
+                  src={menu.urlImage}
+                  />
+                  :
+                  <h6 className="">No Image Yet</h6>
+                }
+              </td>
+              <td className="text-gray-900 px-6 py-4 whitespace-nowrap">
+                {menu.text}
+              </td>
+              <td className="text-gray-900 px-6 py-4 whitespace-nowrap">
+                {String(menu.price)}
+              </td>
+            </tr>
             ))}
-          
            
-        </tbody>
-    </table>
+           
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
     </>

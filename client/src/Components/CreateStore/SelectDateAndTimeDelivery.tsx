@@ -1,7 +1,7 @@
 import { Button, TextField, Divider } from '@mui/material'
 import React from 'react'
 import { TimeOpenDelivery } from '../../Interface/store.interface';
-import { StateProps } from "../../Pages/Admin/UpdateStore"
+import { StateProps } from "../../Pages/Admin/CreateStore"
 import { TimeOpenTable } from '../Table/TimeOpenTable';
 import { TimeOpenDeliveryTable } from '../Table/TimeOpenTableDelivery';
 

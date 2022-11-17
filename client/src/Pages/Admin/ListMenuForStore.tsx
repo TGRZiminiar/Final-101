@@ -1,15 +1,14 @@
-import { Button, Grid, Paper, Table, TableBody, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Button, Grid,  Paper, Table, TableBody, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { Axios, AxiosError, AxiosResponse } from 'axios';
 import React,{ useState,useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { DeleteImageStore, DeleteMenu, GetUploadImageMenu, PatchAddMenu, UploadImageStoreFunc } from '../../Function/store.func';
+import { ChangeMenu, DeleteImageStore, DeleteMenu, GetUploadImageMenu, PatchAddMenu, PatchChangeSequenceMenu } from '../../Function/store.func';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { useSelector } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from '../../Components/Table/table';
 import KeyboardDoubleArrowUpOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
 import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
-import { MenuList } from '../../Interface/store.interface';
 import {useNavigate} from "react-router-dom"
 import { Menu } from './CreateStore';
 
@@ -27,7 +26,7 @@ type ImageData = {
 
 interface StateProps {
     storeName:string;
-    menuList:MenuList[];
+    menuList:ChangeMenu[];
     
     text:string;
     price:number;
@@ -57,7 +56,6 @@ export const ListMenuForStore: React.FC = () => {
     })
 
     const loadSingleStore = async() => {
-
         await GetUploadImageMenu(storeId as string)
         .then((res:AxiosResponse) => {
             const {storeName, menuList} = res.data.store;
@@ -75,24 +73,6 @@ export const ListMenuForStore: React.FC = () => {
     },[])
 
     console.log(state)
-
-    const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // await UploadImageStoreFunc(storeId as string,state.images)
-        // .then((res:AxiosResponse) => {
-        //     //@ts-ignore
-        //     console.log(res)
-        //     //@ts-ignore
-        //     toast.success("Upload Image Success")
-        //     setState(prev => ({...prev,images:[],imageURLs:[],}))
-        //     loadSingleStore()
-        // })
-        // .catch((err:AxiosError) => {
-        //     toast.error(err.response?.data as string)
-        // })
-        
-    }
-
 
     // const handleSubmitDeleteImage = async() => {
     //     const {imageIdArr,singleStore} = state;
@@ -123,7 +103,7 @@ export const ListMenuForStore: React.FC = () => {
     
 
   const handleSwapUp = (index:number) => {
-        const tempMenu:MenuList[] = state.menuList;
+        const tempMenu:ChangeMenu[] = state.menuList;
         if(index-1 < 0){
             let temp = tempMenu[index];
             tempMenu[index] = tempMenu[tempMenu.length-1];
@@ -139,7 +119,7 @@ export const ListMenuForStore: React.FC = () => {
     }
 
   const handleSwapDown = (index:number) => {
-        const tempMenu:MenuList[] = state.menuList;
+        const tempMenu:ChangeMenu[] = state.menuList;
         if(index+1 > tempMenu.length-1){
             let temp = tempMenu[index];
             tempMenu[index] = tempMenu[0];
@@ -154,12 +134,6 @@ export const ListMenuForStore: React.FC = () => {
         setState(prev => ({...prev,menuList:tempMenu}))
     }
 
-    
-  const handleRemoveMenu = (index:number) => {
-      const tempState = state.menu;
-      tempState.splice(index,1);
-      setState(prev => ({...prev,menu:tempState}));
-    }
 
   const handleAddMenu = async() => {
       // const objToPush = state.menu;
@@ -169,7 +143,7 @@ export const ListMenuForStore: React.FC = () => {
       await PatchAddMenu(storeId as string,state.images,state.price,state.text)
       .then((res) => {
         console.log(res.data)
-        setState(prev => ({...prev, text:"", price:0,images:[],imageURLs:[]}));
+        setState(prev => ({...prev, text:"", price:0,images:[],imageURLs:[],menuList:res.data.Menu}));
         toast.success("Add Menu Success")
       })
       .catch((err) => {
@@ -178,11 +152,20 @@ export const ListMenuForStore: React.FC = () => {
 
     }
 
-
   const handleRemove = async(menuId:string) => {
         await DeleteMenu(storeId as string, menuId, state?.menuList[0].urlImage || "")
         .then((res:AxiosResponse) => {
             toast.success("Remove Menu Success");
+            let tempArr = state.menuList;
+            let index = 0;
+            for (let i = 0; i < state.menuList.length; i++) {
+              if(state.menuList[i]._id === menuId){
+                index = i;
+              }
+            }
+            tempArr.splice(index,1);
+            setState(prev => ({...prev,menuList:tempArr}));
+
         })
         .catch((err:AxiosError) => {
             toast.error("Remove Menu Error Try Again");
@@ -213,6 +196,17 @@ export const ListMenuForStore: React.FC = () => {
       setState(prev=>({...prev,imageURLs:newImageUrls}))
   }, [state.images]);
 
+
+  const ChangeSequenceMenu = async() => {
+    await PatchChangeSequenceMenu(storeId as string, state.menuList)
+    .then((res:AxiosResponse) => {
+      toast.success("Update Sequence Menu Success")
+      setState(prev => ({...prev, menuList:res.data.menu}))
+    }) 
+    .catch((err:AxiosError) => {
+      toast.error("Something Went Wronge Ty Again Later")
+    })
+  }
 
     return (
     <>
@@ -286,7 +280,7 @@ export const ListMenuForStore: React.FC = () => {
           </div>
 
     <TableContainer  className="px-20 ">
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table sx={{ minWidth: 700,border:1, borderColor:"gray" }} aria-label="customized table" >
         <TableHead>
           <TableRow>
             <StyledTableCell align="left">Image</StyledTableCell>
@@ -313,8 +307,8 @@ export const ListMenuForStore: React.FC = () => {
                 {menu.text}
               </StyledTableCell>
               <StyledTableCell align="center">{menu.price}</StyledTableCell>
-              <StyledTableCell align="center" width="11%"><KeyboardDoubleArrowUpOutlinedIcon className="cursor-pointer" onClick={() => {}}/></StyledTableCell>
-              <StyledTableCell align="center" width="11%"><KeyboardDoubleArrowDownOutlinedIcon className="cursor-pointer" onClick={() => {}} /></StyledTableCell>
+              <StyledTableCell align="center" width="11%"><KeyboardDoubleArrowUpOutlinedIcon className="cursor-pointer" onClick={() => handleSwapUp(i)}/></StyledTableCell>
+              <StyledTableCell align="center" width="11%"><KeyboardDoubleArrowDownOutlinedIcon className="cursor-pointer" onClick={() => handleSwapDown(i)} /></StyledTableCell>
               <StyledTableCell align="center" width="10%">
               <button type={"button"} onClick={() => navigate(`/admin/edit-menu/${storeId}/menu/${menu._id}`)} className="hover:bg-[#5e744d] text-white bg-[#6E845D] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
                     Edit
@@ -331,7 +325,12 @@ export const ListMenuForStore: React.FC = () => {
       </Table>
     </TableContainer>
             
-         
+
+            <div className="text-center mt-4 pb-4">
+              <button type={"button"} onClick={ChangeSequenceMenu} className="hover:bg-[#615959] text-white bg-[#857F7F] rounded-md px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                    Click To Change Sequence Of Menu
+              </button>
+            </div>
 
           </div>
         </div>

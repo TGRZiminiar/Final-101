@@ -14,3 +14,25 @@
     visibility:visible;
     opacity:1;
 }
+
+.anim {
+    animation:  slide 1s ease 3.5s forwards;
+}
+@keyframes slide {
+    from {height: 0;}
+    to {height: auto;}
+  }
+
+.shown {
+    visibility:visible;
+    opacity:1;
+    transition:visibility 0.3s linear,opacity 0.3s linear;
+    height: min-content;
+}
+
+.hide {
+    visibility:hidden;
+    opacity:0;
+    transition: visibility 0.3s linear opacity 0.3s linear;
+    height: 0px;
+}

@@ -4,20 +4,22 @@ import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutl
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
-import { Avatar,Button,Divider } from '@mui/material';
+import { Avatar,Button,Divider, Rating } from '@mui/material';
 import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
 import { CommentSection } from '../../Interface/store.interface';
 import { TabsDetailState } from './TabsDetailStore';
 import { DialogReply } from '../Dialog/DialogReply';
 import { toast } from 'react-toastify';
-import { CreateReplyComment, PatchDisLikeComment, PatchLikeComment } from '../../Function/comment.func';
+import { CreateReplyComment, GetComments, PatchDisLikeComment, PatchLikeComment } from '../../Function/comment.func';
 import moment from "moment"
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { CommentReply } from './CommentReply';
+import { SingleStateProps } from '../../Pages/User/SingleStore';
 interface CommentProps {
     comment:CommentSection;
-    mainState:TabsDetailState;
-    storeId:string
+    storeId:string;
+    setState:React.Dispatch<React.SetStateAction<SingleStateProps>>;
+
 }
 
 export interface CommentStateProps {
@@ -30,7 +32,7 @@ export interface CommentStateProps {
     textReply:string;
 }
 
-export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) => {
+export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
 
     const [subComment,setSubComment] = useState<CommentStateProps>({
         openReply:false,
@@ -64,6 +66,12 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
         await CreateReplyComment(comment._id, subComment.textReply, storeId)
         .then((res) => {
             console.log(res.data)
+            GetComments(storeId as string)
+            .then((res:AxiosResponse) => {
+                setState((prev:SingleStateProps) => ({...prev, comment:res.data.comments as CommentSection[]}))
+                setSubComment((prev) => ({...prev,openReply:true}));
+                toast.success(res.data.message)
+            })
         })
         .catch((err:AxiosError) => {
             toast.error("Something Went Wronge Try Again Later.")
@@ -108,7 +116,17 @@ export const Comment: React.FC<CommentProps> = ({comment, mainState,storeId}) =>
                     <Avatar className="w-full h-full self-center"/>
                 </div>
             <div className="flex flex-col gap-1">
-               <p className="text-xl font-semibold">{comment.postedBy.userName}</p>
+                <div className="flex gap-4">
+                    <p className="text-xl font-semibold">{comment.postedBy.userName}</p>
+                   {comment.rating !== 0 && 
+                    <Rating
+                    value={comment.rating}
+                    size="small"
+                    className="self-center"
+                    readOnly
+                    />
+                   }
+                </div>
                <p className="flex flex-wrap flex-1">{comment.textComment}</p>
                <p className="flex flex-wrap flex-1 text-sm text-gray-400">{String(moment(comment.postedAt).format("llll"))}</p>
                 <div className="flex gap-4">

@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { Link,useNavigate } from 'react-router-dom';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
+import { useSelector } from 'react-redux';
+import { LogInLogOutUser } from "../Reducer/userReducer";
 
-interface NavbarProps {
 
-}
-
-export const Navbar: React.FC<NavbarProps> = ({}) => {
+export const Navbar: React.FC = () => {
+    //@ts-ignore
+    const user:LogInLogOutUser = useSelector(state => state.user);
     const navigate = useNavigate();
+
     const [state,setState] = useState({
         open:false,
         img:[],
@@ -27,9 +29,9 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
     }
     return (
     <>
-    <div className="bg-white  h-[7vh] text-black text-xl border-b-2 shadow-sm  w-full">
+    <div className="bg-white  h-[7vh] text-black text-xl border-b-2 shadow-sm  w-full fixed z-50">
     <div className="flex justify-around self-center items-center bg-white  h-[7vh] text-black text-xl border-b-2 shadow-sm">
-                <div>
+                <div className="cursor-pointer" onClick={() => navigate("/")}>
                     <h6>LOGO</h6>
                 </div>
                 <div className="flex gap-4 md:gap-8">
@@ -50,13 +52,27 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
                {state.open && 
                 <div className="absolute bg-white shadow-xl drop-shadow-lg w-full h-[20rem] left-0 top-[5vh] p-2 z-50"  >
                 <div className="grid">
-                    <div className="flex border-b-2 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
+                   {user && user.role === "admin" && 
+                    <div className="flex pt-4 border-b-2 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
+                        e.stopPropagation()
+                        navigate("/admin")
+                        setState(prev => ({...prev,open:false}))
+                         }} >
+                            <div className="flex gap-4 self-center place-items-center" >
+                            <SupervisorAccountOutlinedIcon/>
+                            <h6>Admin</h6>
+                            </div>
+                            <div/>
+                        </div>
+                   }
+                    <div className="flex border-b-2 pt-4 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
                     e.stopPropagation()
-                    navigate("/admin")
+                    navigate(`/user/${user.userId}`)
+                    setState(prev => ({...prev,open:false}))
                      }} >
                         <div className="flex gap-4 self-center place-items-center" >
                         <SupervisorAccountOutlinedIcon/>
-                        <h6>Admin</h6>
+                        <h6>User</h6>
                         </div>
                         <div/>
                     </div>

@@ -48,7 +48,7 @@ export const createCommentAndRatingNoExist = async( storeId:string, content:stri
         await StoreModel.updateOne({
             _id:new mongoose.Types.ObjectId(`${storeId}`)
         },{
-            $push:{commentSection:{textComment:content,postedBy:userId},ratingSection:{rating:rating,ratingBy:userId},ratingBy:userId},
+            $push:{commentSection:{textComment:content,postedBy:userId,rating:rating},ratingSection:{rating:rating,ratingBy:userId}},
             $inc:{
                 "ratingCount":+1,
                 "commentCount":1, 
@@ -79,19 +79,16 @@ export const updateCommentButCreateRating = async( storeId:string, content:strin
         
         const updateComment = await StoreModel.updateOne({commentSection:{$elemMatch:existCommentOrNot}}
             ,{
-                $set:{'commentSection.$.textComment':content},
-            }
-            ,{multi:true}).exec()
-        
-
-        const createRatingToBook = await StoreModel.updateOne({_id:new mongoose.Types.ObjectId(`${storeId}`)},
-            {
+                $set:{'commentSection.$.textComment':content,"commentSection.$.rating":rating},
                 $push:{ratingSection:{rating:rating,ratingBy:userId}},
                 $inc:{
                     "ratingCount":+1, 
                     "ratingSum":+rating,
                 }
-            })
+            }
+            ,{multi:true}).exec()
+        
+
         
         // return res.status(200).json('Create Rating And Update Comment Success')
     
@@ -104,7 +101,7 @@ export const updateRatingButCreateComment = async( storeId:string, content:strin
     const createCommentToBook = await StoreModel.updateOne({
         _id:new mongoose.Types.ObjectId(`${storeId}`)
     },{
-        $push:{commentSection:{textComment:content,postedBy:userId}},
+        $push:{commentSection:{textComment:content,postedBy:userId,rating:rating}},
         $inc:{"commentCount":1}
     })
     
@@ -151,7 +148,7 @@ export const updateRatingAndComment = async( storeId:string, content:string, rat
     const updateComment = await StoreModel.updateOne({
         commentSection:{$elemMatch:existCommentOrnot}
     },{
-        $set:{'commentSection.$.textComment':content},
+        $set:{'commentSection.$.textComment':content,"commentSection.$.rating":rating},
     },{
         multi:true
     })

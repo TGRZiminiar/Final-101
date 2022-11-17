@@ -31,7 +31,7 @@ export const Login: React.FC = () => {
             const data:ResultRegister = res.data
             Cookies.set('access_token',`${data.token!}`,{expires:3})
             toast.success(data.message);
-            navigate("/home");
+            navigate("/");
         })
         .catch((err:AxiosError) => {
             console.log("THIS IS ERROR" ,err)

@@ -13,13 +13,14 @@ interface TabsDetailStoreProps {
     state:SingleStateProps;
     handleChange:(newValue:number) => void;
     storeId:string;
+    setState:React.Dispatch<React.SetStateAction<SingleStateProps>>;
 }
 
 export interface TabsDetailState {
     store:SingleStoreInterface | null;
 }
 
-export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({state, handleChange, storeId}) => {
+export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({state, handleChange, storeId,setState}) => {
 
 
     const { value } = state;
@@ -39,26 +40,23 @@ export const TabsDetailStore: React.FC<TabsDetailStoreProps> = ({state, handleCh
             </div>
         </div>
         
-        <div className="p-8 md:p-12">
+        <div className="">
 
-        <div className={`w-full`} 
-        style={value === 0 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
+        <div className={`w-full ${value === 0 ? "shown" : "hide"}`} 
        
         >
             {state.store && <FirstIndex state={state}/>}
         </div>
         
-        <div className={`w-full`} 
-        style={value === 1 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
+        <div className={`w-full ${value === 1 ? "shown" : "hide"}`} 
         >
             {state.store && <SecondIndex state={state} />}
         </div>
         
-        <div className={`w-full`} 
-        style={value === 2 ? {visibility:"visible",opacity:1,transition:"visibility 0.3s linear,opacity 0.3s linear"} : {visibility:"hidden", opacity:0, transition:"visibility 0.3s linear,opacity 0.3s linear",display:"none"}}
+        <div className={`w-full ${value === 2 ? "shown" : "hide"}`} 
         
         >
-            {state.store && <ThirdIndex state={state} storeId={storeId} />}
+            {state.store && <ThirdIndex state={state} storeId={storeId} setState={setState}  />}
         </div>
 
         </div>

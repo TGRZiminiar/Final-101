@@ -12,6 +12,8 @@ import { Contact } from '../../Components/CreateStore/Contact';
 import "./CreateStore.css"
 import { useSelector } from 'react-redux';
 import { Menu } from '../../Components/CreateStore/Menu';
+import Backdrop from '@mui/material/Backdrop';
+import { useNavigate } from "react-router-dom";
 
 type SingleCategory = {
     _id:string;
@@ -75,13 +77,14 @@ export interface StateProps {
     branch:string[];
     otherDetail:string;
 
-    seatNumber:number
-
+    seatNumber:number;
+    backdropOpen?:boolean;
 }
 
 export const CreateStore: React.FC = () => {
     //@ts-ignore
-    const openDrawer = useSelector(state => state.drawer)
+    const openDrawer = useSelector(state => state.drawer);
+    const navigate = useNavigate();
     const [state,setState] = useState<StateProps>({
         name:"Mix",
         category:[],
@@ -115,7 +118,7 @@ export const CreateStore: React.FC = () => {
 
         branch:[],
         otherDetail:"",
-
+        backdropOpen:false
     })
 
     const loadCategories = async() => {
@@ -221,6 +224,7 @@ export const CreateStore: React.FC = () => {
         .then((res) => {
             console.log("THIS IS RESPONSE", res)
             toast.success("Create Store Success");
+            setState(prev => ({...prev,backdropOpen:true}))
         })
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)
@@ -410,6 +414,29 @@ export const CreateStore: React.FC = () => {
             </form>
           </div>
         </div>
+
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={state.backdropOpen!}
+        onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
+      >
+       <div className="bg-white w-[30vh] h-[30vh] grid gap-1">
+            <button 
+            onClick={() => navigate("/admin/get-store")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Edit / Add Image Menu
+            </button>
+            <button 
+            onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Stay On This Page
+            </button>
+        
+       </div>
+      </Backdrop>
+
     </>
     )
 }

@@ -101,6 +101,7 @@ type CommentSection = {
     countLike:number;
     countDislike:number;
     _id:string;
+    rating:number;
 }
 
 type CommentReplyInterface = {

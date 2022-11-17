@@ -8,12 +8,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
-import { GetStore } from '../../Function/store.func';
-import { AxiosResponse } from 'axios';
+import { GetStore,DeleteStore } from '../../Function/store.func';
+import { AxiosError, AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { StyledTableCell, StyledTableRow } from '../../Components/Table/table';
 import { useSelector } from 'react-redux';
-
+import { toast } from 'react-toastify';
+import "./CreateStore.css"
 interface Store {
   _id:string;
   storeName:string
@@ -58,15 +59,30 @@ export const ListStore: React.FC = () => {
     navigate(`/admin/edit/${storeId}`);
   }
 
-  
+  const handleRemoveStore = async(storeId:string, storeName:string) => {
+    if(window.confirm(`You want to delete ${storeName}`)){
+      await DeleteStore(storeId)
+      .then((res:AxiosResponse) => {
+        loadStore();
+        toast.success(`Remove ${storeName} success`);
+      })
+      .catch((err:AxiosError) => {
+        toast.error(`Something Went Wronge Try Again Later`);
+      })
+    }
+  } 
 
     return (
     <>
  <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
-          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] py-10 px-16">
-            <h6 className="text-5xl text-center font-bold text-black mt-4 mb-8">All Store Data</h6>
+          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] ">
+          <div className="bg-[#857F7F] p-4 mb-12"> 
+            <h6 className="text-4xl text-center font-bold text-white ">All Store Data</h6>
+            </div>
 
-            <TableContainer component={Paper}>
+          <div className="md:px-16">
+
+            <TableContainer component={Paper} className="bar overflow-auto">
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
@@ -86,7 +102,7 @@ export const ListStore: React.FC = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                     {store.category.map((cate,i) => (
-                    <h6 key={i}>
+                      <h6 key={i}>
                       {cate.name} {i % 2 === 1 && ","}
                     </h6>
                         ))}
@@ -112,7 +128,7 @@ export const ListStore: React.FC = () => {
                       </StyledTableCell>
 
                     <StyledTableCell align="center" width="10%"> 
-                    <button type={"button"} onClick={() => console.log("REMOVE")} className="hover:bg-[#b49e66] text-white bg-[#CCAF63] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                    <button type={"button"} onClick={() => handleRemoveStore(store._id, store.storeName)} className="hover:bg-[#b49e66] text-white bg-[#CCAF63] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
                         Delete
                     </button>
                     </StyledTableCell>
@@ -121,6 +137,7 @@ export const ListStore: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          </div>
 
           </div>
         </div>

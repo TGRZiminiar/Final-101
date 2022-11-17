@@ -7,6 +7,9 @@ import { signJwt } from "../utils/jwt.utils";
 import multer from "multer"
 import ImageModel from "../Models/Image.model";
 import fs, { rmSync } from "fs"
+import { ImageUrl } from "../Interface/store.interface";
+import StoreModel from "../Models/store.model";
+import mongoose from "mongoose";
 
 export const RegisterUser = async(req:Request, res:Response) => {
     try {
@@ -142,6 +145,79 @@ export const ListAllImage = async(req:Request, res:Response) => {
 
     } catch (error) {
         console.log(`Current User Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const UpdateUser = async(req:Request, res:Response) => {
+    try {
+        
+        //@ts-ignore
+        const files = req.files;
+        //@ts-ignore
+        if(!files){
+             return res.status(400).json("Something Went Wronge");
+        }
+
+        //@ts-ignore
+        const {userId} = req.user;
+
+        const {username, email, gender, currenturl} = req.headers;
+        
+        if(gender === "male" || gender === "female" || gender === "lgbtq+" || gender === "unknow") {
+            //@ts-ignore
+            let imgArray = files.map((file) => {
+                let img = fs.readFileSync(file.path)
+
+                return img.toString('base64')
+            })
+    
+            let url = req.protocol + '://' + req.get('host');
+            let tempImageArray:ImageUrl[] = [];
+            
+            await Promise.all( imgArray.map((src:string, index:number) => {
+    
+                // create object to store data in the collection
+                let finalImg:ImageUrl = {
+                    //@ts-ignore
+                    urlImage : url + "/" +files[index].path,
+                    //@ts-ignore
+                    contentType : files[index].mimetype,
+                }
+                tempImageArray.push(finalImg)
+            }))
+
+            if(currenturl !== tempImageArray[0].urlImage){
+                const subString = String(currenturl).substring(30)
+                fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                    if(r === (subString)){
+                        fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                    }
+                })
+            }
+
+            const updted = await UserModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${userId}`)
+            },{
+                $set:{
+                    "userName":username, 
+                    "email":email, 
+                    "gender":gender, 
+                    "userImage":tempImageArray[0].urlImage
+                }
+            })
+    
+            return res.status(200).json({"message":"Update User Success"});
+
+        }
+        else {
+            return res.status(400).json({"message":"Your Gender Is Not Correct"});
+        }
+
+       
+
+    } catch (error) {
+        console.log(`Update User Error => ${error}`);
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }

@@ -44,3 +44,14 @@ export const CreateReplyComment = async(commentId:string, textReply:string, stor
         }
     });
 }
+
+
+export const GetComments = async(storeId:string) => {
+    return await axios.get("http://localhost:5000/api/get-comment",{
+        headers:{
+            authorization:`Bearer ${authtoken}`,
+            storeid:storeId
+        }
+    });
+    
+}

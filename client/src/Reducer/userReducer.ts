@@ -1,4 +1,4 @@
-interface LogInLogOutUser {
+export interface LogInLogOutUser {
     email:string
     userName:string;
     userId:string;

@@ -19,6 +19,7 @@ export const authCheck = async(req:Request, res:Response, next:NextFunction)/*: 
             console.log('JWT ERROR =>',err)
             return res.status(403).send('TOKEN EXPIRES')
         }
+        // console.log(user)
         //@ts-ignore
         req.user = user as UserSignJWT;
         return next()

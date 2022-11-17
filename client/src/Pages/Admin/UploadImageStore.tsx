@@ -80,18 +80,25 @@ export const UploadImageStore: React.FC = () => {
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await UploadImageStoreFunc(storeId as string, state.images)
-        .then((res:AxiosResponse) => {
-            //@ts-ignore
-            console.log(res)
-            //@ts-ignore
-            toast.success("Upload Image Success")
-            setState(prev => ({...prev,images:[],imageURLs:[],}))
-            loadSingleStore()
-        })
-        .catch((err:AxiosError) => {
-            toast.error(err.response?.data as string)
-        })
+
+        if(state.images.length === 0 || state.imageURLs.length === 0){
+            return toast.error("You need to upload files first");
+        }
+
+        else {
+            await UploadImageStoreFunc(storeId as string, state.images)
+            .then((res:AxiosResponse) => {
+                //@ts-ignore
+                console.log(res)
+                //@ts-ignore
+                toast.success("Upload Image Success")
+                setState(prev => ({...prev,images:[],imageURLs:[],}))
+                loadSingleStore()
+            })
+            .catch((err:AxiosError) => {
+                toast.error(err.response?.data as string)
+            })
+        }
         
     }
 
@@ -130,7 +137,7 @@ export const UploadImageStore: React.FC = () => {
         let fileName:string[] = [];
 
         if(!singleStore?.imageData || !imageIdArr){
-            return toast.error("Something Wronge Please Refresh Page")
+            return 
         }
 
         for (let i = 0; i < singleStore.imageData.length; i++) {

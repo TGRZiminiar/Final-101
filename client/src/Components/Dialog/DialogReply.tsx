@@ -23,7 +23,7 @@ interface DialogReplyProps {
 
 export const DialogReply: React.FC<DialogReplyProps> = ({subComment, closeDialogReply, handleTextReplyChange, comment ,handleSubmitReply}) => {
 
-
+  
 
     return (
      <form  id="form2" onSubmit={handleSubmitReply} >

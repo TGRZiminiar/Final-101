@@ -6,3 +6,21 @@
     color: rgb(156, 163, 175);
     padding: 0.5rem;
 }
+
+
+.bar::-webkit-scrollbar {
+    width: 0.3rem;
+    height: 10px;
+    
+}
+
+.bar::-webkit-scrollbar-track {
+    background-color: #48583d;    
+}
+
+
+.bar::-webkit-scrollbar-thumb {
+    background-color: #84755d;
+    border-radius: 50px;
+    
+}

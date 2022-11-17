@@ -23,6 +23,7 @@ import { UserLayout } from './Layout/UserLayout';
 import { SingleStore } from './Pages/User/SingleStore';
 import { ListMenuForStore } from './Pages/Admin/ListMenuForStore';
 import { EditMenu } from './Pages/Admin/EditMenu';
+import { UserDetail } from './Pages/User/UserDetail';
 
 function App() {
 
@@ -42,7 +43,11 @@ function App() {
       .then((res)=>{
         //console.log(res.data)
         // const {email,image,coin,userName,role,gender,_id,notiCount} = res.data!
-        const {userImage, gender, role, userName, email, _id} = res.data.user;
+        if(!res){
+          return;
+        }
+        else {
+          const {userImage, gender, role, userName, email, _id} = res.data.user;
           dispatch({
             type:"LOGIN_USER",
             payload:{
@@ -54,6 +59,7 @@ function App() {
               userId:_id
             },
           })  
+        }
        
       })
       .catch((err:AxiosError) => {
@@ -70,6 +76,7 @@ function App() {
           <Route index path="/register" element={<Register/>}/>
           <Route index path="/login" element={<Login/>}/>
           <Route index path="/store/:storeId" element={<SingleStore/>}/>
+          <Route index path="/user/:userId" element={<UserDetail/>}/>
         </Route>
 
         <Route element={<AdminLayout/>}>

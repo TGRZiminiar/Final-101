@@ -7,13 +7,14 @@ import { TabsDetailStore } from '../../Components/Tabs/TabsDetailStore';
 import { GetSingleStore } from '../../Function/store.func';
 import { useParams } from 'react-router-dom';
 import { AxiosError, AxiosResponse } from 'axios';
-import { CommentSection, SingleStoreInterface } from "../../Interface/store.interface"
+import { Category, CommentSection, SingleStoreInterface } from "../../Interface/store.interface"
 import { toast } from 'react-toastify';
 
 export interface SingleStateProps {
   value:number;
   store:SingleStoreInterface | null;
   comment:CommentSection[] | null;
+  categories:string[];
 }
 
 export const SingleStore: React.FC = () => {
@@ -25,6 +26,7 @@ export const SingleStore: React.FC = () => {
       value:0,
       store:null,
       comment:null,
+      categories:[],
     })
 
     const handleTabsChange = (newValue:number) => {
@@ -33,9 +35,15 @@ export const SingleStore: React.FC = () => {
 
     const loadSingleStore = async() => {
       await GetSingleStore(storeId as string)
-      .then((res:AxiosResponse | boolean) => {
+      .then(async(res:AxiosResponse | boolean) => {
           if(typeof(res) !== "boolean"){
-            setState(prev => ({...prev, store:res.data.store as SingleStoreInterface, comment:res.data.comments as CommentSection[]}))
+            let str:string[] = [];
+            let data:Category[] = res.data.store.category;
+            await Promise.all((data.map((cate) => {
+              str.push(cate.name)
+            })))
+            setState(prev => ({...prev, store:res.data.store as SingleStoreInterface, comment:res.data.comments as CommentSection[],categories:str}))
+
           }
       })
       .catch((err:AxiosError) => {
@@ -49,7 +57,7 @@ export const SingleStore: React.FC = () => {
 
     return (
     <>
-    <div className="">
+    <div className="pt-[7vh]">
          <Carousel
           responsive={responsive1}
           swipeable={true}
@@ -80,7 +88,7 @@ export const SingleStore: React.FC = () => {
 
     </div>
 
-       <div className="bg-white h-full mx-auto w-[75%] min-h-[100vh]">
+       <div className="bg-white h-full mx-auto w-full lg:w-[75%] min-h-[100vh]">
        <div className=" p-8 md:p-16">
             <div className="flex gap-8 self-center">
                 <h4 className="text-4xl font-bold">Mix Store</h4>
@@ -105,6 +113,7 @@ export const SingleStore: React.FC = () => {
           state={state}
           handleChange={handleTabsChange}
           storeId={storeId as string}
+          setState={setState}
           />
         </div>
        </div>
@@ -133,3 +142,5 @@ const responsive1 = {
       slidesToSlide:1,
     } 
   };
+
+  

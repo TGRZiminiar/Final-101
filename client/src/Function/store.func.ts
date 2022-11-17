@@ -22,6 +22,12 @@ type Contact = {
 type MenuList = {
     text:string;
     price:number;
+   
+}
+
+export interface ChangeMenu extends MenuList {
+    _id:string;
+    urlImage:string;
 }
 
 export const PostCreateStore = async(
@@ -207,4 +213,25 @@ export const DeleteMenu = async(storeId:string, menuId:string, urlImage:string) 
             urlimage:urlImage
         }
     })
+}
+
+export const DeleteStore = async(storeId:string) => {
+    return await axios.delete(`http://localhost:5000/api/remove-store`,{
+        headers:{
+            storeid:storeId,
+            authorization:`Bearer ${authtoken}`,
+        }
+    })
+}
+
+export const PatchChangeSequenceMenu = async(storeId:string, menuList:ChangeMenu[]) => {
+    return await axios.patch(`http://localhost:5000/api/change-sequence-menu`,{
+        storeId:storeId,
+        menuList:menuList,
+    },{
+        headers:{
+            authorization:`Bearer ${authtoken}`,
+        }
+    })
+    
 }
