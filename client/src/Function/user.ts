@@ -66,3 +66,31 @@ export const UpdateUser = async(userName:string, email:string, gender:string, im
     }
 
 }
+
+export const PatchUpdatePassword = async(oldPassword:string, newPassword:string, confirmPassword:string) => {
+    return await axios.patch(`http://localhost:5000/api/update-password`,{
+        oldPassword:oldPassword,
+        newPassword:newPassword,
+        confirmPassword:confirmPassword,
+    },{
+        headers:{
+            authorization:`Bearer ${authtoken}`
+        }
+    })   
+}
+
+export const GetUserBookMark = async() => {
+    
+    if(!authtoken){
+        toast.error("You need to Login First");
+        return false;
+    }
+    else {
+        return await axios.get("http://localhost:5000/api/get-bookMark",{
+            headers:{
+                authorization:`Bearer ${authtoken}`,
+            }
+        });
+    }
+
+}

@@ -15,6 +15,7 @@ export interface StoreDocument extends mongoose.Document{
     menuList:MenuList[];
     branch:string[];
     imageData:ImageData[];
+    userBookMark:string[];
     commentSection:CommentSection[];
     ratingSection:RatingSection[];
     ratingSum:number;
@@ -105,12 +106,15 @@ const storeSchema = new mongoose.Schema({
     imageData:[{    
         urlImage : {
             type : String,
-            required: true
         },
         contentType : {
             type: String,
-            required : true
         },
+    }],
+
+    userBookMark:[{
+        type:mongoose.Types.ObjectId,
+        ref:"User"
     }],
 
     commentSection:[{
@@ -144,7 +148,7 @@ const storeSchema = new mongoose.Schema({
 
     ratingCount:{type:Number,default:0},
     commentCount:{type:Number,default:0},
-    
+
 
 },{timestamps:true});
 

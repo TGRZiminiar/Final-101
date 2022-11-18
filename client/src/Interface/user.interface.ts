@@ -12,4 +12,23 @@ interface CurrentUser {
     data:CurrentUserData
 }
 
-export { CurrentUser,CurrentUserData };
+interface UserBookMark {
+    bookMark:BookMark[];
+}
+
+type BookMark = {
+    category:{
+        name:string;
+        _id:string;
+    }[];
+    
+    commentCount:number;
+    imageData:{urlImage:string}[];
+    ratingCount:number;
+    ratingSum:number;
+    storeName:string;
+    _id:string;
+
+}   
+
+export { CurrentUser, CurrentUserData, UserBookMark, BookMark };

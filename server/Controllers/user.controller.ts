@@ -221,3 +221,112 @@ export const UpdateUser = async(req:Request, res:Response) => {
         return res.status(400).send("Something Went Wronge Try Again Later");
     }
 }
+
+
+export const UpdatePassword = async(req:Request, res:Response) => {
+    try {
+        const {oldPassword,newPassword,confirmPassword} = req.body;
+        //@ts-ignore
+        const {_id} = req.user;
+
+        const checkUserOldPassword = await UserModel.findById({_id:new mongoose.Types.ObjectId(`${_id}`)}).select('password').lean();
+        
+        const checkPassword = bcrypt.compareSync(oldPassword,checkUserOldPassword!.password)
+        
+        if(String(newPassword) === String(confirmPassword)) {
+        
+            if(checkPassword === true) {
+        
+                const passwordHash = bcrypt.hashSync(newPassword,10)
+                const updateUserPassword = await UserModel.findByIdAndUpdate({_id:_id},{password:passwordHash})
+                return res.status(200).json('Update Password Success')
+        
+            }
+        
+            else{
+        
+                return res.status(403).json('Your Password Is Not Correct')
+        
+            }
+        }
+        else{
+     
+            return res.status(402).json('Your Password And Confirm Password Is Not Correct')
+     
+        }
+
+    } catch (error) {
+        res.status(400).json('UPDATE USER PASSWORD ERROR')
+        return console.log('UPDATE USER PASSWORD ERROR=>',error)
+    }
+}
+
+
+export const UserGetBookMark = async(req:Request, res:Response) => {
+    try {
+
+        //@ts-ignore
+        const {userId} = req.user;
+
+        const user:UserDocument = await UserModel.findById({"_id":new mongoose.Types.ObjectId(`${userId}`)})
+        .select("bookMark")
+        .populate({
+            path:"bookMark",
+            select:"imageData storeName ratingSum ratingCount commentCount",
+            populate:{
+                path:"category",
+                select:"name"
+            }
+        })
+        .lean();
+
+        
+
+        return res.status(200).json({"user":user});
+        
+
+    } catch (error) {
+        console.log("User Get Book Mark Error =>",error)
+        return res.status(400).json({"message":"Something Went Wronge"})
+    }
+}
+
+export const PullUserBookMark = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid} = req.headers;
+        //@ts-ignore
+        const {userId} = req.user;
+
+        await UserModel.updateOne({
+            _id:new mongoose.Types.ObjectId(`${userId}`)
+        }, {
+            $pull:{"bookMark":storeid}
+        })
+        .exec();
+
+        return res.status(200).json({"message":"Remove BookMark Success"});
+
+
+    } catch (error) {
+        console.log("Pull User Book Mark Error =>",error)
+        return res.status(400).json({"message":"Something Went Wronge"})
+    }
+}
+
+export const SearchFunction = async(req:Request, res:Response) => {
+    try {
+        
+        const { name,location } = req.body;
+
+        const data = await StoreModel.find({$text:{$search:name}}).lean();
+
+        return res.status(200).json({"data":data});
+
+
+
+    } catch (error) {
+        console.log("Search Fucntion Error =>",error)
+        return res.status(400).json({"message":"Something Went Wronge"})
+    }
+}

@@ -5,8 +5,8 @@ import { LoginUser } from '../Function/user';
 import { toast } from 'react-toastify';
 import { ResultRegister } from '../Interface/Auth.Interface';
 import { AxiosError } from 'axios';
-import {useNavigate} from "react-router-dom"
-
+import {useNavigate} from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 interface State {
     email:string;
@@ -15,6 +15,7 @@ interface State {
 
 export const Login: React.FC = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [state,setState] = useState<State>({
         email:"",
@@ -32,6 +33,8 @@ export const Login: React.FC = () => {
             Cookies.set('access_token',`${data.token!}`,{expires:3})
             toast.success(data.message);
             navigate("/");
+            window.location.reload();
+            
         })
         .catch((err:AxiosError) => {
             console.log("THIS IS ERROR" ,err)

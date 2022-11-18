@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useMemo, useState} from 'react'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import { Avatar,Button,Divider, Rating } from '@mui/material';
 import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
@@ -55,22 +55,30 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
             hasRating = false;
         }
         await CreateComment(comment ,rating ,hasRating ,storeId)
-        .then((res:AxiosResponse) => {
-            GetComments(storeId as string)
-            .then((res:AxiosResponse) => {
-                setState(prev => ({...prev, comment:res.data.comments as CommentSection[]}))
-                toast.success(res.data.message)
-            })
-            .catch((err:AxiosError) => {
-                toast.error("Please Refresh And Try Again")
-            })
-            
+        .then((res:AxiosResponse | boolean) => {
+            if(res){
+                GetComments(storeId as string)
+                .then((res:AxiosResponse) => {
+                    setState(prev => ({...prev, comment:res.data.comments as CommentSection[],open:false}))
+                    toast.success(res.data.message)
+                })
+                .catch((err:AxiosError) => {
+                    toast.error("Please Refresh And Try Again")
+                })
+            }
+                    
         })
         .catch((err:AxiosError) => {
             toast.error("Something Went Wronge Try Again Later.")
         })
 
     }
+    let avg:number = 0;
+    useMemo(() => {
+        if(state.store) {
+          avg = Number((state.store.ratingSum / state.store.ratingCount).toFixed(2)) || 0;
+        }
+    }, [state])
 
     console.log(state)
     //p-8 md:p-12
@@ -79,14 +87,14 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
     <div className="mt-8">
         <div className="min-h-[7rem] h-auto  border-y-[1px] border-gray-400 w-full grid md:grid-cols-2">
             <div className='flex gap-8 lg:gap-16 justify-center md:border-r-[1px] border-gray-400  py-4 md:py-0'>
-                <h6 className="text-2xl text-semibold self-center">500 Reviews</h6>
+                <h6 className="text-2xl text-semibold self-center">{state.store?.ratingCount} Reviews</h6>
                 <div className="flex gap-4">
                     <Rating
-                    value={5}
+                    value={avg ? avg : 0}
                     readOnly
                     className="self-center"
                     />
-                    <h6 className="text-2xl self-center text-semibold">4.46</h6>
+                    <h6 className="text-2xl self-center text-semibold">{String(avg)}</h6>
                 </div>
             </div>
             

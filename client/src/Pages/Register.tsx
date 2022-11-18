@@ -53,6 +53,8 @@ export const Register: React.FC = ({}) => {
             .then((res) => {
                 const data:ResultRegister = res.data
                 Cookies.set('access_token',`${data.token!}`,{expires:3})
+                window.location.reload();
+                navigate("/");
                 toast.success(data.message);
             })
             .catch((err:AxiosError) => {

@@ -1,8 +1,9 @@
-import { Radio, TextField } from '@mui/material'
+import { Checkbox, IconButton, InputAdornment, Radio, TextField } from '@mui/material'
 import React from 'react'
 import { StateProps } from '../../../Pages/User/UserDetail';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface UserDetailFirstTabProps {
     state:StateProps;
@@ -10,9 +11,12 @@ interface UserDetailFirstTabProps {
     handleSubmit:(e:React.FormEvent<HTMLFormElement>) => void; 
     handleImageChange:(e:React.ChangeEvent<HTMLInputElement>) => void; 
     handleChangeEvent:(e:React.ChangeEvent<HTMLInputElement>) => void;
+    handleConfirmPassword:(e:React.ChangeEvent<HTMLInputElement>) => void;
+    handleChangePassword:(e:React.ChangeEvent<HTMLInputElement>) => void;
+    handleSubmitPassword:(e:React.FormEvent<HTMLFormElement>) => void;
 }
 
-export const UserDetailFirstTab: React.FC<UserDetailFirstTabProps> = ({state, setState, handleSubmit, handleImageChange, handleChangeEvent}) => {
+export const UserDetailFirstTab: React.FC<UserDetailFirstTabProps> = ({state, setState, handleSubmit, handleImageChange, handleChangeEvent, handleConfirmPassword, handleChangePassword, handleSubmitPassword}) => {
 
 
 
@@ -111,20 +115,113 @@ export const UserDetailFirstTab: React.FC<UserDetailFirstTabProps> = ({state, se
             </div>    
             <div className="mt-8">
                 <hr className="border-[1px] border-gray-500" />
-                <div className=" px-8 md:px-20 mt-2 ">
+                <form onSubmit={handleSubmitPassword} className=" px-8 md:px-20 mt-2 ">
                     <div className="flex justify-center gap-4">
                         <h6 className="text-4xl text-gray-500 font-semibold mt-4">Change Password</h6>
                         <AppRegistrationOutlinedIcon
-                        className="mt-4"
+                        className="mt-4 self-center"
                         fontSize="large"
                         />
                     </div>
                     
                     <div className="mt-2 pt-3 border-t-[1px] border-gray-500">
                         <h6 className="text-2xl text-gray-500 font-semibold">Current Password</h6>
+                        <TextField
+                        variant="filled"
+                        fullWidth
+                        label="Current Password"
+                        type={state.showCurrentPassword ? "text" : "password"}
+                        value={state.currentPassword}
+                        onChange={(e) => setState(prev=>({...prev,currentPassword:e.target.value}))}
+                        InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                            <IconButton
+                                onClick={() =>
+                                setState({ ...state, showCurrentPassword: !state.showCurrentPassword })
+                                }
+                            >
+                                {state.showCurrentPassword ? <Visibility /> : <VisibilityOff />}
+                            </IconButton>
+                            </InputAdornment>
+                        ),
+                        }}
+                    />
+                    </div>
+                    <div className="mt-5">
+                    <h6 className="text-2xl text-gray-500 font-semibold">Your new Password</h6>
+                        <TextField
+                        variant="filled"
+                        fullWidth
+                        placeholder="New Password"
+                        type={state.showChangePassword ? "text" : "password"}
+                        value={state.passwordChange}
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleChangePassword(e)}
+                        InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                            <IconButton
+                                onClick={() =>
+                                setState({ ...state, showChangePassword: !state.showChangePassword })
+                                }
+                            >
+                                {state.showChangePassword ? <Visibility /> : <VisibilityOff />}
+                            </IconButton>
+                            </InputAdornment>
+                        ),
+                        }}
+                    />
+                    </div>
+                    <div className="mt-5">
+                        <h6 className="text-2xl text-gray-500 font-semibold">Confirm New Password</h6>
+                        <TextField
+                        variant="filled"
+                        fullWidth
+                        type="password"
+                        placeholder="Confirm Your New Password"
+                        value={state.confirmPassword}
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleConfirmPassword(e)}
+                        />
+                    </div>
+                    
+                    <div className="flex flex-col mt-2">
+                        <div className="flex flex-row">
+                        <Checkbox checked={state.Plength} readOnly />
+                            <h6 className="text-xl font-semibold text-gray-600 self-center">
+                            Your Password Need To Be More Than 6 Characters
+                        </h6>
+                        </div>  
+                        <div className="flex flex-row">
+                        <Checkbox checked={state.upper} readOnly />
+                            <h6 className="text-xl font-semibold text-gray-600 self-center">
+                            Your Password Need To 1 Upper Character
+                        </h6>
+                        </div>  
+                        <div className="flex flex-row">
+                        <Checkbox checked={state.lower} readOnly />
+                            <h6 className="text-xl font-semibold text-gray-600 self-center">
+                            Your Password Need To 1 Lower Character
+                        </h6>
+                        </div>  
+                        
+                        <div className="flex flex-row">
+                        <Checkbox checked={state.confirmStatus} readOnly />
+                            <h6 className="text-xl font-semibold text-gray-600 self-center">
+                            Your New Password Field And New Password Confirm Need To Be Equal
+                        </h6>
+                        </div>  
+
+                    </div>
+                    
+                    <div className="mt-4 pb-8">
+                    <button 
+                    type={"submit"} 
+                    className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] rounded-md px-8 py-4 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                        Confirm Change Password
+                    </button>
                     </div>
 
-                </div>
+                </form>
 
                 <div>
 

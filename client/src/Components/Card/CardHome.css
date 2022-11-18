@@ -1,0 +1,101 @@
+
+
+.food-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(112, 10, 10, 0);
+    transition: 0.3s;
+    
+}
+
+
+.btn-detail {
+    border: 3px solid white;
+    padding: 10px 15px;
+    background: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.3em;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-detail:hover {
+    background: white;
+    border: 0px solid white;
+    color: #0a4870;
+}
+
+.content-btn {
+    position: relative;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    transform: translateY(-120px);
+    transition: 0.3s;
+}
+
+
+
+.info-container {
+    padding: 1.25rem;
+    background: #f0f0f0;
+    transform: translateY(60px);
+    transition: 0.3s;
+    color: #0a4870;
+    text-align: center;
+}
+
+.title {
+    position: relative;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    width: 6rem;
+    margin: auto;
+    background: #0a4870;
+}
+
+
+.hide-info {
+    opacity: 0;
+    transition: 0.3s;
+    /* background: #f0f0f0;
+    color: #0a4870; */
+}
+
+
+.food-card:hover::before {
+    background: rgba(10, 72, 112, 0.6);
+}
+
+.food-card:hover .content-btn {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+.food-card:hover .info-container {
+    transform:  translateY(0px);
+}
+
+.food-card:hover .info-container .hide-info {
+    opacity: 1;
+    z-index: 99;
+}   
+

@@ -90,8 +90,8 @@ export const CreateStore: React.FC = () => {
         category:[],
         categories:[],
         tags:[],
-        textLocation:"textloca",
-        link:"linkintext",
+        textLocation:"",
+        link:"",
         date:"",
         timeArray:"",
         temp:"",
@@ -199,7 +199,7 @@ export const CreateStore: React.FC = () => {
         const objToPush = state.contact;
         const tempObject:Contact = {"platform":state.platform,"link":state.linkPlatform};
         objToPush.push(tempObject);
-        setState(prev => ({...prev, platform:"", link:"", contact:objToPush}));
+        setState(prev => ({...prev, platform:"", linkPlatform:"", contact:objToPush}));
     }
   
     const handleAddMenu = () => {
@@ -217,9 +217,10 @@ export const CreateStore: React.FC = () => {
         const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch, seatNumber } = state
         const objLocation = {"textLocation":textLocation,"link":link};
         const onlyIdCategory:string[] = [];
-        category?.map((c) => {
+        await category?.map((c) => {
             onlyIdCategory.push(c._id)
         })
+        console.log("THIS IS OBJ LOCATION =>",state)
         await PostCreateStore(name, onlyIdCategory, objLocation, seatNumber, timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch)
         .then((res) => {
             console.log("THIS IS RESPONSE", res)

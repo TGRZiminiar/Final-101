@@ -14,6 +14,9 @@ import { styled } from '@mui/material/styles';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { GetAllStore } from '../Function/store.func';
 import { CardHome } from '../Components/Card/CardHome';
+import Carousel from 'react-multi-carousel';
+import "react-multi-carousel/lib/styles.css";
+
 
 const SearchBox = styled(TextField)(() => ({
 
@@ -29,11 +32,8 @@ export type Store = {
     }[];
 
     imageData:{
-        contentType:string;
-        filename:string;
-        imageBase64:string;
-        _id:string;
-    };
+        urlImage:string
+    }[];
 
     ratingCount:number;
     commentCount:number;
@@ -79,7 +79,7 @@ export const Home: React.FC = () => {
   
     console.log(state)
 
-   
+    const arr = [1,2,3,4,5,6,7,8,9,10]
 
     return (
     <>
@@ -89,7 +89,38 @@ export const Home: React.FC = () => {
             <div className="w-full h-[25rem] ">
             <img src="https://m.media-amazon.com/images/I/61+oIVFF7FL.png" className="w-full h-full object-cover"/>
             </div>
-            <div className="bg-white h-full mx-auto w-[75%] ">
+            <div className="bg-white h-full mx-auto w-full md:w-[85%] lg:w-[75%]">
+            
+
+            <div className="w-full bg-[#A0412B] p-6 text-center text-[#BB9C78] font-extrabold text-4xl ">
+                <h4>RECOMMENDED BY OTHER PEOPLE</h4>
+            </div>
+
+            <div className="p-8 px-16 mb-8 mt-8">
+                <div className="grid grid-cols-1  min-[600px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+                    {/* grid-flow-col auto-cols-max */}
+                    {state.store && state.store.map((str,i) => (
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                       
+                    ))}
+                    
+                    
+                   {/*  <div>
+                        hello
+                    </div>
+                    <div>
+                        hello
+                    </div> */}
+                </div>
+            </div>
+
+
+            <div className="w-full bg-[#A0412B] p-6 text-center text-[#BB9C78] font-extrabold text-4xl ">
+                <h4>LOOKING FOR SOMETHING</h4>
+            </div>
             <div className="p-8 px-16">
             <div className="grid grid-cols-5 gap-8">
                 <div className="col-span-2">
@@ -140,30 +171,6 @@ export const Home: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-[#A0412B] p-8 text-center text-[#BB9C78] font-extrabold text-4xl mt-16">
-                <h4>RECOMMENDED BY OTHER PEOPLE</h4>
-            </div>
-
-            <div className="p-8 px-16">
-                <div className="grid grid-cols-3 justify-items-center">
-                    
-                    {state.store && state.store.map((str,i) => (
-                        <CardHome
-                        data={str}
-                        key={i}                        
-                        />
-                    ))}
-                    
-                    
-                   {/*  <div>
-                        hello
-                    </div>
-                    <div>
-                        hello
-                    </div> */}
-                </div>
-            </div>
-
             </div>
         </div>
         </div>
@@ -182,3 +189,26 @@ export const Home: React.FC = () => {
                   ):(
                     utf8.decode(h.bookName)
                   )} */
+
+const responsive1 = {
+    desktop: {
+        breakpoint: { max: 3000, min: 1400 },
+        items: 3,
+        slidesToSlide: 3, 
+        showDots:false,
+    },
+    tablet: {
+        breakpoint: { max: 1400, min: 1000 },
+        items: 2,
+        slidesToSlide: 2 ,
+        showDots:false,
+
+    },
+    mobile: {
+        breakpoint: { max: 1000, min: 0 },
+        items:1,
+        slidesToSlide:1,
+    } 
+};
+                
+                  

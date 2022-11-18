@@ -155,18 +155,13 @@ export const GetAllStore = async() => {
 }
 
 export const GetSingleStore = async(storeId:string) => {
-    if(!checkToken(authtoken as string)){
-        toast.error("Please Login Again")
-        return false;
+
+    return await axios.get("http://localhost:5000/api/get-single-store",{
+    headers:{
+        storeid:storeId,
+        authorization:`Bearer ${authtoken}`,
     }
-    else {
-        return await axios.get("http://localhost:5000/api/get-single-store",{
-        headers:{
-            storeid:storeId,
-            authorization:`Bearer ${authtoken}`,
-        }
-        })
-    }
+    })
     
 }
 
@@ -234,4 +229,22 @@ export const PatchChangeSequenceMenu = async(storeId:string, menuList:ChangeMenu
         }
     })
     
+}
+
+
+export const PatchUserBookMark = async(storeId:string) => {
+    ///add-book-mark
+    if(!authtoken){
+        toast.error("You need to Login First");
+        return false;
+    }
+    else {
+        return await axios.patch("http://localhost:5000/api/add-book-mark",{},{
+            headers:{
+                authorization:`Bearer ${authtoken}`,
+                storeid:storeId,
+            }
+        });
+    }
+
 }

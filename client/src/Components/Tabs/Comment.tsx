@@ -64,14 +64,16 @@ export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
         e.preventDefault();
 
         await CreateReplyComment(comment._id, subComment.textReply, storeId)
-        .then((res) => {
-            console.log(res.data)
+        .then((res:AxiosResponse | boolean) => {
+           if(!res) return;
+           else {
             GetComments(storeId as string)
             .then((res:AxiosResponse) => {
-                setState((prev:SingleStateProps) => ({...prev, comment:res.data.comments as CommentSection[]}))
-                setSubComment((prev) => ({...prev,openReply:true}));
+                setState((prev:SingleStateProps) => ({...prev, comment:res.data.comments as CommentSection[] }))
+                setSubComment((prev) => ({...prev,openReply:true,openDialogReply:false,textReply:""}));
                 toast.success(res.data.message)
             })
+           }
         })
         .catch((err:AxiosError) => {
             toast.error("Something Went Wronge Try Again Later.")
@@ -84,12 +86,15 @@ export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
             return toast.error("You Need To UnDislike First To Like This Comment");
         }
         else if(subComment.userLike && !subComment.userDisLike){
-            await PatchLikeComment(parentCommentId,storeId);
-            setSubComment(prev => ({...prev,countLike:prev.countLike-1, userLike:!prev.userLike}));
+            const res:AxiosResponse | boolean = await PatchLikeComment(parentCommentId,storeId);
+            if(!res) return;
+            else setSubComment(prev => ({...prev,countLike:prev.countLike-1, userLike:!prev.userLike}));
+            
         }
         else if(!subComment.userLike && !subComment.userDisLike){
-            await PatchLikeComment(parentCommentId,storeId);
-            setSubComment(prev => ({...prev,countLike:prev.countLike+1, userLike:!prev.userLike}));
+            const res:AxiosResponse | boolean = await PatchLikeComment(parentCommentId,storeId);
+            if(!res) return;
+            else setSubComment(prev => ({...prev,countLike:prev.countLike+1, userLike:!prev.userLike}));
         }
     }
    
@@ -98,12 +103,14 @@ export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
             return toast.error("You Need To Unlike First To Like This Comment");
         }
         else if(subComment.userDisLike && !subComment.userLike){
-            setSubComment(prev => ({...prev,countDisLike:prev.countDisLike-1, userDisLike:!prev.userDisLike}));
-            await PatchDisLikeComment(parentCommentId,storeId);
+            const res:AxiosResponse | boolean =  await PatchDisLikeComment(parentCommentId,storeId);
+            if(!res) return;
+            else setSubComment(prev => ({...prev,countDisLike:prev.countDisLike-1, userDisLike:!prev.userDisLike}));
         }
         else if(!subComment.userLike && !subComment.userDisLike){
-            setSubComment(prev => ({...prev,countDisLike:prev.countDisLike+1, userDisLike:!prev.userDisLike}));
-            await PatchDisLikeComment(parentCommentId,storeId);
+            const res:AxiosResponse | boolean = await PatchDisLikeComment(parentCommentId,storeId);
+            if(!res) return;
+            else setSubComment(prev => ({...prev,countDisLike:prev.countDisLike+1, userDisLike:!prev.userDisLike})); 
         }
     }
 

@@ -7,6 +7,7 @@ export interface UserDocument extends mongoose.Document{
     userImage:string;
     role: "user" | "onwer" | "admin";
     gender: "male" | "female" | "lgbtq+" | "unknow";
+    bookMark:string[];
 }
 
 const userSchema = new mongoose.Schema({
@@ -53,6 +54,11 @@ const userSchema = new mongoose.Schema({
         ],
         default:'user',
     },
+
+    bookMark:[{
+        type:mongoose.Types.ObjectId,
+        ref:"Store",
+    }],
 
 
 },{timestamps:true});

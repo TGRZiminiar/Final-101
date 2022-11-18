@@ -5,6 +5,7 @@ import fs from "fs"
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken"
 import { UserSignJWT } from "../Interface/user.interface";
+import UserModel from "../Models/user.models";
 
 
 export const CreateStore = async(req:Request, res:Response) => {
@@ -295,8 +296,8 @@ export const GetAllStore = async(req:Request, res:Response) => {
         
         const data = await StoreModel.find({})
         .sort({"createdAt":-1})
-        .limit(10)
-        .select("storeName ratingSum ratingCount commentCount")
+        // .limit(10)
+        .select("storeName ratingSum ratingCount commentCount otherDetail seatNumber timeOpen")
         .slice("imageData",1)
         .populate({
             path:"category",
@@ -385,7 +386,7 @@ export const GetSingleStore = async(req:Request, res:Response) => {
      
         const data:StoreDocument = await StoreModel.findById({_id:storeid})
         .select(
-            "storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact menuList branch ratingSum ratingCount commentCount imageData commentSection createdAt ratingSection"
+            "storeName location seatNumber timeOpen timeOpenDelivery rangePrice checkBox otherDetail contact userBookMark menuList branch ratingSum ratingCount commentCount imageData commentSection createdAt ratingSection"
         )
         .populate({
             path:"category",
@@ -408,10 +409,20 @@ export const GetSingleStore = async(req:Request, res:Response) => {
             comments = await checkCommentAndCommentReplyNoUserId(data)
         }
 
-        // console.log(comments);
+        
+      
+        let userAddBookOrNot:boolean = false;
+        for (let i = 0; i < data.userBookMark.length; i++) {
+            if(String(data.userBookMark[i]) === String(userId)){
+                userAddBookOrNot = true;
+            }
+            else continue;
+        }
+
         const temp = {...data} as Partial<StoreDocument>
         delete temp.commentSection;
-        return res.status(200).json({"store":temp,"comments":comments});
+        
+        return res.status(200).json({"store":temp,"comments":comments,"userAddBookOrNot":userAddBookOrNot});
 
     } catch (error) {
         console.log(`Get All Store Error => ${error}`);
@@ -589,11 +600,83 @@ export const RemoveStore = async(req:Request, res:Response) => {
     }
 }
 
+
+
+export const UserAddBookMark = async(req:Request, res:Response) => {
+    try {
+
+        //@ts-ignore
+        const {userId} = req.user;
+        
+        const {storeid} = req.headers;
+        const data:{
+            userBookMark:string[]
+        } = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
+        .select("userBookMark")
+        .lean();
+
+        let userAddBookOrNot:boolean = false;
+        for (let i = 0; i < data.userBookMark.length; i++) {
+            if(String(data.userBookMark[i]) === String(userId)){
+                userAddBookOrNot = true;
+            }
+            else continue;
+        }
+
+        if(userAddBookOrNot){
+            
+            await StoreModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${storeid}`),
+            },{
+                $pull:{"userBookMark":userId}
+            },{
+                new:true
+            })
+
+            await UserModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${userId}`),
+            },{
+                $pull:{"bookMark":storeid}
+            })
+
+            return res.status(200).json({"message":"Remove User Book Mark Success"})
+        }
+        
+        else {
+
+            await StoreModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${storeid}`),
+            },{
+                $addToSet:{"userBookMark":new mongoose.Types.ObjectId(`${userId}`)}
+            },{
+                new:true
+            });
+
+            await UserModel.updateOne({
+                _id:new mongoose.Types.ObjectId(`${userId}`),
+            },{
+                $addToSet:{"bookMark":storeid}
+            });
+
+            return res.status(200).json({"message":"Add To User Book Mark Success"})
+        }
+
+
+    } catch (error) {
+        console.log(`User Add BookMark Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+
+
 export const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => {
     
     let comments:CommentToSend[] = data.commentSection;
     let commentsToReturn:CommentToSend[] = [];
     
+
+
     for (let i = 0; i < comments.length; i++) {
 
         comments[i].userLikeOrNot = false;
@@ -692,5 +775,3 @@ const checkCommentAndCommentReplyNoUserId = async(data:StoreDocument) => {
     return comments;
 
 }
-
-

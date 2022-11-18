@@ -1,5 +1,5 @@
 import express from "express";
-import { CreateStore, GetStore, GetSingleStoreForUploadImage,UploadImageStore, DeleteImageStore,RemoveStore, GetStoreDetailUpdate, ChangeSequenceMenu, AddSingleMenuToStore, GetAllStore, GetSingleStore, UpdateStore, GetDataUploadImageMenu, GetSingleMenuData, UploadMenuStore, RemoveMenuStore } from "../Controllers/store.controller";
+import { CreateStore, GetStore, GetSingleStoreForUploadImage,UploadImageStore, DeleteImageStore,RemoveStore, UserAddBookMark,GetStoreDetailUpdate, ChangeSequenceMenu, AddSingleMenuToStore, GetAllStore, GetSingleStore, UpdateStore, GetDataUploadImageMenu, GetSingleMenuData, UploadMenuStore, RemoveMenuStore } from "../Controllers/store.controller";
 import { AdminCheck, authCheck } from "../Middleware/authCheck";
 import upload from "../Middleware/uploadImage";
 const router = express.Router();
@@ -22,9 +22,10 @@ router.delete("/remove-menu",authCheck, AdminCheck, RemoveMenuStore);
 router.delete("/remove-store",authCheck, AdminCheck, RemoveStore);
 
 router.patch("/add-menu",authCheck,AdminCheck, upload.array("images",1), AddSingleMenuToStore);
-router.patch("/delete-image-store",authCheck, AdminCheck, DeleteImageStore)
-router.patch("/update-store",authCheck, AdminCheck, UpdateStore)
-router.patch("/change-sequence-menu",authCheck, AdminCheck, ChangeSequenceMenu)
+router.patch("/delete-image-store",authCheck, AdminCheck, DeleteImageStore);
+router.patch("/update-store",authCheck, AdminCheck, UpdateStore);
+router.patch("/change-sequence-menu",authCheck, AdminCheck, ChangeSequenceMenu);
 
+router.patch("/add-book-mark", authCheck, UserAddBookMark);
 
 module.exports = router;
