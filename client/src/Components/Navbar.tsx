@@ -5,7 +5,7 @@ import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccount
 import { useDispatch, useSelector } from 'react-redux';
 import { LogInLogOutUser } from "../Reducer/userReducer";
 import "./Tabs/FirstIndex.css"
-import { Avatar } from '@mui/material';
+import { Avatar, TextField } from '@mui/material';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import CottageIcon from '@mui/icons-material/Cottage';
 import VpnKeyRoundedIcon from '@mui/icons-material/VpnKeyRounded';
@@ -15,6 +15,28 @@ import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
 import AppRegistrationRoundedIcon from '@mui/icons-material/AppRegistrationRounded';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { styled } from '@mui/material/styles';
+import { SearchBox } from './SearchBox/SearchBox';
+
+
+
+// export const SearchBox = styled(TextField)(() => ({
+
+//     '& fieldset': {
+//       borderRadius: '30px',
+//     },
+//     // "& .MuiFilledInput-root": {
+//     //     background: "#ffffff"
+//     //   }
+// }));
+
+interface StateProps {
+    open:boolean;
+    img:any;
+    search:string;
+}
 
 export const Navbar: React.FC = () => {
     //@ts-ignore
@@ -22,9 +44,10 @@ export const Navbar: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [state,setState] = useState({
+    const [state,setState] = useState<StateProps>({
         open:false,
         img:[],
+        search:""
     })
 
     const handleOpen = ():void => {
@@ -57,28 +80,55 @@ export const Navbar: React.FC = () => {
         navigate('/');
         toast.success("You Have Been Logout");
     }
+
+    console.log(user)
     return (
     <>
+
     <div className="bg-white   h-[7vh] text-black text-xl border-b-2 shadow-sm  w-full fixed z-50">
     <div className="flex justify-around self-center items-center bg-[#94734D]  h-[7vh] text-black text-xl border-b-2 border-[#7e6140] shadow-sm">
                 <div className="cursor-pointer" onClick={() => navigate("/")}>
                     <h6>LOGO</h6>
                 </div>
+
+                <div>
+                {/* <SearchBox
+                        placeholder="Search By Address Or Location"
+                        fullWidth
+                        className='rounded-md '
+                        InputProps={{
+                        startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchOutlinedIcon />
+                        </InputAdornment>
+                        ),
+                        }}
+                        variant="outlined"
+                    />  */}
+                    <SearchBox
+                    value={state.search}
+                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev,search:e.target.value}))}
+
+                    />
+                </div>
+
                 <div className="flex gap-4 md:gap-8">
-                    <div className="hidden">
-                    <MenuOutlinedIcon />
-                    </div>
+                
+
+                
 
                 {user ? 
                 <div className="relative" onClick={handleOpen}  tabIndex={0} onBlur={onClose}>
                 <div className="bg-white flex border-2 rounded-3xl gap-4 p-1  max-h-[5vh]" >
                     <div className="max-w-[2rem] cursor-pointer">
-                        <img src="https://www.w3schools.com/howto/img_avatar.png" className="rounded-full w-full h-full" />
+                        <img src={user.userImage ? user.userImage : "https://www.w3schools.com/howto/img_avatar.png"} className="rounded-full w-full h-full" />
                     </div>
-                    <div className="self-center text-base font-bold cursor-pointer">
+                    <div className="self-center text-base font-bold cursor-pointer pr-2">
                         {user.userName.length > 15 ? (`${user.userName.substring(0,15)}...`) : user.userName}
                     </div>
+                    
                 </div>
+
 
            {state.open && 
             <div className="absolute border-[1px] border-gray-700 bg-white shadow-xl drop-shadow-lg w-[180%] h-auto top-[5vh]  z-50 transform-center min-w-[15rem]"   >
@@ -94,9 +144,25 @@ export const Navbar: React.FC = () => {
                 </div>
 
                 <div className="px-2 mt-2 pb-2 w-full ">
-                    <button className="bg-sky-200 hover:bg-sky-300 text-blue-600 transition-colors w-full py-2 rounded-xl text-base">View Profile</button>
+                    <button 
+                    className="bg-sky-200 hover:bg-sky-300 text-blue-600 transition-colors w-full py-2 rounded-xl text-base"
+                    onClick={(e:any) => handleNavigate(e,`user/${user.userId}?tab=edit`)}
+                    >View Profile</button>
                 </div>
 
+                {user && user.role === "admin" && 
+                <div 
+                className="flex gap-4 px-2 pb-2 pt-4 w-full  hover:bg-slate-50  border-b-[1px] border-gray-200 cursor-pointer hover:underline" 
+                onClick={(e:any) => {
+                    e.stopPropagation()
+                    navigate("/admin")
+                    setState(prev => ({...prev,open:false}))
+                }}
+                >
+                    <SupervisorAccountOutlinedIcon className="self-center text-[#6E845D]"/>
+                    <h6 className="self-center ">Admin</h6>
+                </div>      
+                }
                 <div 
                 className="flex gap-4 px-2 pb-2 pt-4 w-full  hover:bg-slate-50  border-b-[1px] border-gray-200 cursor-pointer hover:underline" 
                 onClick={(e:any) => handleNavigate(e,"")}
@@ -131,7 +197,7 @@ export const Navbar: React.FC = () => {
                     <h6 className="self-center text-gray-400 text-lg font-semibold">Logout</h6>
                 </div>
 
-               {user && user.role === "admin" && 
+               {/* {user && user.role === "admin" && 
                 <div className="flex pt-4 border-b-2 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
                     e.stopPropagation()
                     navigate("/admin")
@@ -143,7 +209,7 @@ export const Navbar: React.FC = () => {
                         </div>
                         <div/>
                     </div>
-               }
+               } */}
                {/*  <div className="flex border-b-2 pt-4 hover:bg-slate-200 justify-evenly cursor-pointer" onClick={e => {
                 e.stopPropagation()
                 navigate(`/user/${user.userId}`)

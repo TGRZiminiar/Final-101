@@ -2,12 +2,24 @@ import axios from "axios";
 import Cookies from "js-cookie";
 const authtoken = Cookies.get("access_token");
 
-export const PostCreateCategory = async(category:string) => {
-    return await axios.post(`http://localhost:5000/api/create-category`,{category},{
-        headers:{
-            authorization:`Bearer ${authtoken}`
-        }
-    })
+export const PostCreateCategory = async(category:string, images:File[]) => {
+    
+    const formData = new FormData();
+    // console.log(images)
+    formData.append("images",images[0]);
+    formData.append("name",category)
+
+    // return await axios.post(`http://localhost:5000/api/create-category`,{data:formData},{
+    //     headers:{
+    //         authorization:`Bearer ${authtoken}`
+    //     }
+    // })
+    return await axios({
+        method: "post",
+        url: "http://localhost:5000/api/create-category",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data",authorization:`Bearer ${authtoken}` },
+      })
 }
 
 export const UpdateCategory = async(categoryId:string, newCategory:string) => {

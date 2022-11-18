@@ -120,7 +120,7 @@ export const SingleStore: React.FC = () => {
             <div className="grid md:flex gap-8 self-center">
                 <h4 className="text-4xl font-bold">{state.store?.storeName}</h4>
                 <div className="flex gap-2 self-center">
-                <Rating size="large" value={avg ? avg : 0} readOnly />
+                <Rating size="large" value={state.store && (state?.store?.ratingSum / state?.store?.ratingCount) || 0} readOnly />
                 <h6 className="text-xl font-semibold">({state.store?.ratingCount} Ratings)</h6>
                 </div>
             </div>
@@ -131,9 +131,9 @@ export const SingleStore: React.FC = () => {
                 <LocationOnOutlinedIcon className="text-red-500" fontSize="large" />
                 </div>
               {state.store?.location && 
-                <Link to={state.store?.location.link} target="_blank" rel="noopener noreferrer">
+                <a href={state.store?.location.link} target="_black">
                   <h6 className="text-blue-400 hover:underline self-center text-xl font-semibold">{state.store?.location.textLocation}</h6>
-                </Link>
+                </a>
               }
             </div>
         </div>

@@ -51,7 +51,8 @@ export const Login: React.FC = () => {
             <h2 className='pt-2 text-lg font-bold text-slate-500'> Let's have fun!</h2>
             <div className="grid mt-8 gap-4">
                 <h2 className="text-slate-400 text-2xl font-semibold">Email</h2>
-                <input type="text" className="outline-none border text-sm rounded-lg  w-full p-2.5 bg-gray-700 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500 focus:text-white" 
+                <input type="text" 
+                className="outline-none border text-sm rounded-lg  w-full p-2.5 bg-gray-700 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500 focus:text-white" 
                 placeholder="John@gmail.com"
                 required
                 value={state.email}

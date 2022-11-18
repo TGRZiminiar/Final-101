@@ -103,8 +103,6 @@ export const UploadImageStore = async(req:Request, res:Response) => {
         
         //@ts-ignore
         const files = req.files;
-        //@ts-ignore
-        console.log("THIS IS REQ FILE",files)
         if(!files){
             return res.status(400).json("Something Went Wronge");
         }

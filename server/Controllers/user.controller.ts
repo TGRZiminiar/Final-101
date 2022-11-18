@@ -319,14 +319,64 @@ export const SearchFunction = async(req:Request, res:Response) => {
         
         const { name,location } = req.body;
 
-        const data = await StoreModel.find({$text:{$search:name}}).lean();
+        console.log("THIS IS NAME =>",name)
+        console.log("THIS IS LOCATION =>",location)
+        // const data = await StoreModel.find({$text:{$search:name}}).lean();
+        // select:"imageData storeName ratingSum ratingCount commentCount",
+        if(name && !location){
+            const data = await StoreModel.find({
+                "storeName":{$regex:`^${String(name)}$`}
+            })
+            .select("imageData storeName ratingSum ratingCount commentCount")
+            .lean();
+            
+            return res.status(200).json({"data":data});
+        }
+        else if(!location && name){
+            const data = await StoreModel.find({
+                "location.textlocation":{$regex:`^${String(location)}$`}
+            })
+            .select("imageData storeName ratingSum ratingCount commentCount")
+            .lean();
+            
+            return res.status(200).json({"data":data});
+        }
+        else {
+            const data = await StoreModel.find({
+                "storeName":{$regex:`^${String(name)}$`}, 
+                "location.textlocation":{$regex:`^${String(location)}$`}})
+                .select("imageData storeName ratingSum ratingCount commentCount")
+                .lean();
 
-        return res.status(200).json({"data":data});
-
-
+            return res.status(200).json({"data":data});
+        }
 
     } catch (error) {
         console.log("Search Fucntion Error =>",error)
+        return res.status(400).json({"message":"Something Went Wronge"})
+    }
+}
+
+export const RandomRestaurant = async(req:Request, res:Response) => {
+    try {
+        
+        const data = await StoreModel.aggregate([
+            { $match: { district: 3 } },
+            { $match: { $expr: { $lt: [0.5, {$rand: {} } ] } } },
+            { $project: { 
+                _id: 0, 
+                imageData: 1,
+                storeName: 1,
+                ratingSum: 1,
+                ratingCount: 1, 
+                commentCount: 1, 
+            }}
+        ])
+
+        return res.status(200).json({"data":data});
+
+    } catch (error) {
+        console.log("Random Error =>",error)
         return res.status(400).json({"message":"Something Went Wronge"})
     }
 }

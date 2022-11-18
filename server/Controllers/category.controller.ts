@@ -1,15 +1,46 @@
 import CategoryModel from "../Models/category.model";
 import { Request,Response } from "express";
+import fs from "fs";
 
 export const CreateCategory = async(req:Request,res:Response) => {
-
+    let rurl:string = "";
     try{
+        //@ts-ignore
+        const files = req.files;
+        if(!files){
+            return res.status(400).json("Something Went Wronge");
+        }
 
-        const {category} = req.body;
-        const result = await new CategoryModel({name:category}).save();
+        const {name} = req.body
+
+        //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+            return img.toString('base64')
+        })
+        let url = req.protocol + '://' + req.get('host');
+        let tempImageArray:{urlImage:string}[] = [];
+
+        await Promise.all( imgArray.map((src:string, index:number) => {
+            // create object to store data in the collection
+            let finalImg:{urlImage:string} = {
+                //@ts-ignore
+                urlImage : url + "/" +files[index].path,
+                //@ts-ignore
+                // contentType : files[index].mimetype,
+            }
+            tempImageArray.push(finalImg)
+        }))
+        rurl = tempImageArray[0].urlImage;
+
+        const result = await new CategoryModel({name:name,categoryImage:tempImageArray[0].urlImage}).save();
         return res.status(201).json({"category":result});
 
     }catch(error){
+
+        fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${rurl}`)
+
         console.log("CREATE CATEGORY ERROR=>",error);
         return res.status(400).send("CREATE CATEGORY FAILED");
     }
@@ -39,7 +70,7 @@ export const ListAllCategory = async(req:Request, res:Response) => {
         
         const category = await CategoryModel.find({})
         .sort({"updatedAt":-1})
-        .select("name _id")
+        .select("name _id categoryImage")
         .lean();
 
         return res.status(200).json({"category":category});

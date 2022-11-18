@@ -1,6 +1,7 @@
 import React, { useState,useEffect,useMemo } from 'react'
 import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined';
 import ArrowUpwardOutlinedIcon from '@mui/icons-material/ArrowUpwardOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { Button, Grid, Table, TableContainer, TableHead, TableRow, TextField,TableBody,Paper } from '@mui/material';
 import { LocalSearch } from '../../Components/LocalSearch';
 import utf8 from 'utf8';
@@ -18,6 +19,7 @@ type Category = {
   name:string;
   __v:number;
   _id:string;
+  categoryImage:string;
 }
 
 interface StateProps {
@@ -27,6 +29,8 @@ interface StateProps {
   update:string;
   id:string;
   onDisableUpdate:boolean;
+  images:File[];
+  imageURLs:any;
 }
 
 export const CreateCategory: React.FC = () => {
@@ -40,6 +44,8 @@ export const CreateCategory: React.FC = () => {
         update:'',
         id:'',
         onDisableUpdate:true,
+        images:[],
+        imageURLs:[],
     })
 
     const loadCategories = async() => {
@@ -54,11 +60,11 @@ export const CreateCategory: React.FC = () => {
         setState(prev => ({...prev,search:e.target.value}));
     }
 
-    const handleCreateCategory = () => {
-        PostCreateCategory(state.category)
+    const handleCreateCategory = async() => {
+        await PostCreateCategory(state.category,state.images)
         .then((res) => {
           loadCategories();
-          setState(prev=>({...prev,category:""}));
+          setState(prev=>({...prev,category:"",images:[], imageURLs:[]}));
         })
 
     }
@@ -98,6 +104,30 @@ export const CreateCategory: React.FC = () => {
     }
     
 
+    const handleImageChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+      //@ts-ignore  
+      setState(prev=>({...prev,images:[...e.target.files]}))
+    }
+  
+    const handleRemoveImage = (index:number) => {
+      const temp1 = state.images;
+      const temp2 = state.imageURLs;
+      temp1.splice(index,1);
+      temp2.splice(index,1);
+      setState(prev => ({...prev,images:[], imageURLs:[]}));
+    }
+
+    useEffect(() => {
+      if (state.images.length < 1) return;
+      //@ts-ignore
+      const newImageUrls = [];
+      //@ts-ignore
+      state.images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)));
+      //@ts-ignore
+      setState(prev=>({...prev,imageURLs:newImageUrls}))
+    }, [state.images]);
+
+
     useEffect(() => {
       loadCategories()
     }, [])
@@ -121,15 +151,10 @@ export const CreateCategory: React.FC = () => {
           <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem]">
           <Grid container spacing={6}>
             <Grid item xs={12}>
-            <h6 className="text-5xl font-bold text-center my-8">Category</h6>
-            <div className="px-16">
-            <LocalSearch
-            title={''}
-            value={state.search || ''}
-            handleChange={handleSearch}
-            label={'Search Category'}
-            />
+            <div className="bg-[#857F7F] p-4 mb-12"> 
+            <h6 className="text-4xl text-center font-bold text-white ">Create Category</h6>
             </div>
+           
             </Grid>
 
             {/* CREATE CATEGORY */}
@@ -156,12 +181,41 @@ export const CreateCategory: React.FC = () => {
             disabled={state.category.length < 2}
             >
                 
-            คลิกเพื่อสร้าง Category
+            Create Category
             </Button>
             </div>
             </Grid>
 
+            <Grid item xs={12}>
+            <div className={`pl-16 max-h-[25rem]`}>
+              <input 
+                onChange={handleImageChange}
+                multiple={false}
+                type="file" 
+                className="block w-full text-lg text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-lg file:font-semibold
+                file:bg-violet-50 file:text-violet-700
+                hover:file:bg-violet-100
+                "/>
+                {state.imageURLs?.map((imageSrc:string, idx:number) => (
+                        <div key={idx} className="relative max-w-[13rem] h-[20rem] mt-4">
+                        <img src={imageSrc} className="w-full h-full rounded-lg " />
+                        <div className="absolute top-0 right-0 z-50 text-red-500 cursor-pointer" onClick={() => handleRemoveImage(idx)}>
+                            <CloseOutlinedIcon/>
+                        </div>
+                        </div>
+                    ))}
+            </div>
+            </Grid>
+
               {/* START UPDATE CATEGORY */}
+            <Grid item xs={12}>
+              <div className="bg-[#857F7F] p-4 mb-12"> 
+                <h6 className="text-4xl text-center font-bold text-white ">Update Category</h6>
+              </div>
+            </Grid>
             <Grid item xs={9}>
               <div className="pl-16">
               <TextField 
@@ -201,9 +255,18 @@ export const CreateCategory: React.FC = () => {
 
         {/* END UPDATE CATEGORY */}
 
-
              {/* START TABLE CATEGORY */}
         <Grid item xs={12} marginTop={8} mx={4}>
+            <Grid item xs={12} mb={4}>
+            <div className="px-16">
+            <LocalSearch
+            title={''}
+            value={state.search || ''}
+            handleChange={handleSearch}
+            label={'Search Category'}
+            />
+            </div>
+            </Grid>
         <TableContainer component={Paper}>
           <Table>
           <TableHead className="bg-[#857F7F]">

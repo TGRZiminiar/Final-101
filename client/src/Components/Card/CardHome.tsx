@@ -16,8 +16,6 @@ interface CardHomeProps {
 export const CardHome: React.FC<CardHomeProps> = ({data}) => {
     
     const navigate = useNavigate();
-    let str:string[] = [];
-
     // const memo = useMemo(() => {
     //     data.category.map((cate) => (
     //         str.push(cate.name)
@@ -28,23 +26,23 @@ export const CardHome: React.FC<CardHomeProps> = ({data}) => {
     // {user.userName.length > 15 ? (`${user.userName.substring(0,15)}...`) : user.userName}
     console.log(data)
     let avg:number = 0;
-    useMemo(() => {
-        avg = (data.ratingSum / data.ratingCount) || 0;
-    }, [data])
+    // useMemo(() => {
+        avg = Number((data.ratingSum / data.ratingCount).toFixed(2));
+    // }, [data])
 
     return (
     <>
 
-        <div className="w-full h-[25rem] border-2 max-w-[16.875rem]">
+        <div className="w-full h-[25rem]  max-w-[16.875rem] ">{/* max-w-[16.875rem] */}
             <div className="w-full h-[25rem] food-card relative overflow-hidden">
-               <div className="w-full h-[16rem]">
+               <div className="w-full h-[18rem]">
                 <img
                     src={data.imageData[0] ? String(data.imageData[0].urlImage) : "https://images.unsplash.com/photo-1578944032637-f09897c5233d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"}
                     className="w-full h-full"
                 />
                </div>
 
-                <div className="h-[12rem] absolute top-0 right-0 left-0 bottom-0">
+                <div className="h-[6.5rem] absolute top-0 right-0 left-0 bottom-0 ">
                     <div className="content-btn">
                         <button 
                         className="btn-detail"
@@ -52,7 +50,7 @@ export const CardHome: React.FC<CardHomeProps> = ({data}) => {
                         >See Detail</button>
                     </div>
 
-                    <div className="info-container">
+                    <div className="info-container overflow-hidden">
                         <h6 className="title text-xl font-bold">{data.storeName.length > 15 ? (`${data.storeName.substring(0,15)}...`) : data.storeName}</h6>
                         <div className="flex gap-4 justify-center">
                             <Rating

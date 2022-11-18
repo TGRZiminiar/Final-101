@@ -18,7 +18,7 @@ import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
 
 
-const SearchBox = styled(TextField)(() => ({
+export const SearchBox = styled(TextField)(() => ({
 
     '& fieldset': {
       borderRadius: '30px',
@@ -97,23 +97,36 @@ export const Home: React.FC = () => {
             </div>
 
             <div className="p-8 px-16 mb-8 mt-8">
-                <div className="grid grid-cols-1  min-[600px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-                    {/* grid-flow-col auto-cols-max */}
-                    {state.store && state.store.map((str,i) => (
+                <div className="grid grid-cols-1  min-[600px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 items-center">
+                
+                {state.store && state.store.map((str,i) => (
+                        <>
                         <CardHome
                         data={str}
                         key={i}                        
                         />
-                       
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                        <CardHome
+                        data={str}
+                        key={i}                        
+                        />
+                        </>
                     ))}
-                    
-                    
-                   {/*  <div>
-                        hello
-                    </div>
-                    <div>
-                        hello
-                    </div> */}
                 </div>
             </div>
 
@@ -193,22 +206,27 @@ export const Home: React.FC = () => {
 const responsive1 = {
     desktop: {
         breakpoint: { max: 3000, min: 1400 },
-        items: 3,
-        slidesToSlide: 3, 
+        items: 4,
+        slidesToSlide: 4, 
         showDots:false,
     },
     tablet: {
         breakpoint: { max: 1400, min: 1000 },
-        items: 2,
-        slidesToSlide: 2 ,
+        items: 3,
+        slidesToSlide: 3 ,
         showDots:false,
 
     },
     mobile: {
-        breakpoint: { max: 1000, min: 0 },
-        items:1,
-        slidesToSlide:1,
-    } 
+        breakpoint: { max: 1000, min: 550 },
+        items:2,
+        slidesToSlide:2,
+    },
+    smallMobile: {
+        breakpoint: { max: 550, min: 0 },
+        items:2,
+        slidesToSlide:2, 
+    }
 };
-                
-                  
+                                
+                                  

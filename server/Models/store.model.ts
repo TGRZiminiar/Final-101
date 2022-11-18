@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CheckBox, CommentSection, Contact, ImageData, LocationInterface, MenuList, RatingSection, TimeOpen, TimeOpenDelivery } from "../Interface/store.interface";
+import { CheckBox, CommentSection, Contact, ImageData, ImageHeader, LocationInterface, MenuList, RatingSection, TimeOpen, TimeOpenDelivery } from "../Interface/store.interface";
 
 export interface StoreDocument extends mongoose.Document{
     storeName:string;
@@ -15,6 +15,7 @@ export interface StoreDocument extends mongoose.Document{
     menuList:MenuList[];
     branch:string[];
     imageData:ImageData[];
+    imageHeader:ImageHeader;
     userBookMark:string[];
     commentSection:CommentSection[];
     ratingSection:RatingSection[];
@@ -111,6 +112,12 @@ const storeSchema = new mongoose.Schema({
             type: String,
         },
     }],
+
+    imageHeader:{
+        urlImage:{
+            type:String,
+        },
+    },
 
     userBookMark:[{
         type:mongoose.Types.ObjectId,

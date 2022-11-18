@@ -89,6 +89,10 @@ interface CommentToSend extends CommentSection {
     countDislike?:number;
 }
 
+interface ImageHeader {
+    urlImage:string;
+}
+    
 interface ReplyToSend extends CommentReply {
     userLikeOrNot?:boolean;
     userDislikeOrNot?:boolean;
@@ -101,4 +105,4 @@ type ImageUrl = {
     contentType:string;
 }
 
-export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface, ImageUrl};
+export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface, ImageUrl, ImageHeader};
