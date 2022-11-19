@@ -72,10 +72,15 @@ export const ListStore: React.FC = () => {
     }
   } 
 
+  const handleImageHeader = (storeId:string) => {
+    navigate(`/admin/upload-image-header/${storeId}`);
+
+  }
+
     return (
     <>
- <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
-          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] ">
+     <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  py-6 w-[100%] h-full transition-all`}>
+          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-full md:w-[80%] mt-[3.5rem] ">
           <div className="bg-[#857F7F] p-4 mb-12"> 
             <h6 className="text-4xl text-center font-bold text-white ">All Store Data</h6>
             </div>
@@ -89,6 +94,7 @@ export const ListStore: React.FC = () => {
                   <StyledTableCell>StoreName</StyledTableCell>
                   <StyledTableCell align="center">Category</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
+                  <StyledTableCell align="center">Image Header</StyledTableCell>
                   <StyledTableCell align="center">Image Store</StyledTableCell>
                   <StyledTableCell align="center">Edit Menu</StyledTableCell>
                   <StyledTableCell align="center">Delete</StyledTableCell>
@@ -112,6 +118,12 @@ export const ListStore: React.FC = () => {
                         Edit
                     </button>
                       </StyledTableCell>}
+
+                    <StyledTableCell align="center" width="13%">
+                      <button type={"button"} onClick={() => handleImageHeader(store._id)} className="hover:bg-amber-800 text-white bg-amber-700 rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 
+                      Header
+                    </button>
+                      </StyledTableCell>
 
                     <StyledTableCell align="center" width="13%">
                       <button type={"button"} onClick={() => handleUpload(store._id)} className="hover:bg-[#9b6a4e] text-white bg-[#B57B5A] rounded-md px-4 py-2 leading-6 shadow-md text-sm font-normal hover:shadow-xl"> 

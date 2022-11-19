@@ -246,5 +246,47 @@ export const PatchUserBookMark = async(storeId:string) => {
             }
         });
     }
+    
+}
 
+
+export const GetDataImageHeader = async(storeId:string) => {
+    if(!authtoken){
+        toast.error("You need to Login First");
+        return false;
+    }
+    else {
+        return await axios.get("http://localhost:5000/api/get-single-store-image-header",{
+            headers:{
+                authorization:`Bearer ${authtoken}`,
+                storeid:storeId,
+            }
+        });
+    }
+    
+}
+
+export const PatchUploadImageHeader = async(storeId:string,currentUrlImage:string, images:File[]) => {
+    if(!authtoken){
+        toast.error("You need to Login First");
+        return false;
+    }
+    else {
+
+        const formData = new FormData();
+
+        formData.append("images",images[0]);
+        formData.append("currentUrlImage",currentUrlImage);
+        
+        return await axios({
+            method:"patch",
+            url:"http://localhost:5000/api/upload-image-header",
+            data: formData,
+            headers: {
+                "Content-Type":"singlepart/form-data",
+                authorization:`Bearer ${authtoken}`,
+                storeid:storeId,
+            }
+        })
+    }
 }

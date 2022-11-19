@@ -59,7 +59,7 @@ export const Location: React.FC<LocationProps> = ({state,setState}) => {
                     <TextField
                     fullWidth
                     variant="filled"
-                    placeholder="Ex. 1000 - 2000 Baht"
+                    placeholder="Ex. 1000 - 2000"
                     value={state.rangePrice}
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev=> ({...prev, rangePrice:e.target.value}))}
                     sx={{mb:4}}

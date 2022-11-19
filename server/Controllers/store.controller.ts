@@ -189,19 +189,19 @@ export const UploadMenuStore = async(req:Request, res:Response) => {
                         fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
                     }
                 })
-
-            await StoreModel.updateOne({
-                _id:new mongoose.Types.ObjectId(`${storeid}`),
-                menuList:{$elemMatch:{"_id":new mongoose.Types.ObjectId(`${menuid}`)}}
-            },{
-                $set:{
-                    "menuList.$.urlImage":tempImageArray[0].urlImage,
-                    "menuList.$.price":Number(price),
-                    "menuList.$.text":menuname,
-                
-                }
-            })
         }
+
+        await StoreModel.updateOne({
+            _id:new mongoose.Types.ObjectId(`${storeid}`),
+            menuList:{$elemMatch:{"_id":new mongoose.Types.ObjectId(`${menuid}`)}}
+        },{
+            $set:{
+                "menuList.$.urlImage":tempImageArray[0].urlImage,
+                "menuList.$.price":Number(price),
+                "menuList.$.text":menuname,
+            
+            }
+        })
 
 
         return res.status(200).json({"message":"Upload Image Success"});
@@ -295,8 +295,7 @@ export const GetAllStore = async(req:Request, res:Response) => {
         const data = await StoreModel.find({})
         .sort({"createdAt":-1})
         // .limit(10)
-        .select("storeName ratingSum ratingCount commentCount otherDetail seatNumber timeOpen")
-        .slice("imageData",1)
+        .select("storeName ratingSum ratingCount commentCount otherDetail seatNumber timeOpen imageHeader")
         .populate({
             path:"category",
             select:"name _id"
@@ -666,7 +665,79 @@ export const UserAddBookMark = async(req:Request, res:Response) => {
     }
 }
 
+export const GetImageHeader = async(req:Request, res:Response) => {
+    try {
+        
+        const {storeid} = req.headers;
 
+        const data = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
+        .select("storeName imageHeader")
+        .lean();
+
+        return res.status(200).json({"data":data});
+
+    } catch (error) {
+        console.log(`Get Image Header Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+export const UploadImageHeaderStore = async (req:Request, res:Response) => {
+    let rurl:string = "";
+    try {
+        //@ts-ignore
+        const files = req.files;
+        if(!files){
+            return res.status(400).json("Something Went Wronge");
+        }
+        const {currentUrlImage} = req.body;
+        const {storeid} = req.headers;
+
+        //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+            return img.toString('base64')
+        })
+        let url = req.protocol + '://' + req.get('host');
+        let tempImageArray:{urlImage:string}[] = [];
+
+        await Promise.all( imgArray.map((src:string, index:number) => {
+            // create object to store data in the collection
+            let finalImg:{urlImage:string} = {
+                //@ts-ignore
+                urlImage : url + "/" +files[index].path,
+                //@ts-ignore
+                // contentType : files[index].mimetype,
+            }
+            tempImageArray.push(finalImg)
+        }))
+        rurl = tempImageArray[0].urlImage;
+
+        if(currentUrlImage !== tempImageArray[0].urlImage){
+            let subString = String(currentUrlImage).substring(30)
+            fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                if(r === subString){
+                    fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                }
+            })
+        }
+
+        await StoreModel.updateOne({
+            _id:new mongoose.Types.ObjectId(`${storeid}`)
+        },{
+            $set:{"imageHeader.urlImage":rurl}
+        });
+
+        return res.status(200).json({"message":"Upload Sucess"});
+
+    } catch (error) {
+        fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${rurl}`)
+
+        console.log(`Upload Image Header Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
 
 export const checkCommentAndCommentReply = async(data:StoreDocument, userId:string) => {
     

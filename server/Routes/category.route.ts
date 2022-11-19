@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 router.post("/create-category",authCheck, AdminCheck, upload.array("images",1), CreateCategory);
-router.patch("/update-category",authCheck, AdminCheck, UpdateCategory);
+router.patch("/update-category",authCheck, AdminCheck, upload.array("images",1), UpdateCategory);
 router.delete("/delete-category",authCheck, AdminCheck, DeleteCategory);
 router.get("/get-all-category",authCheck, AdminCheck, ListAllCategory);
 

@@ -31,9 +31,9 @@ export type Store = {
         _id:string;
     }[];
 
-    imageData:{
+    imageHeader:{
         urlImage:string
-    }[];
+    }
 
     ratingCount:number;
     commentCount:number;

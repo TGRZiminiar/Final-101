@@ -1,7 +1,7 @@
-import { Grid, TextField } from '@mui/material';
+import { Backdrop, Grid, TextField } from '@mui/material';
 import React,{useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { MenuList } from '../../Interface/store.interface';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { AxiosResponse } from 'axios';
@@ -18,6 +18,7 @@ interface StateProps {
     imageURLs:any;
     imageIdArr:string[] | null;
     currentUrl:string;
+    backdropOpen:boolean;
 }
 
 interface FetchData {
@@ -31,7 +32,7 @@ interface FetchData {
 }
 
 export const EditMenu: React.FC = () => {
-   
+    const navigate = useNavigate();
     //@ts-ignore
     const openDrawer = useSelector(state => state.drawer);
     const {storeId,menuId} = useParams();
@@ -45,7 +46,7 @@ export const EditMenu: React.FC = () => {
         imageURLs:[],
         imageIdArr:null,
         currentUrl:"",
-
+        backdropOpen:false,
     })
 
     const handleImageChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +77,10 @@ export const EditMenu: React.FC = () => {
         e.preventDefault();
 
         await UploadImageMenuFunc(storeId as string, menuId as string, state.images, state.currentUrl, String(state.price), state.menuName)
-        .then((res) => {
+        .then(async(res) => {
             toast.success("Upload Image Success");
-            loadSingleMenu();
+            await loadSingleMenu();
+            setState(prev => ({...prev,backdropOpen:true}));
         })        
         .catch((err) => {
             toast.error("Upload Error Try Again");
@@ -197,6 +199,38 @@ export const EditMenu: React.FC = () => {
 
         </div>
     </div>
+
+
+    <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={state.backdropOpen!}
+        onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
+      >
+       <div className="bg-white w-[30vh] h-[50vh] grid gap-1">
+            <button 
+            onClick={() => navigate("/admin/get-store")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                See All Store
+            </button>
+            <button 
+            onClick={() => navigate("/")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Back To Home Page
+            </button>
+            <button 
+            onClick={() => {
+                
+            }}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Stay On This Page
+            </button>
+        
+       </div>
+      </Backdrop>
+
     </>
     )
 }

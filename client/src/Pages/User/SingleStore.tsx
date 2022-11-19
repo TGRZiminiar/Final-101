@@ -5,7 +5,7 @@ import "react-multi-carousel/lib/styles.css";
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { TabsDetailStore } from '../../Components/Tabs/TabsDetailStore';
 import { GetSingleStore, PatchUserBookMark } from '../../Function/store.func';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { AxiosError, AxiosResponse } from 'axios';
 import { Category, CommentSection, SingleStoreInterface } from "../../Interface/store.interface"
 import { toast } from 'react-toastify';
@@ -13,6 +13,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import BookmarkAddOutlinedIcon from '@mui/icons-material/BookmarkAddOutlined';
 import BookmarkAddedOutlinedIcon from '@mui/icons-material/BookmarkAddedOutlined';
+
 export interface SingleStateProps {
   value:number;
   store:SingleStoreInterface | null;
@@ -23,7 +24,7 @@ export interface SingleStateProps {
 }
 
 export const SingleStore: React.FC = () => {
-    
+    const navigate = useNavigate();
     const {storeId} = useParams();
 
 
@@ -88,6 +89,10 @@ export const SingleStore: React.FC = () => {
       })
     }
 
+    // const handleLink = (link:string) => {
+    //   navigate(`/external/${link}`)
+    // }
+
     return (
     <>
     <div className="pt-[7vh]">
@@ -127,13 +132,13 @@ export const SingleStore: React.FC = () => {
 
         <div className=''>
             <div className="flex mt-4">
-                <div className="self-center">
+                <div className="fself-center">
                 <LocationOnOutlinedIcon className="text-red-500" fontSize="large" />
                 </div>
-              {state.store?.location && 
-                <a href={state.store?.location.link} target="_black">
-                  <h6 className="text-blue-400 hover:underline self-center text-xl font-semibold">{state.store?.location.textLocation}</h6>
-                </a>
+              {state.store?.location.link && 
+                <a /* href={`${String(state.store?.location.link)}`} */ onClick={() => window.open(`http://${state.store?.location.link}`, "_blank")}  rel="noreferrer" target="_blank">
+                  <h6 className="text-blue-400 hover:underline self-center text-xl font-semibold cursor-pointer" /* onClick={() => handleLink(String(state.store?.location.link))} */  >{state.store?.location.textLocation}</h6>
+                 </a>
               }
             </div>
         </div>

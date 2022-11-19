@@ -116,6 +116,7 @@ const storeSchema = new mongoose.Schema({
     imageHeader:{
         urlImage:{
             type:String,
+            default:"",
         },
     },
 

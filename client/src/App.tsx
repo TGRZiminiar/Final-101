@@ -24,6 +24,8 @@ import { SingleStore } from './Pages/User/SingleStore';
 import { ListMenuForStore } from './Pages/Admin/ListMenuForStore';
 import { EditMenu } from './Pages/Admin/EditMenu';
 import { UserDetail } from './Pages/User/UserDetail';
+import { UploadImageHeader } from './Pages/Admin/UploadImageHeader';
+import { Redirect } from './Pages/Redirect';
 
 function App() {
 
@@ -71,6 +73,9 @@ function App() {
 
   return (
       <Routes>
+
+        <Route path="/external/:link" element={<Redirect/>} />
+
         <Route element={<UserLayout/>}>
           <Route index path="/" element={<Home/>}/>
           <Route index path="/register" element={<Register/>}/>
@@ -84,10 +89,11 @@ function App() {
           <Route path="/admin/create-category" element={<CreateCategory/>}/>
           <Route path="/admin/create-store" element={<CreateStore/>}/>
           <Route path="/admin/get-store" element={<ListStore/>}/>
-          <Route path="admin/upload-image/:storeId" element={<UploadImageStore/>}/>
-          <Route path="admin/edit/:storeId" element={<UpdateStore/>}/>
-          <Route path="admin/upload-image-menu/:storeId" element={<ListMenuForStore/>}/>
-          <Route path="admin/edit-menu/:storeId/menu/:menuId" element={<EditMenu/>}/>
+          <Route path="/admin/upload-image/:storeId" element={<UploadImageStore/>}/>
+          <Route path="/admin/edit/:storeId" element={<UpdateStore/>}/>
+          <Route path="/admin/upload-image-menu/:storeId" element={<ListMenuForStore/>}/>
+          <Route path="/admin/edit-menu/:storeId/menu/:menuId" element={<EditMenu/>}/>
+          <Route path="/admin/upload-image-header/:storeId" element={<UploadImageHeader/>}/>
         </Route>
       </Routes>
     );

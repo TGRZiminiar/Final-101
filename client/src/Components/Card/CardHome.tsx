@@ -30,6 +30,8 @@ export const CardHome: React.FC<CardHomeProps> = ({data}) => {
         avg = Number((data.ratingSum / data.ratingCount).toFixed(2));
     // }, [data])
 
+    console.log(data.category[1].name)
+
     return (
     <>
 
@@ -37,7 +39,7 @@ export const CardHome: React.FC<CardHomeProps> = ({data}) => {
             <div className="w-full h-[25rem] food-card relative overflow-hidden">
                <div className="w-full h-[18rem]">
                 <img
-                    src={data.imageData[0] ? String(data.imageData[0].urlImage) : "https://images.unsplash.com/photo-1578944032637-f09897c5233d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"}
+                    src={data.imageHeader.urlImage ? String(data.imageHeader.urlImage) : "https://images.unsplash.com/photo-1578944032637-f09897c5233d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"}
                     className="w-full h-full"
                 />
                </div>
@@ -61,16 +63,16 @@ export const CardHome: React.FC<CardHomeProps> = ({data}) => {
                         </div>
                         
                         {data.commentCount === 0 ? <h6 className="text-lg font-semibold text-center">No Review Yet</h6> : <h6 className="text-lg font-semibold text-center">{data.commentCount} Reviews</h6>}
-                        <div className={`hide-info flex flex-wrap mt-5 overflow-hidden gap-4 ${!data.category[1] && "justify-center"}`}>
+                        <div className={`hide-info grid  mt-2 overflow-hidden gap-1 grid-cols-1 ${!data.category[1] && "justify-center"}`}>
                             <div className="bg-white shadow-md  p-2 hover:bg-slate-100 ">
                                 <button className="cursor-pointer">
-                                   <RestaurantOutlinedIcon/> {data.category[0].name}
+                                   <RestaurantOutlinedIcon fontSize="small"/> {data.category[0].name}
                                 </button>
                             </div>
-                           {data.category[1] && 
+                           {data.category[1].name && 
                             <div className="bg-white shadow-md  p-2 hover:bg-slate-100 ">
                             <button className="cursor-pointer">
-                               <RestaurantOutlinedIcon/> {data.category[1].name}
+                               <RestaurantOutlinedIcon fontSize="small"/> {data.category[1].name}
                             </button>
                         </div>
                            }

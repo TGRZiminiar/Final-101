@@ -78,7 +78,7 @@ export interface StateProps {
     otherDetail:string;
 
     seatNumber:number;
-    backdropOpen?:boolean;
+    backdropOpen:boolean;
 }
 
 export const CreateStore: React.FC = () => {
@@ -86,23 +86,23 @@ export const CreateStore: React.FC = () => {
     const openDrawer = useSelector(state => state.drawer);
     const navigate = useNavigate();
     const [state,setState] = useState<StateProps>({
-        name:"Mix",
+        name:"Mix Noodles",
         category:[],
         categories:[],
         tags:[],
-        textLocation:"",
-        link:"",
+        textLocation:"textlocation",
+        link:"www.google.com",
         date:"",
         timeArray:"",
         temp:"",
-        timeOpen:[{"date":"monday","time":"08.00 - 12.00"}],
+        timeOpen:[{"date":"monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thurday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"}],
         dateDelivery:"",
         timeArrayDelivery:"",
         tempDelivery:"",
-        timeOpenDelivery:[{"date":"monday","time":"08.00 - 12.00"}],
+        timeOpenDelivery:[{"date":"monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thurday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"}],
         index:0,
-        rangePrice:"",
-        seatNumber:0,
+        rangePrice:"1000 - 2000",
+        seatNumber:16,
 
         textCheckBox:"",
         boolCheck:"",
@@ -117,7 +117,7 @@ export const CreateStore: React.FC = () => {
         menu:[],
 
         branch:[],
-        otherDetail:"",
+        otherDetail:"This is other detail",
         backdropOpen:false
     })
 

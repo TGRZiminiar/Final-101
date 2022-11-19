@@ -20,14 +20,28 @@ export const PostCreateCategory = async(category:string, images:File[]) => {
         data: formData,
         headers: { "Content-Type": "multipart/form-data",authorization:`Bearer ${authtoken}` },
       })
-}
+    }
+    
+export const UpdateCategory = async(categoryId:string, newCategory:string, images:File[],currentUrlImage:string) => {
+        
+    const formData = new FormData();
+    formData.append("images",images[0]);
+    formData.append("categoryId",categoryId);
+    formData.append("newCategory",newCategory);
+    formData.append("currentUrlImage",currentUrlImage);
 
-export const UpdateCategory = async(categoryId:string, newCategory:string) => {
-    return await axios.patch(`http://localhost:5000/api/update-category`,{categoryId, newCategory},{
-        headers:{
-            authorization:`Bearer ${authtoken}`
-        }
-    })
+    return await axios({
+        method: "patch",
+        url: "http://localhost:5000/api/update-category",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data",authorization:`Bearer ${authtoken}` },
+        })
+    
+    // return await axios.patch(`http://localhost:5000/api/update-category`,{categoryId, newCategory},{
+    //     headers:{
+    //         authorization:`Bearer ${authtoken}`
+    //     }
+    // })
 }
 
 export const DeleteCategory = async(categoryId:string) => {

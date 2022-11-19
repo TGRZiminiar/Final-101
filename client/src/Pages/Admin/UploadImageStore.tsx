@@ -1,7 +1,7 @@
-import { Button, Grid } from '@mui/material';
+import { Backdrop, Button, Grid } from '@mui/material';
 import { Axios, AxiosError, AxiosResponse } from 'axios';
 import React,{ useState,useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams,useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { DeleteImageStore, GetSingleStoreForUploadImage, UploadImageStoreFunc } from '../../Function/store.func';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -24,10 +24,11 @@ interface StateProps {
     images:File[];
     imageURLs:any;
     imageIdArr:string[] | null;
+    backdropOpen:boolean;
 }
 
 export const UploadImageStore: React.FC = () => {
-    
+    const navigate = useNavigate();
     const {storeId} = useParams();
     //@ts-ignore
     const openDrawer = useSelector(state => state.drawer);
@@ -37,6 +38,7 @@ export const UploadImageStore: React.FC = () => {
         images:[],
         imageURLs:[],
         imageIdArr:null,
+        backdropOpen:false,
     })
 
     const loadSingleStore = async() => {
@@ -87,13 +89,13 @@ export const UploadImageStore: React.FC = () => {
 
         else {
             await UploadImageStoreFunc(storeId as string, state.images)
-            .then((res:AxiosResponse) => {
+            .then(async(res:AxiosResponse) => {
                 //@ts-ignore
                 console.log(res)
                 //@ts-ignore
                 toast.success("Upload Image Success")
-                setState(prev => ({...prev,images:[],imageURLs:[],}))
-                loadSingleStore()
+                await loadSingleStore()
+                setState(prev => ({...prev,images:[],imageURLs:[],backdropOpen:true}))
             })
             .catch((err:AxiosError) => {
                 toast.error(err.response?.data as string)
@@ -150,9 +152,10 @@ export const UploadImageStore: React.FC = () => {
         }
 
         await DeleteImageStore(storeId as string,imageIdArr,fileName)
-        .then((res) => {
+        .then(async(res:AxiosResponse) => {
             toast.success(res.data.message)
-            loadSingleStore()
+            await loadSingleStore()
+            setState(prev => ({...prev,backdropOpen:true}))
         })
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)
@@ -163,10 +166,12 @@ export const UploadImageStore: React.FC = () => {
 
     return (
     <>
-      <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  p-6 w-[100%] h-full transition-all`}>
-          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-[80%] mt-[3.5rem] p-20">
-            <h6 className="text-4xl text-center font-bold text-black">Upload Image To {state.singleStore?.storeName} Store</h6>
-            <div>
+      <div className={` ${openDrawer?.drawer && openDrawer.drawer ? "md:ml-[15rem]" : ""}  py-6 w-[100%] h-full transition-all`}>
+          <div className="bg-white min-h-[90vh] h-[full] mx-auto w-full md:w-[80%] mt-[3.5rem] ">
+              <div className="bg-[#857F7F] p-4 mb-12"> 
+                    <h6 className="text-4xl text-center font-bold text-white ">Upload Image To {state.singleStore?.storeName} Store</h6>
+                </div>
+            <div className="px-20">
                 <Grid>
                 <Grid item xs={12} mt={8}>
                     <form onSubmit={handleSubmit}>
@@ -237,6 +242,37 @@ export const UploadImageStore: React.FC = () => {
 
           </div>
         </div>
+            
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={state.backdropOpen!}
+        onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
+      >
+       <div className="bg-white w-[30vh] h-[50vh] grid gap-1">
+            <button 
+            onClick={() => navigate("/admin/get-store")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                See All Store
+            </button>
+            <button 
+            onClick={() => navigate("/")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Back To Home Page
+            </button>
+            <button 
+            onClick={() => {
+                
+            }}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Stay On This Page
+            </button>
+        
+       </div>
+      </Backdrop>
+
     </>
     )
 }

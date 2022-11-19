@@ -48,11 +48,52 @@ export const CreateCategory = async(req:Request,res:Response) => {
 }
 
 export const UpdateCategory = async(req:Request, res:Response) => {
+    let rurl:string = "";
     try {
-        
-        const {categoryId, newCategory} = req.body;
+         //@ts-ignore
+         const files = req.files;
+         if(!files){
+             return res.status(400).json("Something Went Wronge");
+         }
+ 
+        const {categoryId, newCategory, currentUrlImage} = req.body;
+
+
+          //@ts-ignore
+        let imgArray = files.map((file) => {
+            let img = fs.readFileSync(file.path)
+
+            return img.toString('base64')
+        })
+        let url = req.protocol + '://' + req.get('host');
+        let tempImageArray:{urlImage:string}[] = [];
+
+        await Promise.all( imgArray.map((src:string, index:number) => {
+            // create object to store data in the collection
+            let finalImg:{urlImage:string} = {
+                //@ts-ignore
+                urlImage : url + "/" +files[index].path,
+                //@ts-ignore
+                // contentType : files[index].mimetype,
+            }
+            tempImageArray.push(finalImg)
+        }))
+        rurl = tempImageArray[0].urlImage;
+        if(currentUrlImage !== tempImageArray[0].urlImage){
+            let subString = String(currentUrlImage).substring(30)
+            fs.readdirSync("C:\\Users\\User\\Desktop\\final\\server\\uploads").map((r) => {
+                // console.log("THIS IS SUBSTRING =>",subString)
+                // console.log("THIS IS R =>",r)
+                if(r === subString){
+                    fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${r}`)
+                }
+            })
+        }
+
+
         await CategoryModel.findByIdAndUpdate({_id:categoryId},{
-            name:newCategory
+            name:newCategory,
+            categoryImage:tempImageArray[0].urlImage
         },{
             new:true,
         }).exec();
@@ -60,6 +101,7 @@ export const UpdateCategory = async(req:Request, res:Response) => {
         return res.status(200).send("Update Category SuccessFul");
 
     } catch (error) {
+        fs.unlinkSync(`C:\\Users\\User\\Desktop\\final\\server\\uploads\\${rurl}`)
         console.log("UPDATE CATEGORY ERROR=>",error);
         return res.status(400).send("UPDATE CATEGORY FAILED");
     }

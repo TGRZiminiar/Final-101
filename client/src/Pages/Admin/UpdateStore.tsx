@@ -1,5 +1,5 @@
-import { Grid, Select, TextField, Typography, MenuItem, SelectChangeEvent,Autocomplete, Button, Divider } from '@mui/material'
-import React, { SyntheticEvent, useEffect, useState } from 'react'
+import { Grid, TextField, Autocomplete, Backdrop } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import { ListAllCategory } from "../../Function/category.func"
 import { AxiosError, AxiosResponse } from "axios";
 import {toast} from "react-toastify";
@@ -14,7 +14,7 @@ import "./CreateStore.css"
 import { useSelector } from 'react-redux';
 import { Menu } from '../../Components/CreateStore/Menu';
 import { GetDataUpdate } from "../../Function/store.func";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { UpdateStoreInterface } from '../../Interface/store.interface';
 
 
@@ -81,13 +81,14 @@ export interface StateProps {
     otherDetail:string;
 
     seatNumber:number
+    backdropOpen:boolean;
 
 }
 
 export const UpdateStore: React.FC = () => {
     //@ts-ignore
     const openDrawer = useSelector(state => state.drawer);
-
+    const navigate = useNavigate();
     const {storeId} = useParams();
 
     const [state,setState] = useState<StateProps>({
@@ -123,6 +124,7 @@ export const UpdateStore: React.FC = () => {
 
         branch:[],
         otherDetail:"",
+        backdropOpen:false,
 
     })
 
@@ -270,6 +272,7 @@ export const UpdateStore: React.FC = () => {
         .then((res:AxiosResponse) => {
             console.log("THIS IS RESPONSE", res)
             toast.success("Update Store Success")
+            setState(prev => ({...prev,backdropOpen:true}));
         })  
         .catch((err:AxiosError) => {
             toast.error(err.response?.data as string)
@@ -446,6 +449,37 @@ export const UpdateStore: React.FC = () => {
             </form>
           </div>
         </div>
+
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={state.backdropOpen!}
+        onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
+      >
+       <div className="bg-white w-[30vh] h-[50vh] grid gap-1">
+            <button 
+            onClick={() => navigate("/admin/get-store")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                See All Store
+            </button>
+            <button 
+            onClick={() => navigate("/")}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Back To Home Page
+            </button>
+            <button 
+            onClick={() => {
+                
+            }}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                Stay On This Page
+            </button>
+        
+       </div>
+      </Backdrop>
+
     </>
     )
 }
