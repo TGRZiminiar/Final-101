@@ -106,7 +106,7 @@ export const UserDetailFirstTab: React.FC<UserDetailFirstTabProps> = ({state, se
                 <button 
                 type={"submit"} 
                 className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] rounded-md px-8 py-4 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
-                    Update Store
+                    Update User
                 </button>
                 </form>
 

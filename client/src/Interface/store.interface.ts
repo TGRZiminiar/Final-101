@@ -124,5 +124,21 @@ type PostedBy = {
     userName:string;
 }
 
+interface SearchResult {
+    commentCount:number;
+    ratingCount:number;
+    ratingSum:number;
+    storeName:string;
+    _id:string;
+    imageHeader:{
+        urlImage:string;
+    };
+    category:{
+        name:string;
+        _id:string;
+    }[];
+}
 
-export {SingleStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBoxInterface, CommentSection,ImageData , ContactInterface, CommentReplyInterface, MenuList,Category,UpdateStoreInterface};
+
+
+export {SingleStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBoxInterface, CommentSection,ImageData , ContactInterface, SearchResult,CommentReplyInterface, MenuList,Category,UpdateStoreInterface};

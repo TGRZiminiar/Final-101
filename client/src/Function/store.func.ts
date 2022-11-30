@@ -290,3 +290,18 @@ export const PatchUploadImageHeader = async(storeId:string,currentUrlImage:strin
         })
     }
 }
+
+
+export const GetRandomRestaurant = async() => {
+    return await axios.get("http://localhost:5000/api/get-random");
+}
+
+export const GetSuggestRestaurant = async(storeId:string, categoryId:string[]) => {
+    return await axios.post(`http://localhost:5000/api/suggest-restaurant`,{
+        categoryId:categoryId
+    },{
+        headers:{
+            storeid:storeId,
+        }
+    })
+}

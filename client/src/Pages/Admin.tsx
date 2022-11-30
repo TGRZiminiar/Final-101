@@ -9,12 +9,17 @@ import "./Admin.css"
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import { Link } from 'react-router-dom';
 import Drawer from '../Components/Drawer/Drawer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { LogInLogOutUser } from '../Reducer/userReducer';
 
 export const Admin: React.FC = () => {
     const dispatch = useDispatch();
     const [open,setOpen] = useState(true)
-    
+    //@ts-ignore
+    const user:LogInLogOutUser = useSelector(state => state.user);
+
+
+
     const handleShowMenu = () => {
         setOpen(prev => (!prev))
     }
@@ -61,10 +66,10 @@ export const Admin: React.FC = () => {
             <div className="bg-[#D9D9D9]  w-full p">
                 <div className="h-auto flex p-8 gap-4 justify-evenly">
                     <div className="w-[4rem] h-[4rem]">
-                    <img src="https://www.w3schools.com/howto/img_avatar.png" className="rounded-full w-full h-full" />
+                    <img src={user?.userImage} className="rounded-full w-full h-full" />
                     </div>
                     <div className="grid">
-                        <h6 className="text-black text-xl">UserName</h6>
+                        <h6 className="text-black text-xl capitalize">{user?.userName}</h6>
                         <h6 className="text-gray-500 text-lg">Admin</h6>
                     </div>
                 </div>

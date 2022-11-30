@@ -147,19 +147,27 @@ export const GetComment = async(req:Request, res:Response) => {
 
         const data:StoreDocument = await StoreModel.findById({_id:new mongoose.Types.ObjectId(`${storeid}`)})
         .select(
-            "commentSection"
+            "commentSection ratingSum ratingCount"
         )
         .populate({
             path:"commentSection.postedBy commentSection.commentReply.postedBy",
-            select:"-_id userName userImage gender"
+            select:"-_id userName userImage gender ratingSum ratingCount"
         })  
         .lean();
+        
+        let rating:{
+            ratingSum:number;
+            ratingCount:number;
+        } = {
+            ratingSum:data.ratingSum,
+            ratingCount:data.ratingCount,
+        }
 
         let comments:any = null;
 
         comments = await checkCommentAndCommentReply(data,userId);
         // console.log("THIS IS COMMENT =>",comments)
-        return res.status(200).json({"comments":comments});
+        return res.status(200).json({"comments":comments,"rating":rating});
 
     } catch (error) {
         console.log(`Get Comment Error => ${error}`);

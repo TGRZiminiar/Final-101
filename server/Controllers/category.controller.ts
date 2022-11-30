@@ -138,3 +138,19 @@ export const DeleteCategory = async(req:Request, res:Response) => {
         return res.status(400).send("DELETE CATEGORY FAILED");
     }
 }
+
+export const ListAllCatogories = async(req:Request, res:Response) => {
+    try {
+        
+        const data = await CategoryModel.find({})
+        .select("name _id categoryImage")
+        .lean();
+
+        return res.status(200).json({"categories":data});
+
+    } catch (error) {
+        console.log("LIST ALL CATEGORIES ERROR=>",error);
+        return res.status(400).send("DELETE CATEGORY FAILED");
+    }
+}
+

@@ -218,12 +218,14 @@ export const UserDetail: React.FC = () => {
             
                <div className={`w-full ${state.value === 1 ? "shown" : "hide"}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                   {state?.bookMark && state?.bookMark.bookMark.map((book,i) => (
+                   
+                   {state.bookMark && 
                     <UserDetailSecondTab
-                    book={book}
-                    key={i}
+                    book={state?.bookMark}
+                    
                     />
-                   ))}
+                   }
+                
                 </div>
                 </div>
 

@@ -57,14 +57,18 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
         await CreateComment(comment ,rating ,hasRating ,storeId)
         .then((res:AxiosResponse | boolean) => {
             if(res){
+               setTimeout(() => {
                 GetComments(storeId as string)
                 .then((res:AxiosResponse) => {
-                    setState(prev => ({...prev, comment:res.data.comments as CommentSection[],open:false}))
+                    setState(prev => ({...prev, comment:res.data.comments as CommentSection[],open:false, ratingCount:res.data.rating.ratingCount, ratingSum:res.data.rating.ratingSum}));
+                    setSubState(prev => ({...prev, open:false, comment:"", rating:0}))
                     toast.success(res.data.message)
+                    
                 })
                 .catch((err:AxiosError) => {
                     toast.error("Please Refresh And Try Again")
                 })
+               }, 300);
             }
                     
         })
@@ -80,7 +84,7 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
         }
     }, [state])
 
-    console.log(state)
+   
     //p-8 md:p-12
     return (
     <>
@@ -89,12 +93,12 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
             <div className='flex gap-8 lg:gap-16 justify-center md:border-r-[1px] border-gray-400  py-4 md:py-0'>
                 <h6 className="text-2xl text-semibold self-center">{state.store?.ratingCount} Reviews</h6>
                 <div className="flex gap-4">
-                    <Rating
-                    value={avg ? avg : 0}
-                    readOnly
-                    className="self-center"
-                    />
-                    <h6 className="text-2xl self-center text-semibold">{String(avg)}</h6>
+                <Rating 
+                value={state.store && (state?.ratingSum / state?.ratingCount) || 0} 
+                readOnly 
+                className="self-center"
+                />
+                    <h6 className="text-2xl self-center text-semibold">{state.store && (state?.ratingSum / state?.ratingCount) || 0}</h6>
                 </div>
             </div>
             
@@ -109,11 +113,25 @@ export const ThirdIndex: React.FC<ThirdIndexProps> = ({state, storeId, setState}
 
         <div className="p-8 md:p-12">
 
-        {state.comment && state.comment?.map((comment,i) => (
-           <Comment key={i} comment={comment} storeId={storeId}         setState={setState}
-           />
-        ))}
+        {state?.comment && state.comment.map((comment,i) => (
+            <Comment
+            key={i}
+            comment={comment}
+            storeId={storeId}
+            setState={setState}
+            />
+        ))
+        }
 
+        {state.comment?.length === 0 && 
+        <h6 className="text-4xl text-center text-gray-500 font-semibold">No One Comment Yet</h6>
+        }
+        
+        {/* {state?.comment?.length === 0 || state?.comment !== null && state.comment?.map((comment,i) => (
+           <Comment key={i} comment={comment} storeId={storeId} setState={setState}
+           />
+        )) 
+        } */}
 
         <DialogCreateComment
         subState={subState}

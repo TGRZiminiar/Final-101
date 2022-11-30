@@ -100,9 +100,21 @@ interface ReplyToSend extends CommentReply {
     countReplyDisLikes?:number;
 }
 
+
 type ImageUrl = {
     urlImage:string;
     contentType:string;
 }
 
-export {CreateStoreInterface, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface, ImageUrl, ImageHeader};
+interface SearchStore {
+    _id:string;
+    storeName:string;
+    ratingSum:number;
+    ratingCount:number;
+    commentCount:number;
+    imageData:ImageUrl;
+}
+
+
+
+export {CreateStoreInterface, SearchStore, LocationInterface, TimeOpen, TimeOpenDelivery, CheckBox, CommentSection,ImageData , Contact, CommentReply, RatingSection, MenuList, CommentToSend, ReplyToSend, UpdateStoreInterface, ImageUrl, ImageHeader};

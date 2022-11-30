@@ -90,16 +90,16 @@ export const CreateStore: React.FC = () => {
         category:[],
         categories:[],
         tags:[],
-        textLocation:"textlocation",
-        link:"www.google.com",
+        textLocation:"",
+        link:"https://goo.gl/maps/4XpcQPdSrhqb11sn7",
         date:"",
         timeArray:"",
         temp:"",
-        timeOpen:[{"date":"monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thurday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"}],
+        timeOpen:[{"date":"Monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thursday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"},{"date":"Saturday","time":"08.00 - 12.00"},{"date":"Sunday","time":"08.00 - 12.00"}],
         dateDelivery:"",
         timeArrayDelivery:"",
         tempDelivery:"",
-        timeOpenDelivery:[{"date":"monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thurday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"}],
+        timeOpenDelivery:[{"date":"Monday","time":"08.00 - 12.00"},{"date":"Tueday","time":"08.00 - 12.00"},{"date":"Wednesday","time":"08.00 - 12.00"},{"date":"Thursday","time":"08.00 - 12.00"},{"date":"Friday","time":"08.00 - 12.00"},{"date":"Saturday","time":"08.00 - 12.00"},{"date":"Sunday","time":"08.00 - 12.00"}],
         index:0,
         rangePrice:"1000 - 2000",
         seatNumber:16,
@@ -120,7 +120,7 @@ export const CreateStore: React.FC = () => {
         otherDetail:"This is other detail",
         backdropOpen:false
     })
-
+    console.log(state)
     const loadCategories = async() => {
         return await ListAllCategory();
     }
@@ -190,13 +190,29 @@ export const CreateStore: React.FC = () => {
     
     const handleAddCheckBox = () => {
         const objToPush = state.checkBox;
-        const tempObject:CheckBox = {"text":state.textCheckBox,"check":Boolean(state.boolCheck)};
+        let temp:boolean = false;
+        if(state.boolCheck === "true"){
+            temp = true;
+        }
+        else {
+            temp = false;
+        }
+        // console.log(state.boolCheck)
+        // console.log(Boolean(state.boolCheck))
+        const tempObject:CheckBox = {"text":state.textCheckBox,"check":temp};
         objToPush.push(tempObject);
         setState(prev => ({...prev, textCheckBox:"", boolCheck:"", checkBox:objToPush}));
     }
 
     const handleAddContact = () => {
         const objToPush = state.contact;
+        let tempContact:string = state.linkPlatform;
+        if(tempContact.includes("http://")){
+            tempContact.substring(0,6);
+        }
+        if(tempContact.includes("https://")){
+            tempContact.substring(0,7);
+        }
         const tempObject:Contact = {"platform":state.platform,"link":state.linkPlatform};
         objToPush.push(tempObject);
         setState(prev => ({...prev, platform:"", linkPlatform:"", contact:objToPush}));
@@ -215,6 +231,13 @@ export const CreateStore: React.FC = () => {
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch, seatNumber } = state
+        
+        if(link.includes("http://")){
+            link.substring(0,6);
+        }
+        if(link.includes("https://")){
+            link.substring(0,7);
+        }
         const objLocation = {"textLocation":textLocation,"link":link};
         const onlyIdCategory:string[] = [];
         await category?.map((c) => {
@@ -233,7 +256,7 @@ export const CreateStore: React.FC = () => {
 
     }
 
-
+    console.log(state)
 
     return (
     <>

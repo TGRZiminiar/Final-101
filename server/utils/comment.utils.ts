@@ -165,13 +165,12 @@ export const updateRatingAndComment = async( storeId:string, content:string, rat
                 _id:existRatingOrnot._id
             }}},{
                 multi:true
-            })
-            .exec()
-
+        })
+        console.log(updateRatingIfExist)
             const getSum = await StoreModel.aggregate([
                 {$match:{_id:new mongoose.Types.ObjectId(`${storeId}`)}},
                 {$project:{_id:0,
-                    RatingSum:{$sum:'$ratingSection.ratingSum'},
+                    RatingSum:{$sum:'$ratingSection.rating'},
                 }}
             ])
             

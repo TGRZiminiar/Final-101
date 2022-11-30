@@ -23,7 +23,9 @@ type BookMark = {
     }[];
     
     commentCount:number;
-    imageData:{urlImage:string}[];
+    imageHeader:{
+        urlImage:string
+    }
     ratingCount:number;
     ratingSum:number;
     storeName:string;

@@ -60,3 +60,10 @@ export const ListAllCategory  = async() => {
         }
     })
 }
+
+export const ListAllCategoriesSearch = async() => {
+    return await axios.get(`http://localhost:5000/api/list-categories`,{
+
+})
+}
+

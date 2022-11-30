@@ -7,9 +7,10 @@ import { signJwt } from "../utils/jwt.utils";
 import multer from "multer"
 import ImageModel from "../Models/Image.model";
 import fs, { rmSync } from "fs"
-import { ImageUrl } from "../Interface/store.interface";
+import { ImageUrl, SearchStore } from "../Interface/store.interface";
 import StoreModel from "../Models/store.model";
 import mongoose from "mongoose";
+import { handleCategory, handleNameAndLocation, handleOnlyLocation, handleOnlyName, handlePopular, RemoveDuplication } from "../utils/search.utils";
 
 export const RegisterUser = async(req:Request, res:Response) => {
     try {
@@ -272,7 +273,7 @@ export const UserGetBookMark = async(req:Request, res:Response) => {
         .select("bookMark")
         .populate({
             path:"bookMark",
-            select:"imageData storeName ratingSum ratingCount commentCount",
+            select:"imageHeader storeName ratingSum ratingCount commentCount",
             populate:{
                 path:"category",
                 select:"name"
@@ -280,7 +281,6 @@ export const UserGetBookMark = async(req:Request, res:Response) => {
         })
         .lean();
 
-        
 
         return res.status(200).json({"user":user});
         
@@ -314,69 +314,54 @@ export const PullUserBookMark = async(req:Request, res:Response) => {
     }
 }
 
+
+
+
 export const SearchFunction = async(req:Request, res:Response) => {
     try {
         
-        const { name,location } = req.body;
+        const { name, location, categoryId, popular } = req.body;
 
-        console.log("THIS IS NAME =>",name)
-        console.log("THIS IS LOCATION =>",location)
-        // const data = await StoreModel.find({$text:{$search:name}}).lean();
-        // select:"imageData storeName ratingSum ratingCount commentCount",
+        
+        console.log("THIS IS NAME =>",name);
+        // console.log("THIS IS LOCATION =>",locaz)
+
+        let data:SearchStore[] = [];
+
         if(name && !location){
-            const data = await StoreModel.find({
-                "storeName":{$regex:`^${String(name)}$`}
-            })
-            .select("imageData storeName ratingSum ratingCount commentCount")
-            .lean();
-            
-            return res.status(200).json({"data":data});
+            // console.log("NAME ONLY RUNNING")
+            data = await handleOnlyName(name);
         }
-        else if(!location && name){
-            const data = await StoreModel.find({
-                "location.textlocation":{$regex:`^${String(location)}$`}
-            })
-            .select("imageData storeName ratingSum ratingCount commentCount")
-            .lean();
-            
-            return res.status(200).json({"data":data});
+        
+        else if(!name && location){
+            data = await handleOnlyLocation(location);
         }
-        else {
-            const data = await StoreModel.find({
-                "storeName":{$regex:`^${String(name)}$`}, 
-                "location.textlocation":{$regex:`^${String(location)}$`}})
-                .select("imageData storeName ratingSum ratingCount commentCount")
-                .lean();
+        
+        else if(location && name) {
+            let data1:SearchStore[] = await handleOnlyName(name);
+            let data2:SearchStore[] = await handleOnlyLocation(location);
+            
+            data = data1.concat(data2);
 
-            return res.status(200).json({"data":data});
         }
+        
+        if(categoryId){
+            let data1:SearchStore[] = await handleCategory(categoryId);
+            data = data.concat(data1);
+        }
+        
+        if(popular === "view" || popular === "rating" || popular === "comment"){
+            let data1:SearchStore[] = await handlePopular(popular);
+            data = data.concat(data1);
+        }
+    
+        data = await RemoveDuplication(data);
+        
+        return res.status(200).json({"data":data});
+
 
     } catch (error) {
         console.log("Search Fucntion Error =>",error)
-        return res.status(400).json({"message":"Something Went Wronge"})
-    }
-}
-
-export const RandomRestaurant = async(req:Request, res:Response) => {
-    try {
-        
-        const data = await StoreModel.aggregate([
-            { $match: { district: 3 } },
-            { $match: { $expr: { $lt: [0.5, {$rand: {} } ] } } },
-            { $project: { 
-                _id: 0, 
-                imageData: 1,
-                storeName: 1,
-                ratingSum: 1,
-                ratingCount: 1, 
-                commentCount: 1, 
-            }}
-        ])
-
-        return res.status(200).json({"data":data});
-
-    } catch (error) {
-        console.log("Random Error =>",error)
         return res.status(400).json({"message":"Something Went Wronge"})
     }
 }

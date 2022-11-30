@@ -94,3 +94,13 @@ export const GetUserBookMark = async() => {
     }
 
 }
+export type Popular = "rating" | "comment" | "";
+
+export const SearchFunction = async(name:string, location:string, categoryId:string, popular:Popular) => {
+    return await axios.post("http://localhost:5000/api/search",{
+        name:name,
+        location:location,
+        categoryId:categoryId,
+        popular:popular,
+    });
+}

@@ -26,6 +26,8 @@ import { EditMenu } from './Pages/Admin/EditMenu';
 import { UserDetail } from './Pages/User/UserDetail';
 import { UploadImageHeader } from './Pages/Admin/UploadImageHeader';
 import { Redirect } from './Pages/Redirect';
+import { Search } from './Pages/Search';
+import { Random } from './Pages/Random';
 
 function App() {
 
@@ -80,6 +82,9 @@ function App() {
           <Route index path="/" element={<Home/>}/>
           <Route index path="/register" element={<Register/>}/>
           <Route index path="/login" element={<Login/>}/>
+          <Route index path="/search/?" element={<Search/>}/>
+          <Route index path="/search" element={<Search/>}/>
+          <Route index path="/random" element={<Random/>}/>
           <Route index path="/store/:storeId" element={<SingleStore/>}/>
           <Route index path="/user/:userId" element={<UserDetail/>}/>
         </Route>

@@ -75,21 +75,29 @@ export const EditMenu: React.FC = () => {
 
     const handleChangeMenuImage = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        await UploadImageMenuFunc(storeId as string, menuId as string, state.images, state.currentUrl, String(state.price), state.menuName)
-        .then(async(res) => {
-            toast.success("Upload Image Success");
-            await loadSingleMenu();
-            setState(prev => ({...prev,backdropOpen:true}));
-        })        
-        .catch((err) => {
-            toast.error("Upload Error Try Again");
-        })
         
-    }
+        const {images, currentUrl, price, menuName} = state;
 
-    const handleRemoveImageFromDb = () => {
-
+        // if(!images){
+        //     toast.error("Menu Image Is Required")
+        // }
+        if(!menuName){
+            toast.error("Menu Name Is Required")
+        }
+        else if(!price){
+            toast.error("Menu Price Is Required")
+        }
+        else {
+            await UploadImageMenuFunc(storeId as string, menuId as string, images, currentUrl, String(price), menuName)
+            .then(async(res) => {
+                toast.success("Upload Image Success");
+                await loadSingleMenu();
+                setState(prev => ({...prev,backdropOpen:true}));
+            })        
+            .catch((err) => {
+                toast.error("Upload Error Try Again");
+            })
+        }
     }
 
     useEffect(() => {
@@ -207,6 +215,12 @@ export const EditMenu: React.FC = () => {
         onClick={() => setState(prev => ({...prev,backdropOpen:!prev.backdropOpen}))}
       >
        <div className="bg-white w-[30vh] h-[50vh] grid gap-1">
+            <button 
+            onClick={() => navigate(`/admin/upload-image-menu/${storeId}`)}
+            type={"button"} 
+            className="w-full hover:bg-[#6a7d5b] text-white bg-[#6E845D] px-8 py-6 leading-6 shadow-md text-xl font-bold hover:shadow-xl"> 
+                See All Menu
+            </button>
             <button 
             onClick={() => navigate("/admin/get-store")}
             type={"button"} 

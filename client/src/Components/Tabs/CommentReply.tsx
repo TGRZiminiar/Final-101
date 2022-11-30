@@ -66,13 +66,16 @@ export const CommentReply: React.FC<CommentReplyProps> = ({reply,storeId,parentC
         }
     }
  
-
+    console.log(reply)
 
     return (
     <>
      <div className='flex gap-2 my-2 '>
             <div className="max-w-[3rem] max-h-[3rem] flex justify-center mt-4">
-            <Avatar className="w-full h-full self-center"/>
+            <Avatar 
+            className="w-full h-full self-center"
+            src={reply.postedBy.userImage   }
+            />
             </div>
         
         <div className="flex flex-col gap-1">

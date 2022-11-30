@@ -12,10 +12,9 @@ router.post("/login", validate(loginSchema), LoginUser);
 
 router.get("/current-user", authCheck, CurrentUser);
 router.get("/get-bookMark", authCheck, UserGetBookMark);
-
+router.get("/test2",ListAllImage);
 
 router.post("/test",upload.array("images",5), UpLoadImageCon);
-router.get("/test2",ListAllImage);
 router.patch("/update-user",authCheck , upload.array("images",1), UpdateUser);
 
 router.patch("/change-password", authCheck, UpdatePassword);

@@ -69,7 +69,7 @@ export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
            else {
             GetComments(storeId as string)
             .then((res:AxiosResponse) => {
-                setState((prev:SingleStateProps) => ({...prev, comment:res.data.comments as CommentSection[] }))
+                setState((prev:SingleStateProps) => ({...prev, comment:res.data.comments as CommentSection[]}))
                 setSubComment((prev) => ({...prev,openReply:true,openDialogReply:false,textReply:""}));
                 toast.success(res.data.message)
             })
@@ -120,7 +120,10 @@ export const Comment: React.FC<CommentProps> = ({comment,storeId,setState}) => {
     <>
         <div className="flex gap-2 mt-8 ">
                 <div className="max-w-[3rem] max-h-[3rem] flex justify-center mt-4">
-                    <Avatar className="w-full h-full self-center"/>
+                    <Avatar 
+                    className="w-full h-full self-center"
+                    src={comment.postedBy.userImage}
+                    />
                 </div>
             <div className="flex flex-col gap-1">
                 <div className="flex gap-4">

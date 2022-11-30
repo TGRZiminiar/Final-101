@@ -1,5 +1,5 @@
 import express from "express";
-import { CreateStore, GetStore, GetSingleStoreForUploadImage, UploadImageHeaderStore, GetImageHeader, UploadImageStore, DeleteImageStore,RemoveStore, UserAddBookMark,GetStoreDetailUpdate, ChangeSequenceMenu, AddSingleMenuToStore, GetAllStore, GetSingleStore, UpdateStore, GetDataUploadImageMenu, GetSingleMenuData, UploadMenuStore, RemoveMenuStore } from "../Controllers/store.controller";
+import { CreateStore, GetStore, GetSingleStoreForUploadImage, UploadImageHeaderStore, GetStoreSuggest, RandomRestaurant, GetImageHeader, UploadImageStore, DeleteImageStore,RemoveStore, UserAddBookMark,GetStoreDetailUpdate, ChangeSequenceMenu, AddSingleMenuToStore, GetAllStore, GetSingleStore, UpdateStore, GetDataUploadImageMenu, GetSingleMenuData, UploadMenuStore, RemoveMenuStore } from "../Controllers/store.controller";
 import { AdminCheck, authCheck } from "../Middleware/authCheck";
 import upload from "../Middleware/uploadImage";
 const router = express.Router();
@@ -14,7 +14,9 @@ router.get("/get-all-store", GetAllStore);
 router.get("/get-data-upload-image-menu",authCheck, AdminCheck, GetDataUploadImageMenu);
 router.get("/get-single-menu",authCheck, AdminCheck, GetSingleMenuData);
 router.get("/get-single-store-image-header",authCheck, AdminCheck, GetImageHeader);
+router.get("/get-random", RandomRestaurant);
 
+router.post("/suggest-restaurant",GetStoreSuggest);
 router.post("/upload-image-store",authCheck, AdminCheck, upload.array("images",8), UploadImageStore);
 router.post("/upload-image-menu",authCheck, AdminCheck, upload.array("images",1), UploadMenuStore);
 
@@ -22,7 +24,7 @@ router.post("/upload-image-menu",authCheck, AdminCheck, upload.array("images",1)
 router.delete("/remove-menu",authCheck, AdminCheck, RemoveMenuStore);
 router.delete("/remove-store",authCheck, AdminCheck, RemoveStore);
 
-router.patch("/add-menu",authCheck,AdminCheck, upload.array("images",1), AddSingleMenuToStore);
+router.patch("/add-menu",authCheck,AdminCheck,  AddSingleMenuToStore);
 router.patch("/delete-image-store",authCheck, AdminCheck, DeleteImageStore);
 router.patch("/update-store",authCheck, AdminCheck, UpdateStore);
 router.patch("/change-sequence-menu",authCheck, AdminCheck, ChangeSequenceMenu);

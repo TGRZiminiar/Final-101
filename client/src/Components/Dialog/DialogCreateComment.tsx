@@ -21,9 +21,8 @@ interface DialogCreateCommentProps {
 export const DialogCreateComment: React.FC<DialogCreateCommentProps> = ({subState,handleClose,setSubState,handleSubmitComment}) => {
 
 
-
     return (
-     <form onSubmit={(e) => handleSubmitComment(e )} id="form1">
+     <form onSubmit={(e) => handleSubmitComment(e)} id="form1">
     
       <Dialog  fullWidth open={subState.open} onClose={handleClose} 
       sx={{ '& .MuiDialog-paper': { backgroundColor:"#D7C7B4" } }}

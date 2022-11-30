@@ -19,7 +19,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { styled } from '@mui/material/styles';
 import { SearchBox } from './SearchBox/SearchBox';
-
+import Logo from "../Image/logo2.png"
 
 
 // export const SearchBox = styled(TextField)(() => ({
@@ -47,7 +47,8 @@ export const Navbar: React.FC = () => {
     const [state,setState] = useState<StateProps>({
         open:false,
         img:[],
-        search:""
+        search:"",
+
     })
 
     const handleOpen = ():void => {
@@ -85,36 +86,53 @@ export const Navbar: React.FC = () => {
     return (
     <>
 
-    <div className="bg-white   h-[7vh] text-black text-xl border-b-2 shadow-sm  w-full fixed z-50">
+    <div className="bg-white h-[7vh] text-black text-xl border-b-2 shadow-sm  w-full fixed z-[9999]">
     <div className="flex justify-around self-center items-center bg-[#94734D]  h-[7vh] text-black text-xl border-b-2 border-[#7e6140] shadow-sm">
-                <div className="cursor-pointer" onClick={() => navigate("/")}>
-                    <h6>LOGO</h6>
+                <div className="cursor-pointer ">
+                    <div className="h-[3rem] w-[15rem] md:h-[3.8rem] md:w-[18rem]">
+                        <img
+                        src={Logo}
+                        className="w-full h-full object-cover"
+                        onClick={() => navigate("/")}
+                        />
+                    </div>
                 </div>
 
-                <div>
-                {/* <SearchBox
-                        placeholder="Search By Address Or Location"
-                        fullWidth
-                        className='rounded-md '
-                        InputProps={{
-                        startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchOutlinedIcon />
-                        </InputAdornment>
-                        ),
-                        }}
-                        variant="outlined"
-                    />  */}
+                {/* <div>
+           
                     <SearchBox
                     value={state.search}
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev,search:e.target.value}))}
 
                     />
-                </div>
+                </div> */}
 
                 <div className="flex gap-4 md:gap-8">
                 
+                <div className="self-center px-2 relative">
+                    <div className="hidden  md:block w-[10rem] hover:w-[12rem] transition-all h-[4vh] self-center rounded-lg px-2  cursor-pointer" >
+                    {/* <SearchBox
+                    value={state.search}
+                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev,search:e.target.value}))}
+                /> */}
+                    <div className="flex gap-1 w-full h-full text-semibold rounded-lg self-center">
+                        
+                        <input
+                        placeholder='Search . . .'
+                        className="w-full h-full border-2 rounded-full outline-none ring-amber-500 focus:border-amber-500 placeholder:pl-2 pl-2"
+                        value={state.search}
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => setState(prev => ({...prev,search:e.target.value}))}
+                        />
+                        <button className="absolute h-full border-2 border-amber-600 bg-amber-600 top-0 right-0 rounded-r-lg" >
+                            <SearchOutlinedIcon className="self-center text-white" onClick={() => navigate(`/search?search=${state.search}&category=\"\"`)} />
+                        </button>
+                        </div>
+                    </div>
 
+                    <div className="block md:hidden text-white">
+                    <SearchOutlinedIcon onClick={() => navigate(`/search?search=""&category=\"\"`)} />
+                    </div>
+                </div>
                 
 
                 {user ? 
@@ -136,7 +154,7 @@ export const Navbar: React.FC = () => {
                 <div className="flex gap-2 hover:bg-slate-50 p-2 border-b-[1px] border-gray-700">
                     <div className="w-[4rem] h-[4rem]">
                         <img
-                        src="https://www.w3schools.com/howto/img_avatar.png"
+                        src={user.userImage ? user.userImage : "https://www.w3schools.com/howto/img_avatar.png"}
                         className="rounded-full w-full h-full"
                         />
                     </div>
@@ -155,7 +173,7 @@ export const Navbar: React.FC = () => {
                 className="flex gap-4 px-2 pb-2 pt-4 w-full  hover:bg-slate-50  border-b-[1px] border-gray-200 cursor-pointer hover:underline" 
                 onClick={(e:any) => {
                     e.stopPropagation()
-                    navigate("/admin")
+                    navigate("/admin/get-store")
                     setState(prev => ({...prev,open:false}))
                 }}
                 >

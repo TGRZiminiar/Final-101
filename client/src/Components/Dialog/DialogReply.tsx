@@ -52,7 +52,9 @@ export const DialogReply: React.FC<DialogReplyProps> = ({subComment, closeDialog
                 <DialogContent>
                 <div className="flex gap-2 my-2 mb-6 rounded-md p-2 " style={{backgroundColor:"rgba(0, 0, 0, 0.09)"}}>
                 <div className="max-w-[3rem] max-h-[3rem] flex justify-center">
-                    <Avatar className="w-full h-full self-center"/>
+                    <Avatar className="w-full h-full self-center"
+                    src={comment.postedBy.userImage}
+                    />
                 </div>
                 <div className="flex flex-col gap-1">
                <p className="text-xl font-semibold">{comment.postedBy.userName}</p>

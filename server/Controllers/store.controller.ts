@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken"
 import { UserSignJWT } from "../Interface/user.interface";
 import UserModel from "../Models/user.models";
-
+import upload from "../Middleware/uploadImage";
 
 export const CreateStore = async(req:Request, res:Response) => {
     try {
@@ -66,6 +66,34 @@ export const GetStore = async(req:Request, res:Response) => {
       
         const data = await StoreModel.find({})
         .select("storeName category")
+        .populate({
+            path:"category",
+            select:"name"
+        })
+        .sort({"createdAt":-1})
+        .lean();
+
+        return res.status(200).json({"store":data});
+
+    } catch (error) {
+        console.log(`Get Store Error => ${error}`);
+        return res.status(400).send("Something Went Wronge Try Again Later");
+    }
+}
+
+
+export const GetStoreSuggest = async(req:Request, res:Response) => {
+    try {
+      
+        const {storeid} = req.headers;
+        const {categoryId}:{categoryId:string[]} = req.body;
+
+        const data = await StoreModel.find({
+            _id:{$ne:new mongoose.Types.ObjectId(`${storeid}`)},
+            category:{$in:categoryId},  
+        })
+        .limit(7)
+        .select("storeName ratingSum ratingCount commentCount otherDetail imageHeader")
         .populate({
             path:"category",
             select:"name"
@@ -430,56 +458,76 @@ export const GetSingleStore = async(req:Request, res:Response) => {
 export const AddSingleMenuToStore = async(req:Request, res:Response) => {
     try {
         
+        const {storeid,price,menuname} = req.headers;
+
         //@ts-ignore
         const files = req.files;
         //@ts-ignore
         if(!files){
-             return res.status(400).json("Something Went Wronge");
-        }
- 
-        const {storeid,price,menuname} = req.headers;
+            
+            const data = await StoreModel.findOneAndUpdate({
+                _id:new mongoose.Types.ObjectId(`${storeid}`),
+            },{
+                $push:{menuList:{price:Number(price),text:menuname,urlImage:""}}
+            },{
+                new:true,
+            })
 
-
-        //@ts-ignore
-        let imgArray = files.map((file) => {
-            let img = fs.readFileSync(file.path)
-
-             return img.toString('base64')
-        })
- 
-        let url = req.protocol + '://' + req.get('host');
-        let tempImageArray:ImageUrl[] = [];
-         
-        await Promise.all( imgArray.map((src:string, index:number) => {
- 
-             // create object to store data in the collection
-            let finalImg:ImageUrl = {
-                //@ts-ignore
-                urlImage : url + "/" +files[index].path,
-                //@ts-ignore
-                contentType : files[index].mimetype,
+            if(!data){
+                return res.status(400).json({"message":"StoreId Doesn't Match"});
             }
-            tempImageArray.push(finalImg)
-        }))
+            else {
+                return res.status(200).json({"Menu":data.menuList,"message":"Add Menu Success"});
+            }
 
-        console.log("THIS IS MENU NAME =>",menuname,price);
-
-        const data = await StoreModel.findOneAndUpdate({
-                 _id:new mongoose.Types.ObjectId(`${storeid}`),
-             },{
-                 $push:{menuList:{price:Number(price),text:menuname,urlImage:tempImageArray[0].urlImage}}
-        },{
-            new:true,
-        })
-
-
-
-        if(!data){
-            return res.status(400).json({"message":"StoreId Doesn't Match"});
         }
         else {
-            return res.status(200).json({"Menu":data.menuList,"message":"Add Menu Success"});
+            
+            upload.array("images",1);
+    
+            //@ts-ignore
+            let imgArray = files.map((file) => {
+                let img = fs.readFileSync(file.path)
+    
+                 return img.toString('base64')
+            })
+     
+            let url = req.protocol + '://' + req.get('host');
+            let tempImageArray:ImageUrl[] = [];
+             
+            await Promise.all( imgArray.map((src:string, index:number) => {
+     
+                 // create object to store data in the collection
+                let finalImg:ImageUrl = {
+                    //@ts-ignore
+                    urlImage : url + "/" +files[index].path,
+                    //@ts-ignore
+                    contentType : files[index].mimetype,
+                }
+                tempImageArray.push(finalImg)
+            }))
+
+            const data = await StoreModel.findOneAndUpdate({
+                     _id:new mongoose.Types.ObjectId(`${storeid}`),
+                 },{
+                     $push:{menuList:{price:Number(price),text:menuname,urlImage:tempImageArray[0].urlImage}}
+            },{
+                new:true,
+            })
+    
+            if(!data){
+                return res.status(400).json({"message":"StoreId Doesn't Match"});
+            }
+            else {
+                return res.status(200).json({"Menu":data.menuList,"message":"Add Menu Success"});
+            }
+
         }
+
+
+
+        // console.log("THIS IS MENU NAME =>",menuname,price);
+
 
 
     } catch (error) {
@@ -810,6 +858,44 @@ export const checkCommentAndCommentReply = async(data:StoreDocument, userId:stri
 }
 
 
+
+export const RandomRestaurant = async(req:Request, res:Response) => {
+    try {
+        
+        const data = await StoreModel.aggregate([
+            { $sample: { size: 1 } },
+            { $lookup: {
+                from:"categories",
+                localField:"category",
+                foreignField:"_id",
+                as:"category"
+            }},
+            { $project: { 
+                "_id": 1, 
+                "storeName": 1,
+                "rangePrice": 1,
+                "location": 1,
+                "category.name": 1,
+                "category._id": 1,
+                "imageHeader": 1,
+                "seat": 1,
+                "branch": 1,
+                "contact": 1,
+                "timeOpen": 1,
+                "ratingSum": 1,
+                "ratingCount": 1, 
+                "commentCount": 1, 
+            }},
+           
+        ])
+
+        return res.status(200).json({"data":data[0]});
+
+    } catch (error) {
+        console.log("Random Error =>",error)
+        return res.status(400).json({"message":"Something Went Wronge"})
+    }
+}
 
 const checkCommentAndCommentReplyNoUserId = async(data:StoreDocument) => {
     

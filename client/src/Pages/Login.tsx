@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Cookies from "js-cookie";
 import { LoginUser } from '../Function/user';
@@ -6,20 +6,25 @@ import { toast } from 'react-toastify';
 import { ResultRegister } from '../Interface/Auth.Interface';
 import { AxiosError } from 'axios';
 import {useNavigate} from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import Logo from "../Image/logo.png"
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 interface State {
     email:string;
-    password:string
+    password:string;
+    showPassword:boolean;
 }
 
 export const Login: React.FC = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
+    //@ts-ignore
+    const user:LogInLogOutUser = useSelector(state => state.user);
     const [state,setState] = useState<State>({
         email:"",
         password:"",
+        showPassword:false,
     })
 
     const handleSubmit = (e:React.MouseEvent<HTMLButtonElement>) => {
@@ -43,37 +48,71 @@ export const Login: React.FC = () => {
         
     }
 
+    useEffect(() => {
+      
+        if(user){
+           navigate("/"); 
+        }
+
+    }, [user])
+
     return (
-    <>
-     <div className="w-full h-[100vh] flex justify-center align-middle ">
-        <div className="w-[50vh] h-[50vh] my-auto p-8 self-center bg-white">
-            <h2 className='text-4xl font-bold text-blue-400'> Login Here!</h2>
-            <h2 className='pt-2 text-lg font-bold text-slate-500'> Let's have fun!</h2>
-            <div className="grid mt-8 gap-4">
-                <h2 className="text-slate-400 text-2xl font-semibold">Email</h2>
-                <input type="text" 
-                className="outline-none border text-sm rounded-lg  w-full p-2.5 bg-gray-700 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500 focus:text-white" 
-                placeholder="John@gmail.com"
-                required
-                value={state.email}
-                onChange={(e) => setState((prev) => ({...prev,email:e.target.value}))}
-                />
-                <h2 className="text-slate-400 text-2xl font-semibold">Password</h2>
-                <input type="password" className="outline-none border text-sm rounded-lg  w-full p-2.5 bg-gray-700 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500 focus:text-white" 
-                placeholder="******"
-                required
-                value={state.password}
-                onChange={(e) => setState((prev) => ({...prev,password:e.target.value}))}
-                />
-               
-                <button className='bg-indigo-400 h-auto hover:bg-indigo-500 p-2 rounded-lg mt-2' onClick={(e:React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
+    <div className="w-full flex justify-center align-middle pt-[24vh] max-h-screen overflow-y-hidden">
+        <div className="lg:mx-auto lg:my-auto ">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:w-[100%] mx-auto h-full max-h-[60%]">
+            <div className="">
+                <div className="hidden lg:block w-full h-full">
+                    <img
+                    src={Logo}
+                    className="w-full h-full object-cover"
+                    />
+                </div>
+            </div>
+
+            <div className="p-8 bg-slate-50 flex flex-col justify-center sm:min-w-[50vh] md:min-w-[65vh] lg:min-w-[55vh] ">
+                <h6 className="text-4xl text-center font-semibold mt-4 text-[#9d805f]">Login Account</h6>
+
+                <div className="grid gap-4 mt-8">
+                    <h6 className="text-2xl text-[#ac8b65] font-semibold">Email</h6>
+                    <input
+                    className="outline-none  border text-md focus:bg-gray-50 rounded-lg p-3.5 bg-gray-100 border-l-8 focus:border-l-8 border-l-amber-700 focus:border-2 focus:border-amber-600 focus:border-l-amber-700"
+                    placeholder="Email"
+                    value={state.email}
+                    onChange={(e) => setState((prev) => ({...prev,email:e.target.value}))}
+                    required
+                    />
+                </div>
+
+                <div className="grid gap-4 mt-8">
+                    <h6 className="text-2xl text-[#ac8b65] font-semibold">Password</h6>
+                    <div className="relative ">
+                    <input
+                    className="w-full  outline-none focus:bg-gray-50 border text-md rounded-lg p-3.5 bg-gray-100 border-l-8 focus:border-l-8 border-l-amber-700 focus:border-2 focus:border-amber-600 focus:border-l-amber-700"
+                    placeholder="Password"
+                    type={!state.showPassword ? "password" : "text"}
+                    value={state.password}
+                    onChange={(e) => setState((prev) => ({...prev,password:e.target.value}))}
+                    required
+                    />
+                    <div className="absolute top-3.5 right-2 cursor-pointer" onClick={() => setState(prev => ({...prev,showPassword:!prev.showPassword}))}>
+                    {state.showPassword ? 
+                    <VisibilityOutlinedIcon/>
+                    :
+                    <VisibilityOffOutlinedIcon/>
+                    }
+                    </div>
+                    </div>
+                </div>
+                <h4 className="text-blue-400 text-sm text-right cursor-pointer"><Link to="/register">No Account?</Link></h4>
+
+                <button className='bg-amber-500 h-auto hover:bg-amber-600 p-2 rounded-lg mt-4' onClick={(e:React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
                     <h2 className="text-xl font-bold text-white">Submit</h2>
                 </button>
-                <h4 className="text-blue-400 text-sm text-right cursor-pointer"><Link to="/register">No Account?</Link></h4>
+
             </div>
-           
+            </div>
         </div>
+    
     </div>
-    </>
     )
 }

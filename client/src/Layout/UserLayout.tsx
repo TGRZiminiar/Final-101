@@ -9,7 +9,7 @@ export const UserLayout: React.FC = () => {
     <div className="relative">
         <Navbar/>
        
-        <div className="mb-[7rem]">
+        <div className="">
         <Outlet/>
         </div>
        

@@ -262,7 +262,13 @@ export const UpdateStore: React.FC = () => {
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch,seatNumber } = state
+        const {name, category, textLocation, link , timeOpen, timeOpenDelivery, rangePrice, checkBox, otherDetail, contact, menu, branch,seatNumber } = state;
+        if(link.includes("http://")){
+            link.substring(0,6);
+        }
+        if(link.includes("https://")){
+            link.substring(0,7);
+        }
         const objLocation = {"textLocation":textLocation,"link":link};
         const onlyIdCategory:string[] = [];
         category?.map((c) => {
@@ -444,7 +450,7 @@ export const UpdateStore: React.FC = () => {
                 </div>
             </Grid>
 
-                </Grid>
+            </Grid>
 
             </form>
           </div>

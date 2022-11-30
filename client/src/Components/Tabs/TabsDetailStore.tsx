@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import { FirstIndex } from './FirstIndex';
 import "./TabsDetailStore.css"
 import { SecondIndex } from './SecondIndex';

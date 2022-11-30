@@ -13,6 +13,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import CancelIcon from '@mui/icons-material/Cancel';
 import "./FirstIndex.css"
 import { SingleStateProps } from '../../Pages/User/SingleStore';
+import {useNavigate} from "react-router-dom";
 
 interface FirstIndexProps {
     
@@ -22,7 +23,7 @@ interface FirstIndexProps {
 
 export const FirstIndex: React.FC<FirstIndexProps> = ({state}) => {
     
-    
+    const navigate = useNavigate();
     let str:string[] = [];
 
     // const memo = useMemo(() => {
@@ -78,21 +79,22 @@ export const FirstIndex: React.FC<FirstIndexProps> = ({state}) => {
                         
                         {state.store?.contact.map((con,i) => (
                         <React.Fragment key={i}>
-                            {con.platform === "Facebook" &&  <div>
-                                <FacebookRoundedIcon className="self-center cursor-pointer" sx={{color:"#168FE8"}} fontSize="large"/>
-                            </div>}
-                            {con.platform === "Instagram" && <div>
-                                <InstagramIcon className="self-center cursor-pointer" sx={{color:"#F64B89"}} fontSize="large"/>
-                            </div>}
+                            {con.platform === "Facebook" &&   
+                            <a href={`${con.link}`}  onClick={() => window.open(`http://${con.link}`, "_blank")}  rel="noreferrer" target="_blank" >
+                                <FacebookRoundedIcon className="self-center cursor-pointer" sx={{color:"#168FE8"}} fontSize="large" />
+                            </a>}
+                            {con.platform === "Instagram" && <a href={`${con.link}`}  onClick={() => window.open(`https://${con.link}`, "_blank")}  rel="noreferrer" target="_blank" >
+                                <InstagramIcon className="self-center cursor-pointer" sx={{color:"#F64B89"}} fontSize="large" />
+                            </a>}
 
-                            {con.platform === "Phone" && <div>
-                                <LocalPhoneRoundedIcon className="self-center cursor-pointer" sx={{color:"#168FE8"}} fontSize="large"/>
-                            </div>}
+                            {con.platform === "Phone" && <a href={`${con.link}`}  onClick={() => window.open(`https://${con.link}`, "_blank")}  rel="noreferrer" target="_blank" >
+                                <LocalPhoneRoundedIcon className="self-center cursor-pointer" sx={{color:"#168FE8"}} fontSize="large" />
+                            </a>}
 
-                            {con.platform === "Line" && <div 
+                            {con.platform === "Line" && <a href={`${con.link}`}  onClick={() => window.open(`https://${con.link}`, "_blank")}  rel="noreferrer" target="_blank"  
                                 className="w-[2rem] h-[2rem] rounded-full bg-green-600 line"
                                 >
-                                </div>
+                                </a>
                             }
 
 
